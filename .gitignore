@@ -1,0 +1,16 @@
+.next/
+node_modules/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.local
+.env.*.local
+.vercel/
+.open-next/
+.wrangler/
+supabase/.branches/
+supabase/.temp/
+*.log
+*.tsbuildinfo
+Thumbs.db

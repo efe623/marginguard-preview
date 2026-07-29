@@ -1,0 +1,55 @@
+{
+  "name": "marginguard",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "bootstrap-owner": "node --env-file=.env.local scripts/bootstrap-owner.mjs",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:patch": "node scripts/patch-cloudflare-bundle.mjs",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "dependencies": {
+    "@opennextjs/cloudflare": "^1.20.2",
+    "@supabase/ssr": "0.12.4",
+    "@supabase/supabase-js": "2.111.0",
+    "@swc/helpers": "^0.5.23",
+    "clsx": "2.1.1",
+    "lucide-react": "1.27.0",
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "stripe": "22.3.2",
+    "styled-jsx": "^5.1.7",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.0",
+    "@tailwindcss/postcss": "4.1.14",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.0",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "eslint": "9.39.1",
+    "eslint-config-next": "16.2.12",
+    "jsdom": "27.2.0",
+    "tailwindcss": "4.1.14",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10",
+    "wrangler": "^4.114.0"
+  },
+  "packageManager": "pnpm@11.9.0"
+}
