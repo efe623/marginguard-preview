@@ -10,9 +10,11 @@ const publicPaths = [
   "/recovery",
   "/accept-invitation",
   "/approve",
+  "/portal",
   "/api/auth",
   "/api/client-otp",
   "/api/files/scan-callback",
+  "/api/jobs/daily",
   "/api/jobs/email-outbox",
   "/api/stripe/webhook",
   "/api/health"
