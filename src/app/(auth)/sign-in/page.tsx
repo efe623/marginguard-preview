@@ -5,15 +5,15 @@ import { isSupabaseConfigured } from "@/lib/env";
 
 export default function SignInPage() {
   return (
-    <main className="grid min-h-screen grid-cols-[1fr_0.85fr]">
-      <section className="flex flex-col justify-between bg-[var(--sidebar)] p-14 text-white">
+    <main className="grid min-h-screen grid-cols-1 lg:grid-cols-[1fr_0.85fr]">
+      <section className="flex min-h-[58vh] flex-col justify-between bg-[var(--sidebar)] p-8 text-white sm:p-10 lg:min-h-screen lg:p-14">
         <div>
           <p className="font-display text-4xl font-bold tracking-tight">MarginGuard</p>
           <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-white/45">Profit, protected</p>
         </div>
         <div className="max-w-2xl">
           <p className="text-xs font-bold uppercase tracking-[0.13em] text-white/50">The rule</p>
-          <h1 className="font-display mt-5 text-7xl font-bold leading-[0.98] tracking-[-0.045em]">
+          <h1 className="font-display mt-5 text-5xl font-bold leading-[0.98] tracking-[-0.045em] sm:text-6xl xl:text-7xl">
             No extra work without proof.
           </h1>
           <div className="mt-10 flex gap-3 text-sm text-white/65">
@@ -23,7 +23,7 @@ export default function SignInPage() {
         </div>
         <p className="text-xs text-white/35">Invite-only pilot · Real business data</p>
       </section>
-      <section className="grid place-items-center p-12">
+      <section className="grid place-items-center p-6 py-12 sm:p-12">
         <div className="w-full max-w-md">
           <p className="eyebrow">Secure access</p>
           <h2 className="font-display mt-4 text-5xl font-bold tracking-tight">Welcome back.</h2>
