@@ -37,7 +37,13 @@ export async function POST(request: Request) {
     .is("disconnected_at", null)
     .maybeSingle();
   if (!connection?.charges_enabled) {
-    return NextResponse.json({ error: "Connect an enabled Stripe account first" }, { status: 409 });
+    return NextResponse.json(
+      {
+        error:
+          "Stripe is not connected. The approved order remains recorded; confirm an external payment manually when it arrives."
+      },
+      { status: 409 }
+    );
   }
 
   const { data: version } = await owner.supabase

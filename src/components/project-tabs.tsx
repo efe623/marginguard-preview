@@ -5,25 +5,29 @@ export function ProjectTabs({
   active
 }: {
   projectId: string;
-  active: "overview" | "scope" | "requests" | "orders" | "files" | "audit";
+  active: "overview" | "scope" | "requests" | "orders" | "work" | "money" | "messages" | "ai" | "files" | "audit";
 }) {
   const tabs = [
     ["overview", "Overview", `/projects/${projectId}`],
     ["scope", "Project scope", `/projects/${projectId}/scope`],
     ["requests", "Change requests", `/projects/${projectId}/requests`],
     ["orders", "Change orders", `/projects/${projectId}/change-orders`],
+    ["work", "Tasks & time", `/projects/${projectId}/work`],
+    ["money", "Money", `/projects/${projectId}/money`],
+    ["messages", "Messages", `/projects/${projectId}/messages`],
+    ["ai", "AI drafts", `/projects/${projectId}/ai`],
     ["files", "Files", `/projects/${projectId}/files`],
     ["audit", "Audit", `/projects/${projectId}/audit`]
   ] as const;
 
   return (
-    <nav aria-label="Project sections" className="mt-8 flex border-b border-[var(--line)]">
+    <nav aria-label="Project sections" className="mt-8 flex overflow-x-auto border-b border-[var(--line)]">
       {tabs.map(([key, label, href]) => (
         <Link
           key={key}
           href={href}
           aria-current={active === key ? "page" : undefined}
-          className={`relative px-5 py-4 text-sm font-semibold ${
+          className={`relative shrink-0 px-5 py-4 text-sm font-semibold ${
             active === key ? "text-[var(--ink)]" : "text-[var(--ink-soft)]"
           }`}
         >

@@ -19,6 +19,15 @@ const exportTables = [
   "change_order_approvals",
   "payment_requests",
   "manual_payment_confirmations",
+  "quote_templates",
+  "quotes",
+  "client_messages",
+  "project_tasks",
+  "time_entries",
+  "project_expenses",
+  "invoices",
+  "ai_generations",
+  "project_updates",
   "audit_events"
 ] as const;
 

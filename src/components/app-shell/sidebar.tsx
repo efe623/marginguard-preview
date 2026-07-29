@@ -2,9 +2,12 @@
 
 import {
   BriefcaseBusiness,
+  Bell,
   Building2,
+  FileText,
   LayoutDashboard,
   LogOut,
+  PieChart,
   Settings,
   ShieldCheck
 } from "lucide-react";
@@ -16,6 +19,9 @@ const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/projects", label: "Projects", icon: BriefcaseBusiness },
   { href: "/clients", label: "Clients", icon: Building2 },
+  { href: "/invoices", label: "Invoices", icon: FileText },
+  { href: "/reports", label: "Reports", icon: PieChart },
+  { href: "/notifications", label: "Alerts", icon: Bell },
   { href: "/audit", label: "Audit trail", icon: ShieldCheck },
   { href: "/settings", label: "Settings", icon: Settings }
 ];
@@ -24,8 +30,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 flex w-[268px] flex-col bg-[var(--sidebar)] text-white">
-      <div className="px-7 pb-7 pt-8">
+    <aside className="app-sidebar fixed inset-y-0 left-0 z-20 flex w-[268px] flex-col bg-[var(--sidebar)] text-white">
+      <div className="app-sidebar-brand px-7 pb-7 pt-8">
         <Link href="/dashboard">
           <span className="font-display block text-[2rem] font-bold tracking-[-0.04em]">
             MarginGuard
@@ -38,12 +44,12 @@ export function Sidebar() {
 
       <Link
         href="/projects/new"
-        className="mx-7 mb-8 flex min-h-12 items-center justify-center bg-[var(--signal)] text-xs font-bold uppercase tracking-[0.09em] transition hover:bg-white hover:text-black"
+        className="app-new-project mx-7 mb-8 flex min-h-12 items-center justify-center bg-[var(--signal)] text-xs font-bold uppercase tracking-[0.09em] transition hover:bg-white hover:text-black"
       >
         + New project
       </Link>
 
-      <nav aria-label="Primary navigation" className="flex-1">
+      <nav aria-label="Primary navigation" className="app-nav flex-1">
         {links.map(({ href, label, icon: Icon }) => {
           const active =
             pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`));
@@ -67,7 +73,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-white/15 px-7 py-6">
+      <div className="app-sidebar-footer border-t border-white/15 px-7 py-6">
         <div className="flex items-center gap-3">
           <div className="grid size-10 place-items-center rounded-full border border-white/20 bg-white/10 font-display text-lg">
             A

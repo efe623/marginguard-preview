@@ -40,10 +40,10 @@ export function PaymentActions({
   return (
     <div className="mt-7 border-t border-[var(--line)] pt-6">
       <button className="button button-primary w-full" type="button" disabled={pending} onClick={createLink}>
-        <CreditCard size={16} /> Create Stripe link
+        <CreditCard size={16} /> Create Stripe payment link (if connected)
       </button>
       <details className="mt-3 border border-[var(--line)] p-4">
-        <summary className="cursor-pointer text-sm font-semibold">Record external deposit</summary>
+        <summary className="cursor-pointer text-sm font-semibold">Stripe unavailable? Record external deposit</summary>
         <form action={confirmManualPayment} className="mt-4 space-y-3">
           <input type="hidden" name="paymentRequestId" value={paymentRequestId ?? ""} />
           <input type="hidden" name="projectId" value={projectId} />

@@ -8,6 +8,7 @@ export function FileUploadButton({ projectId }: { projectId: string }) {
   const input = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
+  const [kind, setKind] = useState("other");
 
   async function upload(file: File) {
     setPending(true);
@@ -20,7 +21,8 @@ export function FileUploadButton({ projectId }: { projectId: string }) {
           projectId,
           name: file.name,
           type: file.type,
-          size: file.size
+          size: file.size,
+          kind
         })
       });
       const prepared = (await response.json()) as {
@@ -52,7 +54,7 @@ export function FileUploadButton({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div>
+    <div className="flex flex-wrap items-start gap-2">
       <input
         ref={input}
         className="sr-only"
@@ -63,10 +65,22 @@ export function FileUploadButton({ projectId }: { projectId: string }) {
           if (file) void upload(file);
         }}
       />
+      <select
+        className="input w-auto min-w-36"
+        aria-label="File purpose"
+        value={kind}
+        onChange={(event) => setKind(event.target.value)}
+      >
+        <option value="contract">Contract</option>
+        <option value="quote">Quote</option>
+        <option value="receipt">Receipt</option>
+        <option value="message">Client message</option>
+        <option value="other">Other</option>
+      </select>
       <button className="button button-primary" disabled={pending} onClick={() => input.current?.click()}>
         <Upload size={16} /> {pending ? "Uploading…" : "Upload file"}
       </button>
-      {message ? <p role="status" className="mt-2 max-w-xs text-xs">{message}</p> : null}
+      {message ? <p role="status" className="w-full max-w-md text-xs">{message}</p> : null}
     </div>
   );
 }

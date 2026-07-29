@@ -17,7 +17,8 @@ const schema = z.object({
   projectId: z.uuid(),
   name: z.string().min(1).max(255),
   type: z.string().min(1).max(160),
-  size: z.number().int().min(1).max(20 * 1024 * 1024)
+  size: z.number().int().min(1).max(20 * 1024 * 1024),
+  kind: z.enum(["quote", "contract", "receipt", "message", "other"])
 });
 
 export async function POST(request: Request) {
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
       original_name: parsed.data.name,
       content_type: parsed.data.type,
       size_bytes: parsed.data.size,
+      kind: parsed.data.kind,
       uploaded_by: user.id
     });
   if (rowError) return NextResponse.json({ error: rowError.message }, { status: 403 });

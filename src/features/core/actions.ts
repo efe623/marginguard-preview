@@ -90,6 +90,28 @@ export async function createClient(formData: FormData) {
   redirect(`/clients/${data.id}`);
 }
 
+export async function updateClientNotes(formData: FormData) {
+  if (!isSupabaseConfigured) return;
+  const parsed = z
+    .object({
+      clientId: z.uuid(),
+      notes: z.string().trim().max(5000)
+    })
+    .safeParse({
+      clientId: formData.get("clientId"),
+      notes: formData.get("notes") ?? ""
+    });
+  if (!parsed.success) return;
+  const { supabase, actor } = await requireActor();
+  const { error } = await supabase
+    .from("clients")
+    .update({ notes: parsed.data.notes || null })
+    .eq("id", parsed.data.clientId)
+    .eq("business_id", actor.businessId);
+  if (error) fail(`/clients/${parsed.data.clientId}`, error.message);
+  revalidatePath(`/clients/${parsed.data.clientId}`);
+}
+
 const projectSchema = z.object({
   name: z.string().trim().min(1).max(180),
   clientId: z.uuid(),
@@ -213,6 +235,27 @@ export async function createChangeRequest(formData: FormData) {
     if (revisionError) {
       fail(`/projects/${parsed.data.projectId}/requests`, "Request saved, but revision counting needs review.");
     }
+  }
+  const notificationAdmin = createAdminClient();
+  const { data: requestRecipients } = await notificationAdmin
+    .from("business_memberships")
+    .select("user_id")
+    .eq("business_id", actor.businessId)
+    .eq("status", "active");
+  for (const recipient of requestRecipients ?? []) {
+    await notificationAdmin.from("in_app_notifications").upsert(
+      {
+        business_id: actor.businessId,
+        user_id: recipient.user_id,
+        project_id: parsed.data.projectId,
+        kind: "change_request",
+        title: `New ${parsed.data.requestType.replace("_", " ")}`,
+        body: parsed.data.title,
+        href: `/projects/${parsed.data.projectId}/requests`,
+        dedupe_key: `change-request:${request.id}:${recipient.user_id}`
+      },
+      { onConflict: "dedupe_key", ignoreDuplicates: true }
+    );
   }
 
   revalidatePath(`/projects/${parsed.data.projectId}/requests`);
@@ -362,6 +405,26 @@ export async function sendChangeOrder(formData: FormData) {
     fail(
       `/projects/${parsed.data.projectId}/change-orders/${result.version_id}`,
       "The order was locked, but the approval email could not be queued."
+    );
+  }
+  const { data: orderRecipients } = await admin
+    .from("business_memberships")
+    .select("user_id")
+    .eq("business_id", result.business_id)
+    .eq("status", "active");
+  for (const recipient of orderRecipients ?? []) {
+    await admin.from("in_app_notifications").upsert(
+      {
+        business_id: result.business_id,
+        user_id: recipient.user_id,
+        project_id: parsed.data.projectId,
+        kind: "change_order_sent",
+        title: `CO-${String(result.order_number).padStart(3, "0")} sent`,
+        body: parsed.data.title,
+        href: `/projects/${parsed.data.projectId}/change-orders/${result.version_id}`,
+        dedupe_key: `change-order-sent:${result.version_id}:${recipient.user_id}`
+      },
+      { onConflict: "dedupe_key", ignoreDuplicates: true }
     );
   }
   revalidatePath(`/projects/${parsed.data.projectId}/change-orders`);

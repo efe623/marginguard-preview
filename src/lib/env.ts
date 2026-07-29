@@ -7,6 +7,8 @@ const publicSchema = z.object({
 });
 
 const serverSchema = publicSchema.extend({
+  GEMINI_API_KEY: z.string().optional(),
+  GEMINI_MODEL: z.string().default("gemini-3.5-flash-lite"),
   SUPABASE_SECRET_KEY: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
@@ -36,6 +38,8 @@ export const isSupabaseConfigured = Boolean(
 export function getServerEnv() {
   return serverSchema.parse({
     ...publicEnv,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GEMINI_MODEL: process.env.GEMINI_MODEL,
     SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,

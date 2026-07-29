@@ -1,9 +1,12 @@
-import { CreditCard, KeyRound, LifeBuoy, Trash2, Users } from "lucide-react";
+import { Building2, CreditCard, FileText, KeyRound, LifeBuoy, Sparkles, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 
 const settings = [
+  ["Business profile", "Business type, currency, timezone, and default hourly rate.", Building2, "/settings/business"],
+  ["Quote templates", "Reusable proposal introductions, terms, and validity periods.", FileText, "/settings/quotes"],
+  ["AI and privacy", "Enable draft-only Gemini tools and control external processing.", Sparkles, "/settings/ai"],
   ["Members & permissions", "Invite staff, assign projects, and grant financial-send access.", Users, "/settings/members"],
   ["Security & sessions", "MFA, recovery codes, trusted devices, and remote sign-out.", KeyRound, "/settings/security"],
   ["Stripe", "Connect the owner’s Stripe account for hosted payment links.", CreditCard, "/settings/stripe"],
