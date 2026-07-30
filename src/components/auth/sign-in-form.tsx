@@ -7,21 +7,21 @@ export function SignInForm() {
   const [state, action, pending] = useActionState(signIn, {});
 
   return (
-    <form action={action} className="mt-8 space-y-5">
-      <label>
+    <form action={action} className="mt-8 grid gap-5">
+      <label className="block">
         <span className="field-label">Email</span>
-        <input className="input" name="email" type="email" autoComplete="email" required />
+        <input className="auth-input" name="email" type="email" autoComplete="email" required />
       </label>
-      <label>
+      <label className="block">
         <span className="field-label">Password</span>
-        <input className="input" name="password" type="password" autoComplete="current-password" minLength={10} required />
+        <input className="auth-input" name="password" type="password" autoComplete="current-password" minLength={10} required />
       </label>
       {state.error ? (
         <p role="alert" className="border border-[var(--danger)] bg-[#fff5f3] p-3 text-sm text-[var(--danger)]">
           {state.error}
         </p>
       ) : null}
-      <button className="button button-primary w-full" disabled={pending}>
+      <button className="auth-button auth-button-primary mt-1 w-full" disabled={pending}>
         {pending ? "Signing in…" : "Sign in"}
       </button>
     </form>

@@ -1,9 +1,18 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { SignInForm } from "@/components/auth/sign-in-form";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import { isSupabaseConfigured } from "@/lib/env";
 
-export default function SignInPage() {
+const errors: Record<string, string> = {
+  callback: "The sign-in response could not be verified. Try again.",
+  invitation: "This invitation is invalid, expired, or belongs to another email.",
+  membership: "UnitPulse could not finish joining this workspace.",
+  not_member: "This account is not a UnitPulse member. Ask the owner for an invitation."
+};
+
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
   return (
     <main className="grid min-h-screen grid-cols-1 lg:grid-cols-[1fr_0.85fr]">
       <section className="flex min-h-[58vh] flex-col justify-between bg-[var(--sidebar)] p-8 text-white sm:p-10 lg:min-h-screen lg:p-14">
@@ -34,6 +43,12 @@ export default function SignInPage() {
             </div>
           ) : null}
           <SignInForm />
+          {error && errors[error] ? (
+            <p role="alert" className="mt-4 rounded-xl border border-[var(--danger)] bg-[color-mix(in_srgb,var(--danger)_8%,var(--paper-white))] p-3 text-sm text-[var(--danger)]">
+              {errors[error]}
+            </p>
+          ) : null}
+          {isSupabaseConfigured ? <OAuthButtons /> : null}
           <Link
             href="/sign-up"
             className="mt-5 block text-center text-sm font-semibold underline underline-offset-4"

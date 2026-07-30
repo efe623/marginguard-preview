@@ -229,6 +229,67 @@ a {
   text-transform: uppercase;
 }
 
+.auth-input {
+  background: var(--paper-white);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  color: var(--ink);
+  min-height: 52px;
+  padding: 13px 16px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  width: 100%;
+}
+
+.auth-input:focus {
+  border-color: var(--signal);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--signal) 12%, transparent);
+  outline: none;
+}
+
+.auth-button {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 750;
+  gap: 10px;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 20px;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.auth-button:hover {
+  transform: translateY(-1px);
+}
+
+.auth-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.auth-button-primary {
+  background: var(--signal);
+  color: white;
+}
+
+.auth-button-primary:hover {
+  background: var(--signal-deep);
+}
+
+.auth-button-provider {
+  background: var(--paper-white);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.auth-button-provider:hover {
+  border-color: var(--ink);
+}
+
 .status {
   align-items: center;
   border: 1px solid currentColor;

@@ -7,7 +7,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next") ?? "/dashboard";
+  const requestedNext = url.searchParams.get("next") ?? "/dashboard";
+  const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//")
+    ? requestedNext
+    : "/dashboard";
   const invitationToken = url.searchParams.get("invitation");
   if (!isSupabaseConfigured || !code) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
@@ -59,6 +62,24 @@ export async function GET(request: Request) {
         display_name: user.user_metadata?.full_name || user.email.split("@")[0]
       })
     ]);
+  }
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.redirect(new URL("/sign-in?error=callback", request.url));
+  }
+  const admin = createAdminClient();
+  const { data: membership } = await admin
+    .from("business_memberships")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!membership) {
+    await supabase.auth.signOut();
+    return NextResponse.redirect(new URL("/sign-in?error=not_member", request.url));
   }
   return NextResponse.redirect(new URL(next, request.url));
 }
