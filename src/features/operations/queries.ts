@@ -1,6 +1,7 @@
 import { isSupabaseConfigured } from "@/lib/env";
 import { getAuthenticatedBusinessContext } from "@/features/auth/context";
 import { createClient } from "@/lib/supabase/server";
+import type { CalendarEvent } from "@/lib/calendar";
 
 export type OperationsProjectData = {
   tasks: Array<Record<string, unknown>>;
@@ -224,6 +225,48 @@ export async function getInvoicesPageData() {
     invoices: invoices.data ?? [],
     projects: projects.data ?? []
   };
+}
+
+export async function getCalendarEvents(): Promise<CalendarEvent[]> {
+  if (!isSupabaseConfigured) {
+    return [
+      { id: "demo-invoice-1", date: "2026-07-31", title: "Invoice INV-204 due", detail: "E-commerce Redesign · AED 12,500", href: "/projects/ecommerce-redesign/money", kind: "invoice", status: "sent" },
+      { id: "demo-task-1", date: "2026-08-03", title: "Homepage review", detail: "E-commerce Redesign · High priority", href: "/projects/ecommerce-redesign/work", kind: "task", status: "in_progress" },
+      { id: "demo-project-1", date: "2026-08-07", title: "Branding Package deadline", detail: "Project deadline", href: "/projects/brand-package", kind: "project", status: "active" }
+    ];
+  }
+  const context = await getAuthenticatedBusinessContext();
+  if (!context) return [];
+  const businessId = context.membership.business_id;
+  const [projectsResult, tasksResult, invoicesResult] = await Promise.all([
+    context.supabase.from("projects").select("id, name, due_date, status").eq("business_id", businessId).is("deleted_at", null),
+    context.supabase.from("project_tasks").select("id, project_id, title, priority, status, due_at").eq("business_id", businessId).not("due_at", "is", null),
+    context.supabase.from("invoices").select("id, project_id, invoice_number, amount_minor, currency, status, due_date").eq("business_id", businessId).not("status", "eq", "void")
+  ]);
+  const projects = projectsResult.data ?? [];
+  const projectNames = new Map(projects.map((project) => [project.id, project.name]));
+  const events: CalendarEvent[] = [];
+  for (const project of projects) {
+    if (project.due_date) events.push({
+      id: project.id, date: project.due_date, title: `${project.name} deadline`,
+      detail: "Project deadline", href: `/projects/${project.id}`, kind: "project", status: project.status
+    });
+  }
+  for (const task of tasksResult.data ?? []) {
+    if (task.due_at) events.push({
+      id: task.id, date: task.due_at.slice(0, 10), title: task.title,
+      detail: `${projectNames.get(task.project_id) ?? "Project"} · ${task.priority} priority`,
+      href: `/projects/${task.project_id}/work`, kind: "task", status: task.status
+    });
+  }
+  for (const invoice of invoicesResult.data ?? []) {
+    events.push({
+      id: invoice.id, date: invoice.due_date, title: `Invoice ${invoice.invoice_number} due`,
+      detail: `${projectNames.get(invoice.project_id) ?? "Project"} · ${invoice.currency} ${(Number(invoice.amount_minor) / 100).toLocaleString()}`,
+      href: `/projects/${invoice.project_id}/money`, kind: "invoice", status: invoice.status
+    });
+  }
+  return events.sort((left, right) => left.date.localeCompare(right.date));
 }
 
 export async function getDashboardData() {
