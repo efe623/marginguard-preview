@@ -22,7 +22,7 @@ export default function DeletionPage() {
         </section>
         <section className="border border-[var(--danger)] bg-[#fff5f3] p-8">
           <Trash2 className="text-[var(--danger)]" size={24} />
-          <h2 className="section-title mt-7 text-[var(--danger)]">Delete MarginGuard data</h2>
+          <h2 className="section-title mt-7 text-[var(--danger)]">Delete UnitPulse data</h2>
           <p className="mt-3 leading-7 text-[#701515]">Sessions and links are revoked immediately. The owner can restore the business for 30 days.</p>
           <form action={scheduleDeletion}><Button className="mt-7 bg-[var(--danger)]" type="submit">Begin deletion</Button></form>
         </section>

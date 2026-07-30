@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     .single();
   if (!version) return NextResponse.json({ error: "Change Order not found" }, { status: 404 });
   const snapshot = version.snapshot as { title?: string };
-  const name = `MarginGuard CO-${String(version.order_number).padStart(3, "0")} ${paymentRequest.kind}`;
+  const name = `UnitPulse CO-${String(version.order_number).padStart(3, "0")} ${paymentRequest.kind}`;
   const stripe = createStripeClient();
   try {
     const price = await stripe.prices.create(

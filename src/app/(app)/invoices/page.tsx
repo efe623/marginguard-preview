@@ -12,7 +12,7 @@ export default async function InvoicesPage() {
   const rows = invoices;
   return (
     <div className="page">
-      <PageHeader eyebrow={`${rows.length} invoices`} title="Invoices" description="Track sent, overdue, and externally paid invoices. MarginGuard never holds money." />
+      <PageHeader eyebrow={`${rows.length} invoices`} title="Invoices" description="Track sent, overdue, and externally paid invoices. UnitPulse never holds money." />
       <section className="card mt-8 overflow-x-auto">
         <table className="data-table min-w-[760px]">
           <thead><tr><th>Invoice</th><th>Project</th><th>Due</th><th>Amount</th><th>Status</th><th /></tr></thead>

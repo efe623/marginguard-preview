@@ -36,7 +36,7 @@ export function ChangeOrderEditor({
         <div className="mx-auto min-h-[850px] max-w-[680px] bg-[var(--paper-white)] p-16 shadow-[8px_8px_0_var(--ink)]">
           <div className="flex items-start justify-between border-b border-[var(--line)] pb-10">
             <div>
-              <p className="font-display text-4xl font-bold tracking-tight">MarginGuard</p>
+              <p className="font-display text-4xl font-bold tracking-tight">UnitPulse</p>
               <p className="eyebrow mt-2">Change Order document</p>
             </div>
             <div className="text-right">

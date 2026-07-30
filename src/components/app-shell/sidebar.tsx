@@ -34,10 +34,10 @@ export function Sidebar() {
       <div className="app-sidebar-brand px-7 pb-7 pt-8">
         <Link href="/dashboard">
           <span className="font-display block text-[2rem] font-bold tracking-[-0.04em]">
-            MarginGuard
+            UnitPulse
           </span>
           <span className="mt-1 block text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/45">
-            Profit, protected
+            Scope, cost, control.
           </span>
         </Link>
       </div>

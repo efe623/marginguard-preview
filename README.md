@@ -1,6 +1,6 @@
-# MarginGuard
+# UnitPulse
 
-MarginGuard is an invite-only desktop web app for small businesses to stop unpaid extra work. The launch workflow is:
+UnitPulse is an invite-only desktop web app for small businesses to stop unpaid extra work. The launch workflow is:
 
 `structured scope → change request → locked Change Order → verified client approval → deposit confirmation → authorized work`
 

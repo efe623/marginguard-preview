@@ -9,7 +9,7 @@ export default function SignUpPage() {
         <section className="flex flex-col justify-between bg-[var(--sidebar)] p-8 text-white sm:p-10">
           <div>
             <p className="font-display text-3xl font-bold tracking-tight">
-              MarginGuard
+              UnitPulse
             </p>
             <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-white/45">
               First-owner setup

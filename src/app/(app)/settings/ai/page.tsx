@@ -17,7 +17,7 @@ export default async function AiSettingsPage() {
           <Status tone={enabled ? "success" : "neutral"}>{enabled ? "Enabled" : "Disabled"}</Status>
         </div>
         <div className="mt-6 border border-[var(--line)] bg-[var(--paper-deep)] p-5 text-sm leading-7">
-          The Gemini free tier may use submitted content to improve Google products. Staff must confirm consent for every draft. MarginGuard stores the structured output, model, source hash, reviewer, and audit event.
+          The Gemini free tier may use submitted content to improve Google products. Staff must confirm consent for every draft. UnitPulse stores the structured output, model, source hash, reviewer, and audit event.
         </div>
         <form action={updateBusinessAiSettings} className="mt-6 space-y-4">
           <label className="flex gap-3 text-sm"><input name="aiEnabled" type="checkbox" defaultChecked={enabled} /> Enable Gemini draft tools</label>

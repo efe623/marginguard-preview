@@ -65,7 +65,7 @@ export async function GET() {
   return new NextResponse(body, {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Content-Disposition": `attachment; filename="marginguard-export-${owner.membership.business_id}.json"`,
+      "Content-Disposition": `attachment; filename="unitpulse-export-${owner.membership.business_id}.json"`,
       "Cache-Control": "no-store"
     }
   });

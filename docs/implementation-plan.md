@@ -1,12 +1,12 @@
-# MarginGuard MVP Implementation Plan
+# UnitPulse MVP Implementation Plan
 
 **Status:** Ready for implementation review  
 **Date:** 2026-07-29  
-**Source design:** `C:\Users\efe\Downloads\stitch_marginguard_profit_os.zip`
+**Source design:** `C:\Users\efe\Downloads\stitch_unitpulse_profit_os.zip`
 
 ## 1. Product outcome
 
-MarginGuard's first release has one job:
+UnitPulse's first release has one job:
 
 > Turn an out-of-scope client request into an approved and paid Change Order before work begins.
 
@@ -22,7 +22,7 @@ The release is an invite-only, desktop-first web application that handles real b
 6. The system calculates an extra-work price from hourly or fixed pricing; a human confirms it.
 7. An authorized user creates and sends an immutable Change Order version.
 8. The client opens an expiring link, verifies their email with an OTP, and approves or rejects that exact version.
-9. If Stripe is connected and a deposit is required, MarginGuard creates a one-use Stripe-hosted Payment Link.
+9. If Stripe is connected and a deposit is required, UnitPulse creates a one-use Stripe-hosted Payment Link.
 10. Only a verified Stripe webhook, or an audited manual external-payment confirmation, authorizes work.
 11. The remaining balance is requested manually and tracked separately.
 
@@ -66,7 +66,7 @@ The release is an invite-only, desktop-first web application that handles real b
 - AI writing, pricing, risk scores, and quote intelligence
 - Direct Gmail, Outlook, or WhatsApp connections
 - Bank and accounting-platform connections
-- Card collection or storage inside MarginGuard
+- Card collection or storage inside UnitPulse
 - Refunds, payouts, transfers, or Stripe bank-detail management
 - Native mobile apps, PWA installation, and mobile-specific layouts
 - Full client accounts or a full client portal
@@ -225,7 +225,7 @@ Clients do not receive accounts. A client session is:
 
 ### Recovery codes
 
-Supabase does not provide recovery codes, so MarginGuard owns this feature.
+Supabase does not provide recovery codes, so UnitPulse owns this feature.
 
 - Generate high-entropy, single-use codes after MFA enrollment.
 - Display once; require download/confirmation.
@@ -264,7 +264,7 @@ Supabase does not provide recovery codes, so MarginGuard owns this feature.
   - an idempotently processed, signature-verified Stripe event, or
   - a permitted AAL2 user recording a manual external payment with an audit event.
 - Remaining balance is requested manually.
-- MarginGuard does not perform refunds, payouts, transfers, or card handling.
+- UnitPulse does not perform refunds, payouts, transfers, or card handling.
 
 ### Stripe
 
@@ -272,7 +272,7 @@ Supabase does not provide recovery codes, so MarginGuard owns this feature.
 - Use OAuth `state` for CSRF protection and an exact HTTPS redirect URI.
 - Store the connected Stripe account ID and minimum connection metadata; do not expose credentials to the browser.
 - Create a dedicated, one-use Payment Link for each deposit or final-balance request.
-- Put only opaque MarginGuard IDs in Stripe metadata.
+- Put only opaque UnitPulse IDs in Stripe metadata.
 - Verify the webhook signature against the raw body.
 - Store every Stripe event ID with a unique constraint before applying effects.
 - Validate event account, currency, amount, payment-request ID, and expected state.

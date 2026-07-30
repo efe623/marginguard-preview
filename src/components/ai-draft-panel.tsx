@@ -104,7 +104,7 @@ export function AiDraftPanel({
           </select>
         </label>
         <div className="border border-[var(--line)] bg-[var(--paper-deep)] p-4 text-sm leading-6">
-          AI output is always a draft. MarginGuard never sends, approves, prices, or confirms payment automatically.
+          AI output is always a draft. UnitPulse never sends, approves, prices, or confirms payment automatically.
         </div>
       </div>
       <label className="mt-5 block">

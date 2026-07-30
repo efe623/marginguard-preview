@@ -1,4 +1,4 @@
-# MarginGuard file-scanner contract
+# UnitPulse file-scanner contract
 
 Uploads land only in the private `quarantine` bucket. A scanner worker must:
 
