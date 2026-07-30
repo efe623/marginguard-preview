@@ -20,7 +20,7 @@ export function OwnerSignUpForm() {
           required
         />
         <span className="quiet mt-2 block text-xs">
-          Use the private code supplied with your MarginGuard deployment.
+          Use the private code supplied with your UnitPulse deployment.
         </span>
       </label>
 

@@ -8,8 +8,8 @@ export default function SignInPage() {
     <main className="grid min-h-screen grid-cols-1 lg:grid-cols-[1fr_0.85fr]">
       <section className="flex min-h-[58vh] flex-col justify-between bg-[var(--sidebar)] p-8 text-white sm:p-10 lg:min-h-screen lg:p-14">
         <div>
-          <p className="font-display text-4xl font-bold tracking-tight">MarginGuard</p>
-          <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-white/45">Profit, protected</p>
+          <p className="font-display text-4xl font-bold tracking-tight">UnitPulse</p>
+          <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-white/45">Scope, cost, control.</p>
         </div>
         <div className="max-w-2xl">
           <p className="text-xs font-bold uppercase tracking-[0.13em] text-white/50">The rule</p>
@@ -27,7 +27,7 @@ export default function SignInPage() {
         <div className="w-full max-w-md">
           <p className="eyebrow">Secure access</p>
           <h2 className="font-display mt-4 text-5xl font-bold tracking-tight">Welcome back.</h2>
-          <p className="quiet mt-3 leading-7">Use the account from your MarginGuard invitation.</p>
+          <p className="quiet mt-3 leading-7">Use the account from your UnitPulse invitation.</p>
           {!isSupabaseConfigured ? (
             <div className="mt-6 border border-[#c08c00] bg-[#fff4c8] p-4 text-sm leading-6">
               Preview mode is active. Any valid-looking email and 10-character password opens the sample workspace.

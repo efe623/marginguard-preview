@@ -12,7 +12,7 @@ export default async function SupportAccessPage() {
       <PageHeader
         eyebrow="No active grants"
         title="Support access"
-        description="MarginGuard support cannot open business data unless you create a narrow, time-limited grant."
+        description="UnitPulse support cannot open business data unless you create a narrow, time-limited grant."
       />
       <SettingsNav active="support" />
       <section className="card mt-7 p-9">

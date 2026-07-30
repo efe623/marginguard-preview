@@ -34,7 +34,7 @@ export function MfaPanel({ next = "/dashboard" }: { next?: string }) {
       }
       const { data: enrolled, error: enrollError } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: "MarginGuard authenticator"
+        friendlyName: "UnitPulse authenticator"
       });
       if (enrollError || !enrolled?.totp) {
         setError("Authenticator setup could not be started.");
@@ -83,7 +83,7 @@ export function MfaPanel({ next = "/dashboard" }: { next?: string }) {
         <p className="eyebrow">Save once</p>
         <h1 className="font-display mt-4 text-5xl font-bold">Recovery codes</h1>
         <p className="quiet mt-4 leading-7">
-          Store these somewhere safe. MarginGuard only stores protected digests and cannot show them again.
+          Store these somewhere safe. UnitPulse only stores protected digests and cannot show them again.
         </p>
         <pre className="mt-7 grid grid-cols-2 gap-3 border border-[var(--line)] bg-[var(--paper-deep)] p-6 font-mono text-sm">
           {recoveryCodes.map((recoveryCode) => <span key={recoveryCode}>{recoveryCode}</span>)}

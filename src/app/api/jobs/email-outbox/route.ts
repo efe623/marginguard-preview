@@ -16,7 +16,7 @@ function renderEmail(template: string, payload: Record<string, unknown>) {
   if (template === "client_approval_otp") {
     const code = escapeHtml(String(payload.code ?? ""));
     return {
-      subject: "Your MarginGuard verification code",
+      subject: "Your UnitPulse verification code",
       html: `<h1>Verification code</h1><p style="font-size:28px;letter-spacing:8px"><strong>${code}</strong></p><p>This code expires in 10 minutes.</p>`
     };
   }

@@ -14,6 +14,30 @@
   --warning: #b85c00;
   --danger: #bc1c1c;
   --sidebar: #191b1a;
+  --grid-line: rgba(23, 24, 22, 0.018);
+  --row-hover: rgba(244, 239, 229, 0.72);
+  --switch-bg: rgba(255, 254, 250, 0.92);
+  --switch-shadow: rgba(23, 24, 22, 0.13);
+}
+
+:root[data-theme="dark"] {
+  --paper: #111311;
+  --paper-deep: #191c19;
+  --paper-white: #20231f;
+  --ink: #f3f0e8;
+  --ink-soft: #b8b6ad;
+  --line: #353934;
+  --line-strong: #62675f;
+  --signal: #ff5a1f;
+  --signal-deep: #ff7442;
+  --success: #55c878;
+  --warning: #f2a34c;
+  --danger: #ff7770;
+  --sidebar: #090b0a;
+  --grid-line: rgba(243, 240, 232, 0.025);
+  --row-hover: rgba(255, 255, 255, 0.035);
+  --switch-bg: rgba(32, 35, 31, 0.94);
+  --switch-shadow: rgba(0, 0, 0, 0.42);
 }
 
 * {
@@ -27,7 +51,7 @@ html {
 body {
   margin: 0;
   background:
-    linear-gradient(90deg, rgba(23, 24, 22, 0.018) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 48px 48px,
     var(--paper);
   color: var(--ink);
   font-family: var(--font-body), system-ui, sans-serif;
@@ -57,7 +81,7 @@ a {
 }
 
 .font-display {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), system-ui, sans-serif;
 }
 
 .app-frame {
@@ -68,6 +92,7 @@ a {
 .content-shell {
   margin-left: 268px;
   min-height: 100vh;
+  position: relative;
 }
 
 .page {
@@ -85,7 +110,7 @@ a {
 }
 
 .page-title {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: clamp(2.6rem, 5vw, 5.3rem);
   font-weight: 700;
   letter-spacing: -0.045em;
@@ -94,7 +119,7 @@ a {
 }
 
 .section-title {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: 1.75rem;
   font-weight: 650;
   letter-spacing: -0.025em;
@@ -117,7 +142,7 @@ a {
 }
 
 .metric-value {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: 2.15rem;
   font-weight: 650;
   letter-spacing: -0.035em;
@@ -260,7 +285,7 @@ a {
 }
 
 .data-table tbody tr:hover {
-  background: rgba(244, 239, 229, 0.72);
+  background: var(--row-hover);
 }
 
 .quiet {
@@ -269,6 +294,54 @@ a {
 
 .signal {
   color: var(--signal);
+}
+
+.theme-switch {
+  align-items: center;
+  background: var(--switch-bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 28px var(--switch-shadow);
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  position: fixed;
+  right: 22px;
+  top: 18px;
+  z-index: 50;
+}
+
+.theme-switch button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  padding: 0;
+  width: 30px;
+}
+
+.theme-switch button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.theme-pulse {
+  background: var(--signal);
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--signal) 14%, transparent);
+  height: 5px;
+  width: 5px;
+}
+
+:root[data-theme="dark"] .bg-white {
+  background-color: var(--paper-white) !important;
+}
+
+:root[data-theme="dark"] .text-black {
+  color: var(--ink) !important;
 }
 
 @media (max-width: 1023px) {

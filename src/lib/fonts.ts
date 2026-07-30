@@ -1,13 +1,15 @@
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { IBM_Plex_Sans, Sora } from "next/font/google";
 
-export const displayFont = Playfair_Display({
+export const displayFont = Sora({
   subsets: ["latin"],
   variable: "--font-display",
-  display: "swap"
+  display: "swap",
+  weight: ["500", "600", "700"]
 });
 
-export const bodyFont = Plus_Jakarta_Sans({
+export const bodyFont = IBM_Plex_Sans({
   subsets: ["latin"],
   variable: "--font-body",
-  display: "swap"
+  display: "swap",
+  weight: ["400", "500", "600", "700"]
 });

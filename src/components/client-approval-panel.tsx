@@ -157,7 +157,7 @@ export function ClientApprovalPanel({
       <section className="p-12">
         <div className="flex items-start justify-between border-b border-[var(--line)] pb-8">
           <div>
-            <p className="font-display text-3xl font-bold">MarginGuard</p>
+            <p className="font-display text-3xl font-bold">UnitPulse</p>
             <p className="eyebrow mt-2">{visibleOrder.businessName}</p>
           </div>
           <div className="text-right">

@@ -1,6 +1,6 @@
-# MarginGuard Preview
+# UnitPulse Preview
 
-This is the public, interactive product prototype for MarginGuard.
+This is the public, interactive product prototype for UnitPulse.
 
 - No login or account creation
 - Sample data only
@@ -22,5 +22,5 @@ Open `http://localhost:3000`. The app goes directly to the dashboard.
 pnpm check
 ```
 
-The real, data-backed MarginGuard application lives in a separate private
+The real, data-backed UnitPulse application lives in a separate private
 deployment. Do not add production credentials to this preview.

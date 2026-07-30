@@ -32,7 +32,7 @@ export default async function ClientPortalPage({ params }: { params: Promise<{ t
         <header className="border-b border-[var(--line)] pb-7">
           <p className="eyebrow">{business?.name}</p>
           <h1 className="font-display mt-3 text-5xl font-bold">Welcome, {client?.name}</h1>
-          <p className="quiet mt-3">Private project status, updates, and invoices. MarginGuard does not process payments.</p>
+          <p className="quiet mt-3">Private project status, updates, and invoices. UnitPulse does not process payments.</p>
         </header>
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <section className="card p-6"><h2 className="section-title">Projects</h2><div className="mt-5 space-y-4">{(projects ?? []).map((project) => <article key={project.id} className="border border-[var(--line)] p-4"><div className="flex justify-between gap-4"><strong>{project.name}</strong><Status tone={project.status === "completed" ? "success" : "neutral"}>{project.status.replace("_", " ")}</Status></div>{project.due_date ? <p className="quiet mt-2 text-sm">Target: {project.due_date}</p> : null}</article>)}</div></section>
