@@ -1,10 +1,15 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getServerEnv } from "@/lib/env";
-import { keyedDigest } from "@/lib/security-tokens";
+import {
+  digestOpaqueToken,
+  keyedDigest,
+  safeDigestEqual
+} from "@/lib/security-tokens";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -44,6 +49,137 @@ export async function signIn(
     redirect("/mfa");
   }
   redirect("/dashboard");
+}
+
+const firstOwnerSchema = z
+  .object({
+    setupCode: z.string().trim().min(20).max(100),
+    displayName: z.string().trim().min(2).max(100),
+    email: z.email(),
+    password: z.string().min(12).max(128),
+    confirmation: z.string(),
+    businessName: z.string().trim().min(2).max(160),
+    businessType: z.string().trim().min(2).max(120),
+    currency: z.string().regex(/^[A-Z]{3}$/),
+    countryCode: z.string().regex(/^[A-Z]{2}$/),
+    timezone: z.string().trim().min(1).max(120)
+  })
+  .refine((data) => data.password === data.confirmation, {
+    path: ["confirmation"],
+    message: "Passwords do not match."
+  });
+
+export async function createFirstOwner(
+  _state: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  if (!isSupabaseConfigured) {
+    return { error: "Supabase is not configured." };
+  }
+  const parsed = firstOwnerSchema.safeParse({
+    setupCode: formData.get("setupCode"),
+    displayName: formData.get("displayName"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmation: formData.get("confirmation"),
+    businessName: formData.get("businessName"),
+    businessType: formData.get("businessType"),
+    currency: formData.get("currency"),
+    countryCode: formData.get("countryCode"),
+    timezone: formData.get("timezone")
+  });
+  if (!parsed.success) {
+    return {
+      error:
+        parsed.error.issues[0]?.message ??
+        "Check the owner and business details."
+    };
+  }
+
+  const env = getServerEnv();
+  if (
+    !env.OWNER_SETUP_SECRET ||
+    !safeDigestEqual(
+      digestOpaqueToken(parsed.data.setupCode),
+      digestOpaqueToken(env.OWNER_SETUP_SECRET)
+    )
+  ) {
+    return { error: "The one-time setup code is invalid." };
+  }
+
+  const admin = createAdminClient();
+  const { data: existingOwner, error: ownerLookupError } = await admin
+    .from("business_memberships")
+    .select("id")
+    .eq("role", "owner")
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (ownerLookupError) {
+    return { error: "Owner setup is temporarily unavailable." };
+  }
+  if (existingOwner) {
+    return {
+      error: "Owner setup is already complete. Ask the owner for an invitation."
+    };
+  }
+
+  const { data: created, error: userError } =
+    await admin.auth.admin.createUser({
+      email: parsed.data.email,
+      password: parsed.data.password,
+      email_confirm: true,
+      user_metadata: { full_name: parsed.data.displayName }
+    });
+  if (userError || !created.user) {
+    return { error: "The owner account could not be created." };
+  }
+
+  const { data: business, error: businessError } = await admin
+    .from("businesses")
+    .insert({
+      name: parsed.data.businessName,
+      business_type: parsed.data.businessType,
+      currency: parsed.data.currency,
+      timezone: parsed.data.timezone,
+      country_code: parsed.data.countryCode
+    })
+    .select("id")
+    .single();
+  if (businessError || !business) {
+    await admin.auth.admin.deleteUser(created.user.id);
+    return { error: "The business workspace could not be created." };
+  }
+
+  const joinedAt = new Date().toISOString();
+  const [membership, profile] = await Promise.all([
+    admin.from("business_memberships").insert({
+      business_id: business.id,
+      user_id: created.user.id,
+      role: "owner",
+      status: "active",
+      joined_at: joinedAt
+    }),
+    admin.from("profiles").upsert({
+      user_id: created.user.id,
+      display_name: parsed.data.displayName,
+      timezone: parsed.data.timezone
+    })
+  ]);
+  if (membership.error || profile.error) {
+    await admin.from("businesses").delete().eq("id", business.id);
+    await admin.auth.admin.deleteUser(created.user.id);
+    return { error: "Owner setup could not be completed safely." };
+  }
+
+  const supabase = await createClient();
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password
+  });
+  revalidatePath("/", "layout");
+  if (signInError) redirect("/sign-in?created=1");
+  redirect("/mfa?next=/dashboard");
 }
 
 export async function requestPasswordReset(

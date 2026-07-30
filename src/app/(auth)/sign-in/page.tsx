@@ -34,6 +34,12 @@ export default function SignInPage() {
             </div>
           ) : null}
           <SignInForm />
+          <Link
+            href="/sign-up"
+            className="mt-5 block text-center text-sm font-semibold underline underline-offset-4"
+          >
+            Set up the first owner account
+          </Link>
           <Link href="/forgot-password" className="mt-5 block text-center text-sm font-semibold underline underline-offset-4">
             Reset password
           </Link>

@@ -15,8 +15,8 @@ const serverSchema = publicSchema.extend({
   STRIPE_CONNECT_CLIENT_ID: z.string().optional(),
   RECOVERY_CODE_PEPPER: z.string().optional(),
   CLIENT_SESSION_SECRET: z.string().optional(),
-  SCANNER_CALLBACK_SECRET: z.string().optional()
-  ,
+  SCANNER_CALLBACK_SECRET: z.string().optional(),
+  OWNER_SETUP_SECRET: z.string().min(20).optional(),
   SUPPORT_USER_ID: z.uuid().optional().or(z.literal("")),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().optional(),
@@ -47,6 +47,7 @@ export function getServerEnv() {
     RECOVERY_CODE_PEPPER: process.env.RECOVERY_CODE_PEPPER,
     CLIENT_SESSION_SECRET: process.env.CLIENT_SESSION_SECRET,
     SCANNER_CALLBACK_SECRET: process.env.SCANNER_CALLBACK_SECRET,
+    OWNER_SETUP_SECRET: process.env.OWNER_SETUP_SECRET,
     SUPPORT_USER_ID: process.env.SUPPORT_USER_ID,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,

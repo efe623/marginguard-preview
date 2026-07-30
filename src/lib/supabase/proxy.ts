@@ -4,6 +4,7 @@ import { publicEnv } from "@/lib/env";
 
 const publicPaths = [
   "/sign-in",
+  "/sign-up",
   "/forgot-password",
   "/reset-password",
   "/mfa",
