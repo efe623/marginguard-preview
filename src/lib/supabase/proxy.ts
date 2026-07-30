@@ -26,6 +26,18 @@ export async function updateSession(request: NextRequest) {
     !publicEnv.NEXT_PUBLIC_SUPABASE_URL ||
     !publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
   ) {
+    if (
+      [
+        "/sign-in",
+        "/sign-up",
+        "/forgot-password",
+        "/reset-password",
+        "/mfa",
+        "/recovery"
+      ].some((path) => request.nextUrl.pathname.startsWith(path))
+    ) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
     return NextResponse.next();
   }
 

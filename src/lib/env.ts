@@ -30,10 +30,9 @@ export const publicEnv = publicSchema.parse({
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 });
 
-export const isSupabaseConfigured = Boolean(
-  publicEnv.NEXT_PUBLIC_SUPABASE_URL &&
-    publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-);
+// This repository is intentionally a public, fixture-only product prototype.
+// It must never connect to the production Supabase project.
+export const isSupabaseConfigured = false;
 
 export function getServerEnv() {
   return serverSchema.parse({

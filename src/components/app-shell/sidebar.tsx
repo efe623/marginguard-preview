@@ -6,7 +6,6 @@ import {
   Building2,
   FileText,
   LayoutDashboard,
-  LogOut,
   PieChart,
   Settings,
   ShieldCheck
@@ -84,9 +83,9 @@ export function Sidebar() {
               Owner
             </p>
           </div>
-          <Link href="/sign-in" aria-label="Sign out" className="text-white/50 hover:text-white">
-            <LogOut size={17} />
-          </Link>
+          <span className="border border-white/20 px-2 py-1 text-[0.56rem] font-bold uppercase tracking-[0.12em] text-white/55">
+            Preview
+          </span>
         </div>
       </div>
     </aside>
