@@ -42,7 +42,7 @@ export default async function ProjectWorkPage({
   const totalMinutes = entries.reduce((sum, entry) => sum + Number(entry.minutes), 0);
 
   return (
-    <div>
+    <div className="page">
       <PageHeader
         eyebrow={project.code}
         title="Tasks and time"

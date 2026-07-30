@@ -35,7 +35,7 @@ export default async function ProjectAiPage({
   const defaultSource = latestMessages.map((message) => message.content).join("\n\n---\n\n");
 
   return (
-    <div>
+    <div className="page">
       <PageHeader
         eyebrow={project.code}
         title="AI draft workspace"

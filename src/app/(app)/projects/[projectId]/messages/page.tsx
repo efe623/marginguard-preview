@@ -43,7 +43,7 @@ export default async function ProjectMessagesPage({
   const updates = data.updates as UpdateRow[];
 
   return (
-    <div>
+    <div className="page">
       <PageHeader
         eyebrow={project.code}
         title="Messages and updates"
