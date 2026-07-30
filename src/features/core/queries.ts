@@ -60,13 +60,64 @@ export async function getProjectView(projectId: string): Promise<Project | null>
 export async function listProjectViews(): Promise<Project[]> {
   if (!isSupabaseConfigured) return projects;
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("projects")
-    .select("id")
-    .is("deleted_at", null)
-    .order("updated_at", { ascending: false });
-  const loaded = await Promise.all((data ?? []).map((row) => getProjectView(row.id)));
-  return loaded.filter((project): project is Project => Boolean(project));
+  const [projectRows, clientRows, revisionRows, approvedRows] =
+    await Promise.all([
+      supabase
+        .from("projects")
+        .select(
+          "id, code, name, client_id, currency, quote_amount_minor, status, revision_limit, updated_at"
+        )
+        .is("deleted_at", null)
+        .order("updated_at", { ascending: false }),
+      supabase.from("clients").select("id, name").is("deleted_at", null),
+      supabase.from("revision_events").select("project_id"),
+      supabase
+        .from("change_order_versions")
+        .select("project_id, amount_minor")
+        .in("status", [
+          "approved",
+          "awaiting_deposit",
+          "authorized",
+          "balance_due",
+          "paid"
+        ])
+        .is("superseded_at", null)
+    ]);
+
+  const clientNames = new Map(
+    (clientRows.data ?? []).map((client) => [client.id, client.name])
+  );
+  const revisionCounts = new Map<string, number>();
+  for (const revision of revisionRows.data ?? []) {
+    revisionCounts.set(
+      revision.project_id,
+      (revisionCounts.get(revision.project_id) ?? 0) + 1
+    );
+  }
+  const approvedExtras = new Map<string, number>();
+  for (const order of approvedRows.data ?? []) {
+    approvedExtras.set(
+      order.project_id,
+      (approvedExtras.get(order.project_id) ?? 0) + Number(order.amount_minor)
+    );
+  }
+
+  return (projectRows.data ?? []).map((project) => ({
+    id: project.id,
+    code: project.code,
+    name: project.name,
+    clientId: project.client_id,
+    clientName: clientNames.get(project.client_id) ?? "Client",
+    currency: project.currency,
+    quoteMinor: Number(project.quote_amount_minor),
+    approvedExtrasMinor: approvedExtras.get(project.id) ?? 0,
+    status: visibleStatuses.has(project.status as Project["status"])
+      ? (project.status as Project["status"])
+      : "active",
+    revisionUsed: revisionCounts.get(project.id) ?? 0,
+    revisionLimit: project.revision_limit,
+    updatedAt: project.updated_at
+  }));
 }
 
 export async function getClientView(clientId: string): Promise<Client | null> {

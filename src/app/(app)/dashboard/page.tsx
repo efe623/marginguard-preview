@@ -3,14 +3,14 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
-import { getBusinessOperationsData } from "@/features/operations/queries";
+import { getDashboardData } from "@/features/operations/queries";
 import { formatMoney } from "@/lib/money";
 
 export default async function DashboardPage() {
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
   const urgentCutoff = now.getTime() + 3 * 86400000;
-  const data = await getBusinessOperationsData();
+  const data = await getDashboardData();
   const currency = data.business?.currency ?? "AED";
   const projects = data.projects as Array<{ id: string; name: string; quote_amount_minor: number; status: string }>;
   const expenses = data.expenses as Array<{ amount_minor: number; currency: string }>;

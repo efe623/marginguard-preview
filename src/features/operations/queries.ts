@@ -1,4 +1,5 @@
 import { isSupabaseConfigured } from "@/lib/env";
+import { getAuthenticatedBusinessContext } from "@/features/auth/context";
 import { createClient } from "@/lib/supabase/server";
 
 export type OperationsProjectData = {
@@ -107,11 +108,8 @@ export async function getBusinessOperationsData() {
       notifications: []
     };
   }
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const context = await getAuthenticatedBusinessContext();
+  if (!context) {
     return {
       business: null,
       projects: [],
@@ -124,53 +122,35 @@ export async function getBusinessOperationsData() {
       notifications: []
     };
   }
-  const { data: membership } = await supabase
-    .from("business_memberships")
-    .select("business_id")
-    .eq("user_id", user.id)
-    .eq("status", "active")
-    .limit(1)
-    .maybeSingle();
-  if (!membership) {
-    return {
-      business: null,
-      projects: [],
-      clients: [],
-      tasks: [],
-      timeEntries: [],
-      expenses: [],
-      invoices: [],
-      changeOrders: [],
-      notifications: []
-    };
-  }
+  const { supabase, userId } = context;
+  const businessId = context.membership.business_id;
 
   const [business, projects, clients, tasks, timeEntries, expenses, invoices, orders, notifications] =
     await Promise.all([
-      supabase.from("businesses").select("*").eq("id", membership.business_id).maybeSingle(),
+      supabase.from("businesses").select("*").eq("id", businessId).maybeSingle(),
       supabase
         .from("projects")
         .select("*")
-        .eq("business_id", membership.business_id)
+        .eq("business_id", businessId)
         .is("deleted_at", null),
       supabase
         .from("clients")
         .select("*")
-        .eq("business_id", membership.business_id)
+        .eq("business_id", businessId)
         .is("deleted_at", null),
-      supabase.from("project_tasks").select("*").eq("business_id", membership.business_id),
-      supabase.from("time_entries").select("*").eq("business_id", membership.business_id),
-      supabase.from("project_expenses").select("*").eq("business_id", membership.business_id),
-      supabase.from("invoices").select("*").eq("business_id", membership.business_id),
+      supabase.from("project_tasks").select("*").eq("business_id", businessId),
+      supabase.from("time_entries").select("*").eq("business_id", businessId),
+      supabase.from("project_expenses").select("*").eq("business_id", businessId),
+      supabase.from("invoices").select("*").eq("business_id", businessId),
       supabase
         .from("change_order_versions")
         .select("*")
-        .eq("business_id", membership.business_id)
+        .eq("business_id", businessId)
         .is("superseded_at", null),
       supabase
         .from("in_app_notifications")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(30)
     ]);
@@ -185,6 +165,130 @@ export async function getBusinessOperationsData() {
     invoices: invoices.data ?? [],
     changeOrders: orders.data ?? [],
     notifications: notifications.data ?? []
+  };
+}
+
+export async function getBusinessSettingsData() {
+  if (!isSupabaseConfigured) return null;
+  const context = await getAuthenticatedBusinessContext();
+  if (!context) return null;
+
+  const { data } = await context.supabase
+    .from("businesses")
+    .select(
+      "id, name, business_type, currency, timezone, country_code, default_hourly_rate_minor, ai_enabled, ai_terms_acknowledged_at"
+    )
+    .eq("id", context.membership.business_id)
+    .maybeSingle();
+
+  return data;
+}
+
+export async function getNotificationsData() {
+  if (!isSupabaseConfigured) return [];
+  const context = await getAuthenticatedBusinessContext();
+  if (!context) return [];
+
+  const { data } = await context.supabase
+    .from("in_app_notifications")
+    .select("id, title, body, href, read_at, created_at")
+    .eq("user_id", context.userId)
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  return data ?? [];
+}
+
+export async function getInvoicesPageData() {
+  if (!isSupabaseConfigured) return { invoices: [], projects: [] };
+  const context = await getAuthenticatedBusinessContext();
+  if (!context) return { invoices: [], projects: [] };
+  const businessId = context.membership.business_id;
+
+  const [invoices, projects] = await Promise.all([
+    context.supabase
+      .from("invoices")
+      .select(
+        "id, project_id, invoice_number, description, amount_minor, currency, status, due_date"
+      )
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: false }),
+    context.supabase
+      .from("projects")
+      .select("id, name")
+      .eq("business_id", businessId)
+      .is("deleted_at", null)
+  ]);
+
+  return {
+    invoices: invoices.data ?? [],
+    projects: projects.data ?? []
+  };
+}
+
+export async function getDashboardData() {
+  if (!isSupabaseConfigured) {
+    return {
+      business: null,
+      projects: [],
+      tasks: [],
+      expenses: [],
+      invoices: [],
+      changeOrders: []
+    };
+  }
+  const context = await getAuthenticatedBusinessContext();
+  if (!context) {
+    return {
+      business: null,
+      projects: [],
+      tasks: [],
+      expenses: [],
+      invoices: [],
+      changeOrders: []
+    };
+  }
+  const businessId = context.membership.business_id;
+  const [business, projects, tasks, expenses, invoices, changeOrders] =
+    await Promise.all([
+      context.supabase
+        .from("businesses")
+        .select("currency")
+        .eq("id", businessId)
+        .maybeSingle(),
+      context.supabase
+        .from("projects")
+        .select("id, name, quote_amount_minor, status")
+        .eq("business_id", businessId)
+        .is("deleted_at", null),
+      context.supabase
+        .from("project_tasks")
+        .select("id, project_id, title, status, due_at")
+        .eq("business_id", businessId),
+      context.supabase
+        .from("project_expenses")
+        .select("amount_minor, currency")
+        .eq("business_id", businessId),
+      context.supabase
+        .from("invoices")
+        .select(
+          "id, project_id, invoice_number, amount_minor, status, due_date"
+        )
+        .eq("business_id", businessId),
+      context.supabase
+        .from("change_order_versions")
+        .select("amount_minor, status")
+        .eq("business_id", businessId)
+        .is("superseded_at", null)
+    ]);
+
+  return {
+    business: business.data,
+    projects: projects.data ?? [],
+    tasks: tasks.data ?? [],
+    expenses: expenses.data ?? [],
+    invoices: invoices.data ?? [],
+    changeOrders: changeOrders.data ?? []
   };
 }
 

@@ -2,16 +2,16 @@ import { AlertTriangle, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
-import { getBusinessOperationsData } from "@/features/operations/queries";
+import { getInvoicesPageData } from "@/features/operations/queries";
 import { formatMoney } from "@/lib/money";
 
 export default async function InvoicesPage() {
-  const { invoices, projects } = await getBusinessOperationsData();
-  const projectNames = new Map((projects as Array<{ id: string; name: string }>).map((project) => [project.id, project.name]));
+  const { invoices, projects } = await getInvoicesPageData();
+  const projectNames = new Map(projects.map((project) => [project.id, project.name]));
   const today = new Date().toISOString().slice(0, 10);
-  const rows = invoices as Array<{ id: string; project_id: string; invoice_number: string; description: string; amount_minor: number; currency: string; status: string; due_date: string }>;
+  const rows = invoices;
   return (
-    <div>
+    <div className="page">
       <PageHeader eyebrow={`${rows.length} invoices`} title="Invoices" description="Track sent, overdue, and externally paid invoices. MarginGuard never holds money." />
       <section className="card mt-8 overflow-x-auto">
         <table className="data-table min-w-[760px]">

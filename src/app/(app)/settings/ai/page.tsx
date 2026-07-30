@@ -2,13 +2,13 @@ import { SettingsNav } from "@/components/settings-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 import { updateBusinessAiSettings } from "@/features/operations/actions";
-import { getBusinessOperationsData } from "@/features/operations/queries";
+import { getBusinessSettingsData } from "@/features/operations/queries";
 
 export default async function AiSettingsPage() {
-  const { business } = await getBusinessOperationsData();
+  const business = await getBusinessSettingsData();
   const enabled = Boolean(business?.ai_enabled);
   return (
-    <div>
+    <div className="page">
       <PageHeader eyebrow="Owner controls" title="AI and privacy" description="Gemini is draft-only and can be disabled for the whole business or individual projects." />
       <SettingsNav active="ai" />
       <section className="card mt-8 max-w-3xl p-7">

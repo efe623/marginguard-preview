@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
-import { getBusinessOperationsData } from "@/features/operations/queries";
+import { getNotificationsData } from "@/features/operations/queries";
 
 export default async function NotificationsPage() {
-  const { notifications } = await getBusinessOperationsData();
-  const rows = notifications as Array<{ id: string; title: string; body: string; href: string | null; read_at: string | null; created_at: string }>;
+  const rows = await getNotificationsData();
   return (
-    <div>
+    <div className="page">
       <PageHeader eyebrow={`${rows.filter((row) => !row.read_at).length} unread`} title="Notifications" description="Approvals, extra requests, deadlines, and payment reminders." />
       <section className="card mt-8">
         {rows.map((row) => {

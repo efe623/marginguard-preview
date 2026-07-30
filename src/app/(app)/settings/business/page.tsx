@@ -1,17 +1,17 @@
 import { SettingsNav } from "@/components/settings-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { updateBusinessProfile } from "@/features/operations/actions";
-import { getBusinessOperationsData } from "@/features/operations/queries";
+import { getBusinessSettingsData } from "@/features/operations/queries";
 import { formatMoney } from "@/lib/money";
 
 export default async function BusinessSettingsPage() {
-  const { business } = await getBusinessOperationsData();
+  const business = await getBusinessSettingsData();
   const currency = business?.currency ?? "AED";
   const rate = business?.default_hourly_rate_minor
     ? formatMoney(Number(business.default_hourly_rate_minor), currency).replace(`${currency}\u00a0`, "")
     : "";
   return (
-    <div>
+    <div className="page">
       <PageHeader eyebrow="Owner controls" title="Business profile" description="Defaults used for project pricing, reports, invoices, and AI estimates." />
       <SettingsNav active="business" />
       <form action={updateBusinessProfile} className="card mt-8 grid max-w-3xl gap-5 p-7 md:grid-cols-2">

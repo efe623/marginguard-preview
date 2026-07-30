@@ -38,7 +38,7 @@ export default async function ReportsPage() {
   const unbilledTimeValue = projectRows.reduce((sum, project) => sum + (project.hourly_rate_minor ? Math.round((project.minutes / 60) * Number(project.hourly_rate_minor)) : 0), 0);
 
   return (
-    <div>
+    <div className="page">
       <PageHeader eyebrow="Decision intelligence" title="Reports" description="Money leaks, project risk, best clients, and safer future pricing." actions={<ButtonLink href="/api/export"><Download size={16} /> Export accounting data</ButtonLink>} />
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         <div className="card p-5"><p className="eyebrow">Overdue invoices</p><p className="mt-2 text-3xl font-bold text-[var(--danger)]">{formatMoney(overdueValue, currency)}</p></div>
