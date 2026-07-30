@@ -44,7 +44,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
   const due = dueDate.toISOString().slice(0, 10);
 
   return (
-    <div>
+    <div className="page">
       <PageHeader eyebrow={project.code} title="Project money" description="Quotes, costs, invoices, and remaining profit in one place." />
       <ProjectTabs projectId={projectId} active="money" />
       <div className="mt-8 grid gap-4 md:grid-cols-3">
