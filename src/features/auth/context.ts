@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { ensureAppSession } from "@/features/auth/session";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -9,6 +10,7 @@ export const getAuthenticatedBusinessContext = cache(async () => {
   const { data: claimsData } = await supabase.auth.getClaims();
   const claims = claimsData?.claims;
   if (!claims?.sub) return null;
+  if (!(await ensureAppSession(supabase, claims))) return null;
 
   const { data: membership } = await supabase
     .from("business_memberships")

@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { ensureAppSession } from "@/features/auth/session";
 import { isSupabaseConfigured } from "@/lib/env";
 import { toMinorUnits } from "@/lib/money";
 import { createOpaqueToken, digestOpaqueToken } from "@/lib/security-tokens";
@@ -26,6 +27,13 @@ async function requireActor(): Promise<{
     data: { user }
   } = await supabase.auth.getUser();
   if (!user) redirect("/sign-in");
+  const { data: claimsData } = await supabase.auth.getClaims();
+  if (
+    !claimsData?.claims ||
+    !(await ensureAppSession(supabase, claimsData.claims))
+  ) {
+    redirect("/sign-in?error=Session%20expired");
+  }
 
   const { data: membership } = await supabase
     .from("business_memberships")

@@ -1,3 +1,4 @@
+import { ensureAppSession } from "@/features/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getAuthenticatedMembership() {
@@ -6,6 +7,10 @@ export async function getAuthenticatedMembership() {
     data: { user }
   } = await supabase.auth.getUser();
   if (!user) return null;
+  const { data: claimsData } = await supabase.auth.getClaims();
+  if (!claimsData?.claims || !(await ensureAppSession(supabase, claimsData.claims))) {
+    return null;
+  }
 
   const { data: membership } = await supabase
     .from("business_memberships")
