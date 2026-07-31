@@ -404,6 +404,29 @@ a {
   z-index: 70;
 }
 
+.settings-route-loader {
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  inset: 0;
+  margin-left: 268px;
+  pointer-events: none;
+  position: fixed;
+  z-index: 65;
+}
+
+.settings-route-loader-bar {
+  animation: settings-load 800ms ease-in-out infinite;
+  background: var(--signal);
+  height: 3px;
+  transform-origin: left;
+  width: 100%;
+}
+
+@keyframes settings-load {
+  0% { transform: scaleX(0.08); opacity: 0.65; }
+  55% { transform: scaleX(0.7); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0.45; }
+}
+
 .pulse-launcher {
   align-items: center;
   background: var(--sidebar);
@@ -700,6 +723,10 @@ a {
   .pulse-assistant {
     bottom: 88px;
     right: 18px;
+  }
+
+  .settings-route-loader {
+    margin-left: 0;
   }
 
   .pulse-panel {

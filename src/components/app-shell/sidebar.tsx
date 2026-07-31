@@ -7,7 +7,6 @@ import {
   CalendarDays,
   FileText,
   LayoutDashboard,
-  LogOut,
   PieChart,
   Settings,
   ShieldCheck
@@ -15,7 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
-import { signOut } from "@/features/auth/actions";
+import { SignOutButton } from "@/components/app-shell/sign-out-button";
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -88,11 +87,7 @@ export function Sidebar({ user }: { user: { displayName: string; role: string } 
               {user.role}
             </p>
           </div>
-          <form action={signOut}>
-            <button type="submit" aria-label="Sign out" title="Sign out" className="grid size-9 place-items-center rounded-full text-white/50 transition hover:bg-white/10 hover:text-white">
-              <LogOut size={17} />
-            </button>
-          </form>
+          <SignOutButton />
         </div>
       </div>
     </aside>

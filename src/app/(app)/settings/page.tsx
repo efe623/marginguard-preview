@@ -1,5 +1,5 @@
 import { Building2, CreditCard, FileText, KeyRound, LifeBuoy, Sparkles, Trash2, Users } from "lucide-react";
-import Link from "next/link";
+import { SettingsTransitionLink } from "@/components/settings-transition-link";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 
@@ -24,14 +24,14 @@ export default function SettingsPage() {
       />
       <section className="card mt-8">
         {settings.map(([title, description, Icon, href]) => (
-          <Link key={title} href={href} className="group grid grid-cols-[48px_1fr_auto] items-center gap-5 border-b border-[var(--line)] p-7 last:border-0 hover:bg-[var(--paper-deep)]">
+          <SettingsTransitionLink key={title} href={href} className="group grid grid-cols-[48px_1fr_auto] items-center gap-5 border-b border-[var(--line)] p-7 last:border-0 hover:bg-[var(--paper-deep)]">
             <span className="grid size-12 place-items-center border border-[var(--line)]"><Icon size={21} /></span>
             <div>
               <h2 className="font-semibold">{title}</h2>
               <p className="quiet mt-1 text-sm">{description}</p>
             </div>
             {title === "Stripe" ? <Status tone="warning">Not connected</Status> : <span aria-hidden>→</span>}
-          </Link>
+          </SettingsTransitionLink>
         ))}
       </section>
     </div>

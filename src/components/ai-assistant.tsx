@@ -67,7 +67,7 @@ export function AiAssistant() {
   }
 
   return (
-    <div className="pulse-assistant">
+    <div className="pulse-assistant" style={{ left: "auto", right: "max(18px, env(safe-area-inset-right))" }}>
       {open ? (
         <section className="pulse-panel" aria-label="Pulse AI assistant">
           <header className="pulse-header">
