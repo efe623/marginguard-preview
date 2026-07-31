@@ -200,6 +200,68 @@ export async function getNotificationsData() {
   return data ?? [];
 }
 
+export type ActivityItem = {
+  id: string;
+  kind: "alert" | "audit";
+  title: string;
+  body: string;
+  href: string | null;
+  unread: boolean;
+  createdAt: string;
+  category: string;
+};
+
+export async function getActivityCenterData(): Promise<ActivityItem[]> {
+  if (!isSupabaseConfigured) return [];
+  const context = await getAuthenticatedBusinessContext();
+  if (!context) return [];
+
+  const [notifications, auditEvents] = await Promise.all([
+    context.supabase
+      .from("in_app_notifications")
+      .select("id, title, body, href, read_at, created_at")
+      .eq("user_id", context.userId)
+      .order("created_at", { ascending: false })
+      .limit(40),
+    context.supabase
+      .from("audit_events")
+      .select("id, action, subject_type, subject_id, metadata, occurred_at, project_id")
+      .eq("business_id", context.membership.business_id)
+      .order("occurred_at", { ascending: false })
+      .limit(40)
+  ]);
+
+  const alertItems: ActivityItem[] = (notifications.data ?? []).map((row) => ({
+    id: `alert-${row.id}`,
+    kind: "alert",
+    title: row.title,
+    body: row.body,
+    href: row.href,
+    unread: !row.read_at,
+    createdAt: row.created_at,
+    category: "Alert"
+  }));
+  const auditItems: ActivityItem[] = (auditEvents.data ?? []).map((row) => {
+    const words = row.action.replaceAll(".", " ").replaceAll("_", " ");
+    const title = words.charAt(0).toUpperCase() + words.slice(1);
+    const subject = row.subject_type.replaceAll("_", " ");
+    return {
+      id: `audit-${row.id}`,
+      kind: "audit",
+      title,
+      body: row.subject_id ? `${subject} · ${row.subject_id}` : subject,
+      href: row.project_id ? `/projects/${row.project_id}/audit` : null,
+      unread: false,
+      createdAt: row.occurred_at,
+      category: "Audit"
+    };
+  });
+
+  return [...alertItems, ...auditItems]
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+    .slice(0, 60);
+}
+
 export async function getInvoicesPageData() {
   if (!isSupabaseConfigured) return { invoices: [], projects: [] };
   const context = await getAuthenticatedBusinessContext();

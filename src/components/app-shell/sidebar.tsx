@@ -2,14 +2,12 @@
 
 import {
   BriefcaseBusiness,
-  Bell,
   Building2,
   CalendarDays,
   FileText,
   LayoutDashboard,
   PieChart,
   Settings,
-  ShieldCheck
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,8 +21,6 @@ const links = [
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/invoices", label: "Invoices", icon: FileText },
   { href: "/reports", label: "Reports", icon: PieChart },
-  { href: "/notifications", label: "Alerts", icon: Bell },
-  { href: "/audit", label: "Audit trail", icon: ShieldCheck },
   { href: "/settings", label: "Settings", icon: Settings }
 ];
 
