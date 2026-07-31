@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedMembership } from "@/features/auth/authorization";
 import { generateAssistantReply } from "@/lib/ai";
-import { getServerEnv, isSupabaseConfigured } from "@/lib/env";
+import { getServerEnv } from "@/lib/env";
 
 export const runtime = "nodejs";
 
@@ -19,9 +19,15 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  if (!isSupabaseConfigured || !getServerEnv().GEMINI_API_KEY) {
+  const hasGeminiKey = Boolean(getServerEnv().GEMINI_API_KEY?.trim());
+  if (!hasGeminiKey) {
+    console.error("[api/ai/assistant] Gemini configuration missing", {
+      hasGeminiKey,
+      hasGeminiModel: Boolean(getServerEnv().GEMINI_MODEL?.trim()),
+      vercelEnvironment: process.env.VERCEL_ENV ?? "local"
+    });
     return NextResponse.json(
-      { error: "Pulse is not configured yet. Add the Gemini API key and redeploy." },
+      { error: "Pulse cannot find GEMINI_API_KEY in this deployment. Check the Production environment value and redeploy." },
       { status: 503 }
     );
   }
