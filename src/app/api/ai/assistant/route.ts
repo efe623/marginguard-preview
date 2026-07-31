@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   if (!actor) return NextResponse.json({ error: "Sign in required." }, { status: 401 });
   const businessId = actor.membership.business_id;
 
-  const [businessResult, projectsResult, clientsResult, invoicesResult, tasksResult, expensesResult] =
+  const [businessResult, projectsResult, clientsResult, invoicesResult, tasksResult, expensesResult, stripeResult, calendarResult, userResult] =
     await Promise.all([
       actor.supabase
         .from("businesses")
@@ -71,7 +71,10 @@ export async function POST(request: Request) {
       actor.supabase
         .from("project_expenses")
         .select("project_id, amount_minor, currency, category, incurred_on")
-        .eq("business_id", businessId)
+        .eq("business_id", businessId),
+      actor.supabase.from("stripe_connections").select("charges_enabled, disconnected_at").eq("business_id", businessId).maybeSingle(),
+      actor.supabase.from("calendar_feeds").select("id").eq("business_id", businessId).is("revoked_at", null),
+      actor.supabase.auth.getUser()
     ]);
 
   const business = businessResult.data;
@@ -80,6 +83,20 @@ export async function POST(request: Request) {
       { error: "The owner must enable AI in Settings → AI and privacy first." },
       { status: 403 }
     );
+  }
+
+  const latestQuestion = parsed.data.messages.at(-1)?.content.toLowerCase() ?? "";
+  if (/\b(connect|connected|connection|connections|integration|integrations|stripe|strength|google account)\b/.test(latestQuestion)) {
+    const googleConnected = Boolean(userResult.data.user?.identities?.some((identity) => identity.provider === "google"));
+    const stripeConnected = Boolean(stripeResult.data && !stripeResult.data.disconnected_at);
+    const calendarFeedReady = (calendarResult.data?.length ?? 0) > 0;
+    return NextResponse.json({ reply: [
+      "Here are your UnitPulse connections:",
+      `• Google sign-in: ${googleConnected ? "Connected" : "Not connected"}`,
+      `• Stripe: ${stripeConnected ? (stripeResult.data?.charges_enabled ? "Connected and ready" : "Connected, but charges are not enabled yet") : "Not connected"}`,
+      `• Calendar feed: ${calendarFeedReady ? "Created" : "Not created yet"}`,
+      "You can manage these in Settings → Connections."
+    ].join("\n") });
   }
 
   const projectNames = new Map((projectsResult.data ?? []).map((project) => [project.id, project.name]));
@@ -105,6 +122,11 @@ export async function POST(request: Request) {
     projects: projectsResult.data ?? [],
     tasks: (tasksResult.data ?? []).slice(0, 100),
     expenses: (expensesResult.data ?? []).slice(0, 100),
+    connections: {
+      google: userResult.data.user?.identities?.some((identity) => identity.provider === "google") ? "connected" : "not connected",
+      stripe: stripeResult.data && !stripeResult.data.disconnected_at ? "connected" : "not connected",
+      calendarFeed: (calendarResult.data?.length ?? 0) > 0 ? "created" : "not created"
+    },
     accessNote: "This dataset is already limited by UnitPulse row-level permissions."
   });
 

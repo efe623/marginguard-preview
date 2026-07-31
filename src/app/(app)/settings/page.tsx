@@ -1,4 +1,4 @@
-import { Building2, CreditCard, FileText, KeyRound, LifeBuoy, Sparkles, Trash2, Users } from "lucide-react";
+import { Building2, CreditCard, FileText, KeyRound, LifeBuoy, Plug, Sparkles, Trash2, Users } from "lucide-react";
 import { SettingsTransitionLink } from "@/components/settings-transition-link";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
@@ -9,6 +9,7 @@ const settings = [
   ["AI and privacy", "Enable draft-only Gemini tools and control external processing.", Sparkles, "/settings/ai"],
   ["Members & permissions", "Invite staff, assign projects, and grant financial-send access.", Users, "/settings/members"],
   ["Security & sessions", "MFA, recovery codes, trusted devices, and remote sign-out.", KeyRound, "/settings/security"],
+  ["Connections", "Connect Google sign-in and review account integrations.", Plug, "/settings/connections"],
   ["Stripe", "Connect the owner’s Stripe account for hosted payment links.", CreditCard, "/settings/stripe"],
   ["Support access", "Create a time-limited, audited support grant.", LifeBuoy, "/settings/support"],
   ["Deletion", "Export data or begin the 30-day deletion window.", Trash2, "/settings/deletion"]

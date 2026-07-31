@@ -10,6 +10,7 @@ const items = [
   ["ai", "AI", "/settings/ai"],
   ["members", "Members", "/settings/members"],
   ["security", "Security", "/settings/security"],
+  ["connections", "Connections", "/settings/connections"],
   ["stripe", "Stripe", "/settings/stripe"],
   ["support", "Support access", "/settings/support"],
   ["deletion", "Deletion", "/settings/deletion"]

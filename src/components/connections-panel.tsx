@@ -25,7 +25,7 @@ export function ConnectionsPanel() {
     const { error: linkError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=/connections`
+        redirectTo: `${window.location.origin}/api/auth/callback?next=/settings/connections`
       }
     });
     if (linkError) {

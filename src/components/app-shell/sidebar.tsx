@@ -8,7 +8,6 @@ import {
   FileText,
   LayoutDashboard,
   PieChart,
-  Plug,
   Settings,
   ShieldCheck
 } from "lucide-react";
@@ -22,7 +21,6 @@ const links = [
   { href: "/projects", label: "Projects", icon: BriefcaseBusiness },
   { href: "/clients", label: "Clients", icon: Building2 },
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/connections", label: "Connections", icon: Plug },
   { href: "/invoices", label: "Invoices", icon: FileText },
   { href: "/reports", label: "Reports", icon: PieChart },
   { href: "/notifications", label: "Alerts", icon: Bell },
