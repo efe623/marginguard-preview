@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArrowUp, Bot, FileText, ReceiptText, Sparkles, X } from "lucide-react";
+import { getInstantPulseReply } from "@/lib/pulse";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -33,6 +34,11 @@ export function AiAssistant() {
     const nextMessages = [...messages, { role: "user" as const, content: clean }].slice(-10);
     setMessages(nextMessages);
     setInput("");
+    const instantReply = getInstantPulseReply(clean);
+    if (instantReply) {
+      setMessages([...nextMessages, { role: "assistant", content: instantReply }]);
+      return;
+    }
     setPending(true);
     try {
       const response = await fetch("/api/ai/assistant", {
