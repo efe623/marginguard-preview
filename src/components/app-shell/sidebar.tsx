@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { signOut } from "@/features/auth/actions";
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -28,8 +29,9 @@ const links = [
   { href: "/settings", label: "Settings", icon: Settings }
 ];
 
-export function Sidebar() {
+export function Sidebar({ user }: { user: { displayName: string; role: string } }) {
   const pathname = usePathname();
+  const initial = user.displayName.trim().charAt(0).toUpperCase() || "U";
 
   return (
     <aside className="app-sidebar fixed inset-y-0 left-0 z-20 flex w-[268px] flex-col bg-[var(--sidebar)] text-white">
@@ -78,17 +80,19 @@ export function Sidebar() {
       <div className="app-sidebar-footer border-t border-white/15 px-7 py-6">
         <div className="flex items-center gap-3">
           <div className="grid size-10 place-items-center rounded-full border border-white/20 bg-white/10 font-display text-lg">
-            A
+            {initial}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">Alex Morgan</p>
+            <p className="truncate text-sm font-semibold">{user.displayName}</p>
             <p className="mt-0.5 text-[0.62rem] uppercase tracking-[0.14em] text-white/45">
-              Owner
+              {user.role}
             </p>
           </div>
-          <Link href="/sign-in" aria-label="Sign out" className="text-white/50 hover:text-white">
-            <LogOut size={17} />
-          </Link>
+          <form action={signOut}>
+            <button type="submit" aria-label="Sign out" title="Sign out" className="grid size-9 place-items-center rounded-full text-white/50 transition hover:bg-white/10 hover:text-white">
+              <LogOut size={17} />
+            </button>
+          </form>
         </div>
       </div>
     </aside>

@@ -22,10 +22,28 @@ export const getAuthenticatedBusinessContext = cache(async () => {
 
   if (!membership) return null;
 
+  const [{ data: profile }, { data: business }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("display_name, timezone")
+      .eq("user_id", claims.sub)
+      .maybeSingle(),
+    supabase
+      .from("businesses")
+      .select("name, business_type, currency, country_code, timezone")
+      .eq("id", membership.business_id)
+      .maybeSingle()
+  ]);
+
   return {
     supabase,
     userId: claims.sub,
     assuranceLevel: claims.aal,
-    membership
+    membership,
+    profile,
+    business,
+    profileComplete:
+      (claims.user_metadata as { unitpulse_profile_complete?: boolean } | undefined)
+        ?.unitpulse_profile_complete === true
   };
 });

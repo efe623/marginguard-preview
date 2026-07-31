@@ -15,8 +15,21 @@ export default async function ProtectedLayout({
       context.membership.role === "owner" &&
       context.assuranceLevel !== "aal2"
     ) {
-      redirect("/mfa");
+      redirect(`/mfa?next=${context.profileComplete ? "/dashboard" : "/complete-profile"}`);
     }
+    if (context.membership.role === "owner" && !context.profileComplete) {
+      redirect("/complete-profile");
+    }
+    return (
+      <AppShell
+        user={{
+          displayName: context.profile?.display_name || "UnitPulse member",
+          role: context.membership.role
+        }}
+      >
+        {children}
+      </AppShell>
+    );
   }
-  return <AppShell>{children}</AppShell>;
+  return <AppShell user={{ displayName: "Preview owner", role: "owner" }}>{children}</AppShell>;
 }

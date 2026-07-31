@@ -69,6 +69,15 @@ const firstOwnerSchema = z
     message: "Passwords do not match."
   });
 
+const ownerProfileSchema = z.object({
+  displayName: z.string().trim().min(2).max(100),
+  businessName: z.string().trim().min(2).max(160),
+  businessType: z.string().trim().min(2).max(120),
+  currency: z.string().regex(/^[A-Z]{3}$/),
+  countryCode: z.string().trim().toUpperCase().regex(/^[A-Z]{2}$/),
+  timezone: z.string().trim().min(1).max(120)
+});
+
 export async function createFirstOwner(
   _state: AuthState,
   formData: FormData
@@ -129,7 +138,10 @@ export async function createFirstOwner(
       email: parsed.data.email,
       password: parsed.data.password,
       email_confirm: true,
-      user_metadata: { full_name: parsed.data.displayName }
+      user_metadata: {
+        full_name: parsed.data.displayName,
+        unitpulse_profile_complete: true
+      }
     });
   if (userError || !created.user) {
     return { error: "The owner account could not be created." };
@@ -180,6 +192,81 @@ export async function createFirstOwner(
   revalidatePath("/", "layout");
   if (signInError) redirect("/sign-in?created=1");
   redirect("/mfa?next=/dashboard");
+}
+
+export async function completeOwnerProfile(
+  _state: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const parsed = ownerProfileSchema.safeParse({
+    displayName: formData.get("displayName"),
+    businessName: formData.get("businessName"),
+    businessType: formData.get("businessType"),
+    currency: formData.get("currency"),
+    countryCode: formData.get("countryCode"),
+    timezone: formData.get("timezone")
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Check your details." };
+  }
+
+  const supabase = await createClient();
+  const [{ data: userData }, { data: assurance }] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+  ]);
+  const user = userData.user;
+  if (!user || assurance?.currentLevel !== "aal2") {
+    redirect("/mfa?next=/complete-profile");
+  }
+
+  const admin = createAdminClient();
+  const { data: membership } = await admin
+    .from("business_memberships")
+    .select("business_id, role")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!membership || membership.role !== "owner") {
+    return { error: "Only the business owner can complete this setup." };
+  }
+
+  const [profileResult, businessResult, userResult] = await Promise.all([
+    admin.from("profiles").upsert({
+      user_id: user.id,
+      display_name: parsed.data.displayName,
+      timezone: parsed.data.timezone
+    }),
+    admin.from("businesses").update({
+      name: parsed.data.businessName,
+      business_type: parsed.data.businessType,
+      currency: parsed.data.currency,
+      country_code: parsed.data.countryCode,
+      timezone: parsed.data.timezone
+    }).eq("id", membership.business_id),
+    admin.auth.admin.updateUserById(user.id, {
+      user_metadata: {
+        ...user.user_metadata,
+        full_name: parsed.data.displayName,
+        unitpulse_profile_complete: true
+      }
+    })
+  ]);
+  if (profileResult.error || businessResult.error || userResult.error) {
+    return { error: "Your profile could not be saved. Try again." };
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/dashboard");
+}
+
+export async function signOut() {
+  if (isSupabaseConfigured) {
+    const supabase = await createClient();
+    await supabase.auth.signOut({ scope: "local" });
+  }
+  redirect("/sign-in");
 }
 
 export async function requestPasswordReset(

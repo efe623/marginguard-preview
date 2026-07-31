@@ -1,16 +1,26 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+const items = [
+  ["business", "Business", "/settings/business"],
+  ["quotes", "Quote templates", "/settings/quotes"],
+  ["ai", "AI", "/settings/ai"],
+  ["members", "Members", "/settings/members"],
+  ["security", "Security", "/settings/security"],
+  ["stripe", "Stripe", "/settings/stripe"],
+  ["support", "Support access", "/settings/support"],
+  ["deletion", "Deletion", "/settings/deletion"]
+] as const;
 
 export function SettingsNav({ active }: { active: string }) {
-  const items = [
-    ["business", "Business", "/settings/business"],
-    ["quotes", "Quote templates", "/settings/quotes"],
-    ["ai", "AI", "/settings/ai"],
-    ["members", "Members", "/settings/members"],
-    ["security", "Security", "/settings/security"],
-    ["stripe", "Stripe", "/settings/stripe"],
-    ["support", "Support access", "/settings/support"],
-    ["deletion", "Deletion", "/settings/deletion"]
-  ];
+  const router = useRouter();
+
+  useEffect(() => {
+    items.forEach(([, , href]) => router.prefetch(href));
+  }, [router]);
 
   return (
     <nav className="flex overflow-x-auto border-b border-[var(--line)]">
@@ -18,6 +28,7 @@ export function SettingsNav({ active }: { active: string }) {
         <Link
           key={key}
           href={href}
+          prefetch
           className={`relative shrink-0 px-5 py-4 text-sm font-semibold ${active === key ? "" : "quiet"}`}
         >
           {label}

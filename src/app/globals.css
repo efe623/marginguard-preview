@@ -399,7 +399,7 @@ a {
 
 .pulse-assistant {
   bottom: 22px;
-  left: 290px;
+  right: 22px;
   position: fixed;
   z-index: 70;
 }
@@ -472,7 +472,7 @@ a {
   display: flex;
   flex-direction: column;
   height: min(610px, calc(100vh - 120px));
-  left: 0;
+  right: 0;
   overflow: hidden;
   position: absolute;
   width: min(390px, calc(100vw - 36px));
@@ -699,7 +699,7 @@ a {
 
   .pulse-assistant {
     bottom: 88px;
-    left: 18px;
+    right: 18px;
   }
 
   .pulse-panel {
