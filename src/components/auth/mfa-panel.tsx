@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
+import QRCode from "qrcode";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 
@@ -40,10 +41,16 @@ export function MfaPanel({ next = "/dashboard" }: { next?: string }) {
         setError("Authenticator setup could not be started.");
         return;
       }
+      const authenticatorUri = `otpauth://totp/${encodeURIComponent("UnitPulse")}?secret=${encodeURIComponent(enrolled.totp.secret)}&issuer=${encodeURIComponent("UnitPulse")}&algorithm=SHA1&digits=6&period=30`;
+      const brandedQrCode = await QRCode.toDataURL(authenticatorUri, {
+        errorCorrectionLevel: "M",
+        margin: 2,
+        width: 440
+      });
       setFactorId(enrolled.id);
       setEnrollment({
         factorId: enrolled.id,
-        qrCode: enrolled.totp.qr_code,
+        qrCode: brandedQrCode,
         secret: enrolled.totp.secret
       });
     })();

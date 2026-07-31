@@ -133,7 +133,14 @@ export async function createFirstOwner(
       }
     });
   if (userError || !created.user) {
-    return { error: "The owner account could not be created." };
+    const message = userError?.message.toLowerCase() ?? "";
+    if (message.includes("already") || message.includes("registered") || message.includes("exists")) {
+      return { error: "An account already uses this email. Sign in or reset its password." };
+    }
+    if (message.includes("password")) {
+      return { error: "Supabase rejected this password. Use at least 11 characters with letters and numbers." };
+    }
+    return { error: userError?.message || "The owner account could not be created." };
   }
 
   const { data: business, error: businessError } = await admin
