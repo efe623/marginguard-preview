@@ -12,7 +12,7 @@ export default function SignUpPage() {
               UnitPulse
             </p>
             <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-white/45">
-              First-owner setup
+              Owner setup
             </p>
           </div>
           <div className="my-16">
@@ -21,9 +21,9 @@ export default function SignUpPage() {
               Create the account that controls your workspace.
             </h1>
             <p className="mt-5 max-w-sm text-sm leading-7 text-white/60">
-              Your setup code prevents strangers from opening businesses on
-              this private pilot. After setup, you will enroll an authenticator
-              app for owner security.
+              Use the UnitPulse testing code to create a separate owner
+              workspace. After setup, you will enroll an authenticator app for
+              owner security.
             </p>
           </div>
           <p className="text-xs text-white/35">

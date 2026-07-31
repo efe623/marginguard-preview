@@ -20,11 +20,11 @@ export function OwnerSignUpForm() {
           required
         />
         <span className="quiet mt-2 block text-xs">
-          Use the private code supplied with your UnitPulse deployment.
+          Testing code: <strong>EFEBAYLANEFE</strong>
         </span>
       </label>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div>
         <label>
           <span className="field-label">Your name</span>
           <input
@@ -34,7 +34,12 @@ export function OwnerSignUpForm() {
             required
           />
         </label>
-        <label>
+      </div>
+
+      <div className="border-t border-[var(--line)] pt-6">
+        <p className="eyebrow">Your email and password</p>
+        <div className="mt-4 grid gap-5 sm:grid-cols-2">
+          <label className="sm:col-span-2">
           <span className="field-label">Work email</span>
           <input
             className={fieldClass}
@@ -43,32 +48,17 @@ export function OwnerSignUpForm() {
             autoComplete="email"
             required
           />
-        </label>
-      </div>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <label>
-          <span className="field-label">Password</span>
-          <input
-            className={fieldClass}
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            minLength={12}
-            required
-          />
-        </label>
-        <label>
-          <span className="field-label">Confirm password</span>
-          <input
-            className={fieldClass}
-            name="confirmation"
-            type="password"
-            autoComplete="new-password"
-            minLength={12}
-            required
-          />
-        </label>
+          </label>
+          <label>
+            <span className="field-label">Password</span>
+            <input className={fieldClass} name="password" type="password" autoComplete="new-password" minLength={11} required />
+            <span className="quiet mt-2 block text-xs">Use at least 11 characters.</span>
+          </label>
+          <label>
+            <span className="field-label">Confirm password</span>
+            <input className={fieldClass} name="confirmation" type="password" autoComplete="new-password" minLength={11} required />
+          </label>
+        </div>
       </div>
 
       <div className="border-t border-[var(--line)] pt-6">
@@ -137,7 +127,7 @@ export function OwnerSignUpForm() {
         {pending ? "Creating secure workspace…" : "Create owner account"}
       </button>
       <p className="quiet text-center text-xs leading-5">
-        This creates the first owner only. Team members continue to join through
+        Each owner account gets its own workspace. Team members join through
         owner invitations.
       </p>
     </form>

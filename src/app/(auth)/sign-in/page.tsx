@@ -53,7 +53,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
             href="/sign-up"
             className="mt-5 block text-center text-sm font-semibold underline underline-offset-4"
           >
-            Set up the first owner account
+            Set up an owner account
           </Link>
           <Link href="/forgot-password" className="mt-5 block text-center text-sm font-semibold underline underline-offset-4">
             Reset password
