@@ -67,7 +67,17 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (data?.claims && request.nextUrl.pathname === "/sign-in") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+    if (user) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
+    // A deleted account can leave a locally valid JWT behind until it expires.
+    // Clear it here so sign-in does not bounce between this page and the app.
+    await supabase.auth.signOut({ scope: "local" });
+    return response;
   }
 
   return response;
