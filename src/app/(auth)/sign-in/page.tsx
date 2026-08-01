@@ -3,12 +3,14 @@ import { ShieldCheck } from "lucide-react";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import { isSupabaseConfigured } from "@/lib/env";
+import { startOwnerSetup } from "@/features/auth/actions";
 
 const errors: Record<string, string> = {
   callback: "The sign-in response could not be verified. Try again.",
   invitation: "This invitation is invalid, expired, or belongs to another email.",
   membership: "UnitPulse could not finish joining this workspace.",
-  not_member: "This account is not a UnitPulse member. Ask the owner for an invitation."
+  not_member: "This account is not a UnitPulse member. Ask the owner for an invitation.",
+  owner_setup_unavailable: "Owner setup is not available right now."
 };
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
@@ -49,12 +51,11 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
             </p>
           ) : null}
           {isSupabaseConfigured ? <OAuthButtons /> : null}
-          <Link
-            href="/sign-up"
-            className="mt-5 block text-center text-sm font-semibold underline underline-offset-4"
-          >
-            Set up an owner account
-          </Link>
+          <form action={startOwnerSetup} className="mt-5 text-center">
+            <button className="text-sm font-semibold underline underline-offset-4" type="submit">
+              Set up an owner account
+            </button>
+          </form>
           <Link href="/forgot-password" className="mt-5 block text-center text-sm font-semibold underline underline-offset-4">
             Reset password
           </Link>

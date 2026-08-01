@@ -187,9 +187,9 @@ a {
 }
 
 .topbar-icon-button-active {
-  background: color-mix(in srgb, var(--success) 12%, var(--paper-white));
-  border-color: color-mix(in srgb, var(--success) 42%, var(--line));
-  color: var(--success);
+  background: color-mix(in srgb, var(--signal) 12%, var(--paper-white));
+  border-color: color-mix(in srgb, var(--signal) 42%, var(--line));
+  color: var(--signal);
 }
 
 .topbar-alert-count {

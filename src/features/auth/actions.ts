@@ -12,6 +12,11 @@ import {
 } from "@/lib/security-tokens";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import {
+  beginOwnerSetupFlow,
+  clearOwnerSetupFlow,
+  hasOwnerSetupFlow
+} from "@/features/auth/owner-setup-flow";
 
 export type AuthState = { error?: string; success?: string };
 
@@ -78,10 +83,20 @@ const ownerProfileSchema = z.object({
   timezone: z.string().trim().min(1).max(120)
 });
 
+export async function startOwnerSetup() {
+  if (!(await beginOwnerSetupFlow())) {
+    redirect("/sign-in?error=owner_setup_unavailable");
+  }
+  redirect("/sign-up");
+}
+
 export async function createFirstOwner(
   _state: AuthState,
   formData: FormData
 ): Promise<AuthState> {
+  if (!(await hasOwnerSetupFlow())) {
+    return { error: "This owner setup session expired. Start again from sign in." };
+  }
   if (!isSupabaseConfigured) {
     return { error: "Supabase is not configured." };
   }
@@ -186,6 +201,7 @@ export async function createFirstOwner(
     password: parsed.data.password
   });
   revalidatePath("/", "layout");
+  await clearOwnerSetupFlow();
   if (signInError) redirect("/sign-in?created=1");
   redirect("/mfa?next=/dashboard");
 }

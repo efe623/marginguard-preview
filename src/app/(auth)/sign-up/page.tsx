@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { OwnerSignUpForm } from "@/components/auth/owner-sign-up-form";
+import { redirect } from "next/navigation";
+import { hasOwnerSetupFlow } from "@/features/auth/owner-setup-flow";
+import { isSupabaseConfigured } from "@/lib/env";
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  if (isSupabaseConfigured && !(await hasOwnerSetupFlow())) redirect("/sign-in");
   return (
     <main className="min-h-screen bg-[var(--background)] px-5 py-8 sm:px-8 sm:py-12">
       <div className="mx-auto grid w-full max-w-6xl overflow-hidden border border-[var(--line)] bg-white shadow-[0_24px_80px_rgba(15,28,24,0.10)] lg:grid-cols-[0.72fr_1fr]">
