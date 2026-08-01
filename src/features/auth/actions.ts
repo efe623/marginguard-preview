@@ -257,6 +257,63 @@ export async function completeOwnerProfile(
   redirect("/dashboard");
 }
 
+const googleOwnerSchema = z.object({
+  displayName: z.string().trim().min(2).max(100),
+  businessName: z.string().trim().min(2).max(160),
+  businessType: z.string().trim().min(2).max(120),
+  currency: z.string().regex(/^[A-Z]{3}$/),
+  countryCode: z.string().trim().toUpperCase().regex(/^[A-Z]{2}$/),
+  timezone: z.string().trim().min(1).max(120)
+});
+
+export async function createGoogleOwner(
+  _state: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const parsed = googleOwnerSchema.safeParse({
+    displayName: formData.get("displayName"),
+    businessName: formData.get("businessName"),
+    businessType: formData.get("businessType"),
+    currency: formData.get("currency"),
+    countryCode: formData.get("countryCode"),
+    timezone: formData.get("timezone")
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check your details." };
+
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user?.email || !user.identities?.some((identity) => identity.provider === "google")) {
+    return { error: "Sign in with Google before creating this workspace." };
+  }
+
+  const admin = createAdminClient();
+  const { data: existingMembership } = await admin.from("business_memberships").select("id").eq("user_id", user.id).eq("status", "active").limit(1).maybeSingle();
+  if (existingMembership) redirect("/dashboard");
+
+  const { data: business, error: businessError } = await admin.from("businesses").insert({
+    name: parsed.data.businessName,
+    business_type: parsed.data.businessType,
+    currency: parsed.data.currency,
+    timezone: parsed.data.timezone,
+    country_code: parsed.data.countryCode
+  }).select("id").single();
+  if (businessError || !business) return { error: "The business workspace could not be created." };
+
+  const [membership, profile, authUser] = await Promise.all([
+    admin.from("business_memberships").insert({ business_id: business.id, user_id: user.id, role: "owner", status: "active", joined_at: new Date().toISOString() }),
+    admin.from("profiles").upsert({ user_id: user.id, display_name: parsed.data.displayName, timezone: parsed.data.timezone }),
+    admin.auth.admin.updateUserById(user.id, { user_metadata: { ...user.user_metadata, full_name: parsed.data.displayName, unitpulse_profile_complete: true } })
+  ]);
+  if (membership.error || profile.error || authUser.error) {
+    await admin.from("businesses").delete().eq("id", business.id);
+    return { error: "Owner setup could not be completed safely." };
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/mfa?next=/dashboard");
+}
+
 export async function signOut() {
   if (isSupabaseConfigured) {
     const supabase = await createClient();

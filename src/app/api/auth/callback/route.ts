@@ -78,8 +78,7 @@ export async function GET(request: Request) {
     .limit(1)
     .maybeSingle();
   if (!membership) {
-    await supabase.auth.signOut();
-    return NextResponse.redirect(new URL("/sign-in?error=not_member", request.url));
+    return NextResponse.redirect(new URL("/google-onboarding", request.url));
   }
   return NextResponse.redirect(new URL(next, request.url));
 }

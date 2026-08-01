@@ -7,6 +7,7 @@ const publicPaths = [
   "/sign-up",
   "/forgot-password",
   "/reset-password",
+  "/google-onboarding",
   "/mfa",
   "/recovery",
   "/accept-invitation",

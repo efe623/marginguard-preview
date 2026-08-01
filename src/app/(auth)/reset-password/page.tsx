@@ -8,14 +8,14 @@ export default async function ResetPasswordPage({
   const { error } = await searchParams;
   return (
     <main className="grid min-h-screen place-items-center p-8">
-      <div className="card w-full max-w-lg p-9">
+      <div className="card w-full max-w-lg rounded-[28px] p-8 shadow-[0_24px_80px_rgba(15,28,24,0.10)] sm:p-10">
         <p className="eyebrow">Password reset</p>
         <h1 className="font-display mt-4 text-5xl font-bold tracking-tight">Create a new password.</h1>
-        <form action={updatePassword} className="mt-8 space-y-5">
-          <label><span className="field-label">New password</span><input className="input" name="password" type="password" minLength={12} required /></label>
-          <label><span className="field-label">Confirm password</span><input className="input" name="confirmation" type="password" minLength={12} required /></label>
-          {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
-          <button className="button button-primary w-full" type="submit">Update password</button>
+        <form action={updatePassword} className="mt-8 grid gap-6">
+          <label><span className="field-label">New password</span><input className="auth-input" name="password" type="password" autoComplete="new-password" minLength={12} required /></label>
+          <label><span className="field-label">Confirm password</span><input className="auth-input" name="confirmation" type="password" autoComplete="new-password" minLength={12} required /></label>
+          {error ? <p className="rounded-xl border border-[var(--danger)] bg-[#fff5f3] p-3 text-sm text-[var(--danger)]">{error}</p> : null}
+          <button className="auth-button auth-button-primary mt-2 w-full" type="submit">Update password</button>
         </form>
       </div>
     </main>
