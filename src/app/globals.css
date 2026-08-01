@@ -82,7 +82,6 @@ a {
 
 .font-display {
   font-family: var(--font-display), system-ui, sans-serif;
-  font-stretch: condensed;
 }
 
 .app-frame {
