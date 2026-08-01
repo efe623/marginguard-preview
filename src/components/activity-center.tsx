@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Bell, ChevronRight, History, X } from "lucide-react";
 import type { ActivityItem } from "@/features/operations/queries";
 
@@ -33,6 +34,7 @@ export function ActivityList({ items }: { items: ActivityItem[] }) {
 }
 
 export function ActivityCenter({ items }: { items: ActivityItem[] }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const unread = items.filter((item) => item.unread).length;
@@ -54,7 +56,7 @@ export function ActivityCenter({ items }: { items: ActivityItem[] }) {
 
   return (
     <div className="activity-center" ref={rootRef}>
-      <button className="topbar-icon-button" type="button" aria-label={`Activity center${unread ? `, ${unread} unread` : ""}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+      <button className={`topbar-icon-button ${pathname === "/notifications" ? "topbar-icon-button-active" : ""}`} type="button" aria-label={`Activity center${unread ? `, ${unread} unread` : ""}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
         <Bell size={19} />
         {unread ? <span className="topbar-alert-count">{Math.min(unread, 9)}</span> : null}
       </button>

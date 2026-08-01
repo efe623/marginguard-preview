@@ -2,6 +2,7 @@ import { DemoBanner } from "@/components/demo-banner";
 import { Sidebar } from "@/components/app-shell/sidebar";
 import { AiAssistant } from "@/components/ai-assistant";
 import { ActivityCenter } from "@/components/activity-center";
+import { SettingsNavLink } from "@/components/app-shell/settings-nav-link";
 import { getActivityCenterData } from "@/features/operations/queries";
 
 export async function AppShell({
@@ -33,9 +34,7 @@ export async function AppShell({
         <header className="app-topbar">
           <span className="app-topbar-label">UnitPulse workspace</span>
           <div className="app-topbar-actions">
-            <Link href="/settings" className="topbar-icon-button" aria-label="Settings">
-              <Settings size={19} />
-            </Link>
+            <SettingsNavLink />
             <ActivityCenter items={activity} />
           </div>
         </header>
@@ -46,5 +45,3 @@ export async function AppShell({
     </div>
   );
 }
-import Link from "next/link";
-import { Settings } from "lucide-react";
