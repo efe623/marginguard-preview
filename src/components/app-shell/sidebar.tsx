@@ -1,26 +1,19 @@
 "use client";
 
-import {
-  ArrowUpRight,
-  BriefcaseBusiness,
-  Building2,
-  CalendarDays,
-  FileText,
-  LayoutDashboard,
-  PieChart,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/cn";
 import { SignOutButton } from "@/components/app-shell/sign-out-button";
 
 const links = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/projects", label: "Projects", icon: BriefcaseBusiness },
-  { href: "/clients", label: "Clients", icon: Building2 },
-  { href: "/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/invoices", label: "Invoices", icon: FileText },
-  { href: "/reports", label: "Reports", icon: PieChart }
+  { href: "/dashboard", label: "Dashboard", icon: "/icons/sidebar/dashboard.png" },
+  { href: "/projects", label: "Projects", icon: "/icons/sidebar/projects.png" },
+  { href: "/clients", label: "Clients", icon: "/icons/sidebar/clients.png" },
+  { href: "/calendar", label: "Calendar", icon: "/icons/sidebar/calendar.png" },
+  { href: "/invoices", label: "Invoices", icon: "/icons/sidebar/invoices.png" },
+  { href: "/reports", label: "Reports", icon: "/icons/sidebar/reports.png" }
 ];
 
 export function Sidebar({ user }: { user: { displayName: string; role: string } }) {
@@ -39,14 +32,14 @@ export function Sidebar({ user }: { user: { displayName: string; role: string } 
 
       <Link
         href="/projects/new"
-        className="app-new-project mx-6 mb-8 flex items-center justify-between border-y border-white/14 py-4 text-[0.72rem] font-bold uppercase tracking-[0.11em] text-white transition hover:text-[var(--signal)]"
+        className="app-new-project mx-5 mb-8 flex min-h-11 items-center justify-between rounded-xl bg-[var(--signal)] px-4 py-3 text-[0.72rem] font-bold uppercase tracking-[0.11em] text-white shadow-[0_10px_24px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5 hover:bg-[var(--signal-deep)] hover:shadow-[0_14px_28px_rgba(0,0,0,0.22)]"
       >
         New project <ArrowUpRight size={16} />
       </Link>
 
       <nav aria-label="Primary navigation" className="app-nav flex-1 px-3">
         <p className="app-nav-label px-3 pb-2">Workspace</p>
-        {links.map(({ href, label, icon: Icon }) => {
+        {links.map(({ href, label, icon }) => {
           const active =
             pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`));
           return (
@@ -62,7 +55,11 @@ export function Sidebar({ user }: { user: { displayName: string; role: string } 
               {active ? (
                 <span className="absolute left-0 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[var(--signal)]" />
               ) : null}
-              <Icon size={19} strokeWidth={1.7} />
+              <span
+                aria-hidden
+                className="sidebar-page-icon"
+                style={{ "--sidebar-icon-image": `url(${icon})` } as CSSProperties}
+              />
               <span className="font-display text-[0.9rem] font-semibold">{label}</span>
             </Link>
           );
