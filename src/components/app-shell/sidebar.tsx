@@ -9,11 +9,11 @@ import { SignOutButton } from "@/components/app-shell/sign-out-button";
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: "/icons/sidebar/dashboard.png" },
-  { href: "/projects", label: "Projects", icon: "/icons/sidebar/projects.png", emphasized: true },
+  { href: "/projects", label: "Projects", icon: "/icons/sidebar/projects.png" },
   { href: "/clients", label: "Clients", icon: "/icons/sidebar/clients.png" },
   { href: "/calendar", label: "Calendar", icon: "/icons/sidebar/calendar.png", calendar: true },
-  { href: "/invoices", label: "Invoices", icon: "/icons/sidebar/invoices.png", emphasized: true },
-  { href: "/reports", label: "Reports", icon: "/icons/sidebar/reports.png", emphasized: true }
+  { href: "/invoices", label: "Invoices", icon: "/icons/sidebar/invoices.png" },
+  { href: "/reports", label: "Reports", icon: "/icons/sidebar/reports.png" }
 ];
 
 export function Sidebar({
@@ -45,7 +45,7 @@ export function Sidebar({
 
       <nav aria-label="Primary navigation" className="app-nav flex-1 px-3">
         <p className="app-nav-label px-3 pb-2">Workspace</p>
-        {links.map(({ href, label, icon, emphasized, calendar }) => {
+        {links.map(({ href, label, icon, calendar }) => {
           const active =
             pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`));
           return (
@@ -63,11 +63,7 @@ export function Sidebar({
               ) : null}
               <span
                 aria-hidden
-                className={cn(
-                  "sidebar-icon-frame",
-                  emphasized && "sidebar-icon-frame-emphasized",
-                  calendar && "sidebar-icon-frame-calendar"
-                )}
+                className="sidebar-icon-frame"
               >
                 <span
                   className="sidebar-page-icon"

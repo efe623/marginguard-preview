@@ -89,21 +89,9 @@ a {
 .sidebar-icon-frame {
   display: inline-block;
   flex: 0 0 auto;
-  height: 20px;
+  height: 24px;
   position: relative;
-  width: 20px;
-}
-
-.sidebar-icon-frame-emphasized {
-  height: 31px;
-  margin-inline: -5.5px;
-  width: 31px;
-}
-
-.sidebar-icon-frame-calendar {
-  height: 26px;
-  margin-inline: -3px;
-  width: 26px;
+  width: 24px;
 }
 
 .sidebar-page-icon {
@@ -129,15 +117,15 @@ a {
   color: var(--sidebar-icon);
   display: flex;
   font-family: var(--font-body), system-ui, sans-serif;
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 900;
   height: 10px;
   justify-content: center;
-  left: 7px;
+  left: 6px;
   letter-spacing: -0.06em;
   line-height: 1;
   position: absolute;
-  top: 12px;
+  top: 11px;
   width: 12px;
 }
 
