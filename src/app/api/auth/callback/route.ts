@@ -13,12 +13,19 @@ export async function GET(request: Request) {
     : "/dashboard";
   const invitationToken = url.searchParams.get("invitation");
   if (!isSupabaseConfigured || !code) {
+    console.warn("[auth/callback] missing configuration or authorization code", {
+      configured: isSupabaseConfigured,
+      hasCode: Boolean(code)
+    });
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) return NextResponse.redirect(new URL("/sign-in?error=callback", request.url));
+  if (error) {
+    console.error("[auth/callback] code exchange failed", { message: error.message });
+    return NextResponse.redirect(new URL("/sign-in?error=callback", request.url));
+  }
   if (invitationToken) {
     const {
       data: { user }
@@ -78,7 +85,9 @@ export async function GET(request: Request) {
     .limit(1)
     .maybeSingle();
   if (!membership) {
+    console.info("[auth/callback] authenticated Google user needs onboarding", { userId: user.id });
     return NextResponse.redirect(new URL("/google-onboarding", request.url));
   }
+  console.info("[auth/callback] authenticated existing member", { userId: user.id });
   return NextResponse.redirect(new URL(next, request.url));
 }

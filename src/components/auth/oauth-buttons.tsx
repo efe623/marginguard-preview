@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { publicEnv } from "@/lib/env";
 
 function GoogleMark() {
   return (
@@ -23,10 +24,12 @@ export function OAuthButtons() {
     setPending("google");
     setError("");
     const supabase = createClient();
+    const callbackUrl = new URL("/api/auth/callback", publicEnv.NEXT_PUBLIC_APP_URL);
+    callbackUrl.searchParams.set("next", "/dashboard");
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=/dashboard`
+        redirectTo: callbackUrl.toString()
       }
     });
     if (oauthError) {

@@ -13,7 +13,7 @@ import {
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthState = { error?: string };
+export type AuthState = { error?: string; success?: string };
 
 const signInSchema = z.object({
   email: z.email(),
@@ -333,10 +333,11 @@ export async function requestPasswordReset(
   if (!email.success) return { error: "Enter a valid email address." };
 
   const supabase = await createClient();
-  await supabase.auth.resetPasswordForEmail(email.data, {
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback?next=/reset-password`
+  const { error } = await supabase.auth.resetPasswordForEmail(email.data, {
+    redirectTo: `${getServerEnv().NEXT_PUBLIC_APP_URL}/api/auth/callback?next=/reset-password`
   });
-  return {};
+  if (error) return { error: "The recovery email could not be sent. Try again." };
+  return { success: "Check your inbox for a secure password-reset link." };
 }
 
 export async function updatePassword(formData: FormData) {
