@@ -8,7 +8,6 @@ import {
   FileText,
   LayoutDashboard,
   PieChart,
-  Settings,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -21,12 +20,8 @@ const links = [
   { href: "/clients", label: "Clients", icon: Building2 },
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/invoices", label: "Invoices", icon: FileText },
-  { href: "/reports", label: "Reports", icon: PieChart },
-  { href: "/settings", label: "Settings", icon: Settings }
+  { href: "/reports", label: "Reports", icon: PieChart }
 ];
-
-const primaryLinks = links.slice(0, 6);
-const manageLinks = links.slice(6);
 
 export function Sidebar({ user }: { user: { displayName: string; role: string } }) {
   const pathname = usePathname();
@@ -51,7 +46,7 @@ export function Sidebar({ user }: { user: { displayName: string; role: string } 
 
       <nav aria-label="Primary navigation" className="app-nav flex-1 px-3">
         <p className="app-nav-label px-3 pb-2">Workspace</p>
-        {primaryLinks.map(({ href, label, icon: Icon }) => {
+        {links.map(({ href, label, icon: Icon }) => {
           const active =
             pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`));
           return (
@@ -68,17 +63,6 @@ export function Sidebar({ user }: { user: { displayName: string; role: string } 
                 <span className="absolute left-0 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[var(--signal)]" />
               ) : null}
               <Icon size={19} strokeWidth={1.7} />
-              <span>{label}</span>
-            </Link>
-          );
-        })}
-        <p className="app-nav-label mt-7 border-t border-white/10 px-3 pb-2 pt-6">Manage</p>
-        {manageLinks.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
-          return (
-            <Link key={href} href={href} aria-current={active ? "page" : undefined} className={cn("relative flex min-h-11 items-center gap-3 px-3 text-[0.83rem] text-white/52 transition hover:text-white", active && "text-white")}>
-              {active ? <span className="absolute left-0 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[var(--signal)]" /> : null}
-              <Icon size={18} strokeWidth={1.6} />
               <span>{label}</span>
             </Link>
           );

@@ -1,13 +1,13 @@
-import { IBM_Plex_Sans, Sora } from "next/font/google";
+import { Barlow_Condensed, Source_Sans_3 } from "next/font/google";
 
-export const displayFont = Sora({
+export const displayFont = Barlow_Condensed({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
   weight: ["500", "600", "700"]
 });
 
-export const bodyFont = IBM_Plex_Sans({
+export const bodyFont = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",

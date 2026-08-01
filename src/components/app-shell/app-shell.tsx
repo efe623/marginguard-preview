@@ -18,7 +18,12 @@ export async function AppShell({
       <main className="content-shell">
         <header className="app-topbar">
           <span className="app-topbar-label">UnitPulse workspace</span>
-          <div className="app-topbar-actions"><ActivityCenter items={activity} /></div>
+          <div className="app-topbar-actions">
+            <Link href="/settings" className="topbar-icon-button" aria-label="Settings">
+              <Settings size={19} />
+            </Link>
+            <ActivityCenter items={activity} />
+          </div>
         </header>
         <DemoBanner />
         {children}
@@ -27,3 +32,5 @@ export async function AppShell({
     </div>
   );
 }
+import Link from "next/link";
+import { Settings } from "lucide-react";
