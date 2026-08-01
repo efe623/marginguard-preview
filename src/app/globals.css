@@ -90,7 +90,7 @@ a {
 }
 
 .content-shell {
-  margin-left: 268px;
+  margin-left: 244px;
   min-height: 100vh;
   position: relative;
 }
@@ -517,6 +517,172 @@ a:hover > .activity-row { background: var(--row-hover); }
   color: var(--paper);
 }
 
+.theme-switch-expanded {
+  box-shadow: none;
+  display: grid;
+  gap: 0;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 24px;
+  padding: 0;
+}
+
+.theme-switch-expanded button {
+  gap: 9px;
+  height: 48px;
+  width: auto;
+}
+
+.theme-switch-expanded button + button {
+  border-left: 1px solid var(--line);
+}
+
+.theme-switch-expanded button[aria-pressed="true"] {
+  background: var(--sidebar);
+  color: #fffefa;
+}
+
+.app-nav-label {
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 0.59rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.settings-home {
+  border-top: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns: minmax(220px, 0.34fr) minmax(0, 1fr);
+}
+
+.settings-home-aside {
+  align-self: start;
+  padding: 34px 46px 34px 0;
+  position: sticky;
+  top: 102px;
+}
+
+.settings-directory {
+  border-left: 1px solid var(--line);
+}
+
+.settings-directory-label {
+  color: var(--ink-soft);
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.15em;
+  padding: 18px 24px;
+  text-transform: uppercase;
+}
+
+.settings-directory-row {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 24px minmax(0, 1fr) 24px;
+  min-height: 92px;
+  padding: 20px 24px;
+  transition: background 140ms ease, padding 140ms ease;
+}
+
+.settings-directory-row:hover {
+  background: var(--row-hover);
+  padding-left: 30px;
+}
+
+.settings-directory-row h2 {
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.settings-directory-row p {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.settings-directory-arrow {
+  color: var(--ink-soft);
+  opacity: 0.45;
+  transition: color 140ms ease, opacity 140ms ease, transform 140ms ease;
+}
+
+.settings-directory-row:hover .settings-directory-arrow {
+  color: var(--signal);
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+.settings-subnav {
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 24px;
+  margin-top: 28px;
+  overflow-x: auto;
+  padding-bottom: 1px;
+}
+
+.settings-subnav-link {
+  color: var(--ink-soft);
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 12px 0;
+  position: relative;
+}
+
+.settings-subnav-link.is-active {
+  color: var(--ink);
+}
+
+.settings-subnav-link.is-active::after {
+  background: var(--signal);
+  bottom: -2px;
+  content: "";
+  height: 3px;
+  inset-inline: 0;
+  position: absolute;
+}
+
+.connections-ledger {
+  border-bottom: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+}
+
+.connection-row {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  padding: 30px 24px;
+}
+
+.connection-mark {
+  align-items: center;
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+.connection-state {
+  align-items: center;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  gap: 7px;
+}
+
+.connection-message {
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+  grid-column: 2 / -1;
+}
+
 .theme-pulse {
   background: var(--signal);
   border-radius: 999px;
@@ -535,7 +701,7 @@ a:hover > .activity-row { background: var(--row-hover); }
 .settings-route-loader {
   background: color-mix(in srgb, var(--paper) 82%, transparent);
   inset: 0;
-  margin-left: 268px;
+  margin-left: 244px;
   pointer-events: none;
   position: fixed;
   z-index: 65;
@@ -821,6 +987,10 @@ a:hover > .activity-row { background: var(--row-hover); }
     overflow-x: auto;
   }
 
+  .app-nav-label {
+    display: none;
+  }
+
   .app-nav a {
     flex: 1 0 76px;
     flex-direction: column;
@@ -862,6 +1032,35 @@ a:hover > .activity-row { background: var(--row-hover); }
 
   .settings-route-loader {
     margin-left: 0;
+  }
+
+  .settings-home {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-home-aside {
+    border-bottom: 1px solid var(--line);
+    padding: 28px 0;
+    position: static;
+  }
+
+  .settings-directory {
+    border-left: 0;
+  }
+
+  .settings-directory-row:hover {
+    padding-left: 24px;
+  }
+
+  .connection-row {
+    align-items: start;
+    grid-template-columns: 40px minmax(0, 1fr);
+    padding-inline: 12px;
+  }
+
+  .connection-row > :nth-child(3) {
+    grid-column: 2;
+    justify-self: start;
   }
 
   .pulse-panel {

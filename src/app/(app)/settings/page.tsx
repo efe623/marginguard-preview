@@ -1,16 +1,25 @@
-import { Building2, CreditCard, FileText, KeyRound, LifeBuoy, Plug, Sparkles, Trash2, Users } from "lucide-react";
+import {
+  ArrowUpRight,
+  Building2,
+  FileText,
+  KeyRound,
+  LifeBuoy,
+  Plug,
+  Sparkles,
+  Trash2,
+  Users
+} from "lucide-react";
 import { SettingsTransitionLink } from "@/components/settings-transition-link";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { PageHeader } from "@/components/ui/page-header";
-import { Status } from "@/components/ui/status";
 
 const settings = [
   ["Business profile", "Business type, currency, timezone, and default hourly rate.", Building2, "/settings/business"],
   ["Quote templates", "Reusable proposal introductions, terms, and validity periods.", FileText, "/settings/quotes"],
-  ["AI and privacy", "Enable draft-only Gemini tools and control external processing.", Sparkles, "/settings/ai"],
-  ["Members & permissions", "Invite staff, assign projects, and grant financial-send access.", Users, "/settings/members"],
+  ["AI and privacy", "Draft-only Gemini tools and external processing controls.", Sparkles, "/settings/ai"],
+  ["Members & permissions", "Invite staff, assign projects, and control financial access.", Users, "/settings/members"],
   ["Security & sessions", "MFA, recovery codes, trusted devices, and remote sign-out.", KeyRound, "/settings/security"],
-  ["Connections", "Connect Google sign-in and review account integrations.", Plug, "/settings/connections"],
-  ["Stripe", "Connect the owner’s Stripe account for hosted payment links.", CreditCard, "/settings/stripe"],
+  ["Connections", "Connect Google sign-in and Stripe-hosted payment links.", Plug, "/settings/connections"],
   ["Support access", "Create a time-limited, audited support grant.", LifeBuoy, "/settings/support"],
   ["Deletion", "Export data or begin the 30-day deletion window.", Trash2, "/settings/deletion"]
 ] as const;
@@ -21,20 +30,29 @@ export default function SettingsPage() {
       <PageHeader
         eyebrow="Owner controls"
         title="Settings"
-        description="Business, people, integrations, and security boundaries."
+        description="One place for the rules, access, and services behind your workspace."
       />
-      <section className="card mt-8">
-        {settings.map(([title, description, Icon, href]) => (
-          <SettingsTransitionLink key={title} href={href} className="group grid grid-cols-[48px_1fr_auto] items-center gap-5 border-b border-[var(--line)] p-7 last:border-0 hover:bg-[var(--paper-deep)]">
-            <span className="grid size-12 place-items-center border border-[var(--line)]"><Icon size={21} /></span>
-            <div>
-              <h2 className="font-semibold">{title}</h2>
-              <p className="quiet mt-1 text-sm">{description}</p>
-            </div>
-            {title === "Stripe" ? <Status tone="warning">Not connected</Status> : <span aria-hidden>→</span>}
-          </SettingsTransitionLink>
-        ))}
-      </section>
+      <div className="settings-home mt-10">
+        <aside className="settings-home-aside">
+          <p className="eyebrow">Appearance</p>
+          <h2 className="font-display mt-3 text-2xl font-semibold tracking-tight">Choose your workspace light.</h2>
+          <p className="quiet mt-3 text-sm leading-6">Saved on this device and applied before the page loads.</p>
+          <ThemeToggle expanded />
+        </aside>
+        <section className="settings-directory" aria-label="Settings directory">
+          <p className="settings-directory-label">Control / configure</p>
+          {settings.map(([title, description, Icon, href]) => (
+            <SettingsTransitionLink key={title} href={href} className="settings-directory-row group">
+              <Icon size={19} strokeWidth={1.6} />
+              <div>
+                <h2>{title}</h2>
+                <p>{description}</p>
+              </div>
+              <ArrowUpRight size={18} className="settings-directory-arrow" />
+            </SettingsTransitionLink>
+          ))}
+        </section>
+      </div>
     </div>
   );
 }

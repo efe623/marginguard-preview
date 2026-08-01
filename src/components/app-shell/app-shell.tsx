@@ -1,6 +1,5 @@
 import { DemoBanner } from "@/components/demo-banner";
 import { Sidebar } from "@/components/app-shell/sidebar";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { AiAssistant } from "@/components/ai-assistant";
 import { ActivityCenter } from "@/components/activity-center";
 import { getActivityCenterData } from "@/features/operations/queries";
@@ -19,7 +18,7 @@ export async function AppShell({
       <main className="content-shell">
         <header className="app-topbar">
           <span className="app-topbar-label">UnitPulse workspace</span>
-          <div className="app-topbar-actions"><ThemeToggle /><ActivityCenter items={activity} /></div>
+          <div className="app-topbar-actions"><ActivityCenter items={activity} /></div>
         </header>
         <DemoBanner />
         {children}

@@ -7,19 +7,19 @@ import { createOpaqueToken } from "@/lib/security-tokens";
 export async function GET() {
   if (!isSupabaseConfigured) {
     return NextResponse.redirect(
-      new URL("/settings/stripe?preview=connect", getServerEnv().NEXT_PUBLIC_APP_URL)
+      new URL("/settings/connections?preview=connect", getServerEnv().NEXT_PUBLIC_APP_URL)
     );
   }
   const owner = await getOwnerAal2();
   if (!owner) {
     return NextResponse.redirect(
-      new URL("/mfa?next=/settings/stripe", getServerEnv().NEXT_PUBLIC_APP_URL)
+      new URL("/mfa?next=/settings/connections", getServerEnv().NEXT_PUBLIC_APP_URL)
     );
   }
   const env = getServerEnv();
   if (!env.STRIPE_CONNECT_CLIENT_ID) {
     return NextResponse.redirect(
-      new URL("/settings/stripe?error=Stripe%20Connect%20is%20not%20configured", env.NEXT_PUBLIC_APP_URL)
+      new URL("/settings/connections?error=Stripe%20Connect%20is%20not%20configured", env.NEXT_PUBLIC_APP_URL)
     );
   }
 
