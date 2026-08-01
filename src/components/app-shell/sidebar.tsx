@@ -63,7 +63,7 @@ export function Sidebar({ user }: { user: { displayName: string; role: string } 
                 <span className="absolute left-0 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[var(--signal)]" />
               ) : null}
               <Icon size={19} strokeWidth={1.7} />
-              <span>{label}</span>
+              <span className="font-display text-[0.9rem] font-semibold">{label}</span>
             </Link>
           );
         })}
