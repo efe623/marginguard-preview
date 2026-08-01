@@ -7,15 +7,25 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next") ?? "/dashboard";
+  const requestedNext = url.searchParams.get("next") ?? "/dashboard";
+  const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//")
+    ? requestedNext
+    : "/dashboard";
   const invitationToken = url.searchParams.get("invitation");
   if (!isSupabaseConfigured || !code) {
+    console.warn("[auth/callback] missing configuration or authorization code", {
+      configured: isSupabaseConfigured,
+      hasCode: Boolean(code)
+    });
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) return NextResponse.redirect(new URL("/sign-in?error=callback", request.url));
+  if (error) {
+    console.error("[auth/callback] code exchange failed", { message: error.message });
+    return NextResponse.redirect(new URL("/sign-in?error=callback", request.url));
+  }
   if (invitationToken) {
     const {
       data: { user }
@@ -60,5 +70,24 @@ export async function GET(request: Request) {
       })
     ]);
   }
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.redirect(new URL("/sign-in?error=callback", request.url));
+  }
+  const admin = createAdminClient();
+  const { data: membership } = await admin
+    .from("business_memberships")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!membership) {
+    console.info("[auth/callback] authenticated Google user needs onboarding", { userId: user.id });
+    return NextResponse.redirect(new URL("/google-onboarding", request.url));
+  }
+  console.info("[auth/callback] authenticated existing member", { userId: user.id });
   return NextResponse.redirect(new URL(next, request.url));
 }

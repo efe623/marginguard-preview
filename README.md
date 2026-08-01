@@ -1,6 +1,6 @@
-# UnitPulse Preview
+# UnitPulse
 
-This is the public, interactive product prototype for UnitPulse.
+UnitPulse is an invite-only desktop web app for small businesses to stop unpaid extra work. The launch workflow is:
 
 - No login or account creation
 - Sample data only

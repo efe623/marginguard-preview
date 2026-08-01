@@ -14,13 +14,13 @@ export async function GET(request: Request) {
   cookieStore.delete("mg_stripe_connect_state");
   if (!state || !expectedState || state !== expectedState || !code) {
     return NextResponse.redirect(
-      new URL("/settings/stripe?error=Connection%20could%20not%20be%20verified", env.NEXT_PUBLIC_APP_URL)
+      new URL("/settings/connections?error=Connection%20could%20not%20be%20verified", env.NEXT_PUBLIC_APP_URL)
     );
   }
 
   const owner = await getOwnerAal2();
   if (!owner) {
-    return NextResponse.redirect(new URL("/mfa?next=/settings/stripe", env.NEXT_PUBLIC_APP_URL));
+    return NextResponse.redirect(new URL("/mfa?next=/settings/connections", env.NEXT_PUBLIC_APP_URL));
   }
 
   try {
@@ -40,10 +40,10 @@ export async function GET(request: Request) {
       updated_at: new Date().toISOString()
     });
     if (error) throw error;
-    return NextResponse.redirect(new URL("/settings/stripe?connected=1", env.NEXT_PUBLIC_APP_URL));
+    return NextResponse.redirect(new URL("/settings/connections?connected=1", env.NEXT_PUBLIC_APP_URL));
   } catch {
     return NextResponse.redirect(
-      new URL("/settings/stripe?error=Stripe%20connection%20failed", env.NEXT_PUBLIC_APP_URL)
+      new URL("/settings/connections?error=Stripe%20connection%20failed", env.NEXT_PUBLIC_APP_URL)
     );
   }
 }

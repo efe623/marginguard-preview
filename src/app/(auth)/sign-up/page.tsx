@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { OwnerSignUpForm } from "@/components/auth/owner-sign-up-form";
+import { redirect } from "next/navigation";
+import { hasOwnerSetupFlow } from "@/features/auth/owner-setup-flow";
+import { isSupabaseConfigured } from "@/lib/env";
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  if (isSupabaseConfigured && !(await hasOwnerSetupFlow())) redirect("/sign-in");
   return (
     <main className="min-h-screen bg-[var(--background)] px-5 py-8 sm:px-8 sm:py-12">
       <div className="mx-auto grid w-full max-w-6xl overflow-hidden border border-[var(--line)] bg-white shadow-[0_24px_80px_rgba(15,28,24,0.10)] lg:grid-cols-[0.72fr_1fr]">
@@ -12,7 +16,7 @@ export default function SignUpPage() {
               UnitPulse
             </p>
             <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-white/45">
-              First-owner setup
+              Owner setup
             </p>
           </div>
           <div className="my-16">
@@ -21,9 +25,9 @@ export default function SignUpPage() {
               Create the account that controls your workspace.
             </h1>
             <p className="mt-5 max-w-sm text-sm leading-7 text-white/60">
-              Your setup code prevents strangers from opening businesses on
-              this private pilot. After setup, you will enroll an authenticator
-              app for owner security.
+              Use the UnitPulse testing code to create a separate owner
+              workspace. After setup, you will enroll an authenticator app for
+              owner security.
             </p>
           </div>
           <p className="text-xs text-white/35">

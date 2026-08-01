@@ -1,4 +1,5 @@
 import { updatePassword } from "@/features/auth/actions";
+import { LockKeyhole } from "lucide-react";
 
 export default async function ResetPasswordPage({
   searchParams
@@ -7,15 +8,19 @@ export default async function ResetPasswordPage({
 }) {
   const { error } = await searchParams;
   return (
-    <main className="grid min-h-screen place-items-center p-8">
-      <div className="card w-full max-w-lg p-9">
-        <p className="eyebrow">Password reset</p>
-        <h1 className="font-display mt-4 text-5xl font-bold tracking-tight">Create a new password.</h1>
-        <form action={updatePassword} className="mt-8 space-y-5">
-          <label><span className="field-label">New password</span><input className="input" name="password" type="password" minLength={12} required /></label>
-          <label><span className="field-label">Confirm password</span><input className="input" name="confirmation" type="password" minLength={12} required /></label>
-          {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
-          <button className="button button-primary w-full" type="submit">Update password</button>
+    <main className="grid min-h-screen place-items-center px-5 py-10 sm:px-8">
+      <div className="card w-full max-w-lg rounded-[28px] p-7 shadow-[0_24px_80px_rgba(15,28,24,0.10)] sm:p-10">
+        <div className="grid size-12 place-items-center rounded-2xl bg-[var(--paper-deep)] text-[var(--signal)]">
+          <LockKeyhole size={22} />
+        </div>
+        <p className="eyebrow mt-6">Password reset</p>
+        <h1 className="font-display mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Create a new password.</h1>
+        <p className="quiet mt-4 leading-7">Use at least 12 characters. A longer, unique phrase is easiest to remember and safer.</p>
+        <form action={updatePassword} className="mt-8 grid gap-6">
+          <label><span className="field-label">New password</span><input className="auth-input" name="password" type="password" autoComplete="new-password" minLength={12} required /></label>
+          <label><span className="field-label">Confirm password</span><input className="auth-input" name="confirmation" type="password" autoComplete="new-password" minLength={12} required /></label>
+          {error ? <p className="rounded-xl border border-[var(--danger)] bg-[#fff5f3] p-3 text-sm text-[var(--danger)]">{error}</p> : null}
+          <button className="auth-button auth-button-primary mt-2 w-full" type="submit">Update password</button>
         </form>
       </div>
     </main>

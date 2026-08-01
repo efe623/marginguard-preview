@@ -27,7 +27,7 @@ export function ProjectTabs({
           key={key}
           href={href}
           aria-current={active === key ? "page" : undefined}
-          className={`relative shrink-0 px-5 py-4 text-sm font-semibold ${
+          className={`font-display relative shrink-0 px-5 py-4 text-sm font-semibold ${
             active === key ? "text-[var(--ink)]" : "text-[var(--ink-soft)]"
           }`}
         >

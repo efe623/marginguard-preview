@@ -1,6 +1,9 @@
 import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { MfaPanel } from "@/components/auth/mfa-panel";
+import { redirect } from "next/navigation";
+import { isSupabaseConfigured } from "@/lib/env";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function MfaPage({
   searchParams
@@ -8,6 +11,11 @@ export default async function MfaPage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
+  if (isSupabaseConfigured) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect("/sign-in");
+  }
   return (
     <main className="grid min-h-screen place-items-center p-8">
       <div>

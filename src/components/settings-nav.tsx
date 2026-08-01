@@ -1,28 +1,37 @@
-import Link from "next/link";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { SettingsTransitionLink } from "@/components/settings-transition-link";
+
+const items = [
+  ["business", "Business", "/settings/business"],
+  ["quotes", "Quote templates", "/settings/quotes"],
+  ["ai", "AI", "/settings/ai"],
+  ["members", "Members", "/settings/members"],
+  ["security", "Security", "/settings/security"],
+  ["connections", "Connections", "/settings/connections"],
+  ["support", "Support access", "/settings/support"],
+  ["deletion", "Deletion", "/settings/deletion"]
+] as const;
 
 export function SettingsNav({ active }: { active: string }) {
-  const items = [
-    ["business", "Business", "/settings/business"],
-    ["quotes", "Quote templates", "/settings/quotes"],
-    ["ai", "AI", "/settings/ai"],
-    ["members", "Members", "/settings/members"],
-    ["security", "Security", "/settings/security"],
-    ["stripe", "Stripe", "/settings/stripe"],
-    ["support", "Support access", "/settings/support"],
-    ["deletion", "Deletion", "/settings/deletion"]
-  ];
+  const router = useRouter();
+
+  useEffect(() => {
+    items.forEach(([, , href]) => router.prefetch(href));
+  }, [router]);
 
   return (
-    <nav className="flex overflow-x-auto border-b border-[var(--line)]">
+    <nav className="settings-subnav" aria-label="Settings sections">
       {items.map(([key, label, href]) => (
-        <Link
+        <SettingsTransitionLink
           key={key}
           href={href}
-          className={`relative shrink-0 px-5 py-4 text-sm font-semibold ${active === key ? "" : "quiet"}`}
+          className={active === key ? "settings-subnav-link is-active" : "settings-subnav-link"}
         >
           {label}
-          {active === key ? <span className="absolute inset-x-0 bottom-[-1px] h-[3px] bg-[var(--signal)]" /> : null}
-        </Link>
+        </SettingsTransitionLink>
       ))}
     </nav>
   );
