@@ -94,10 +94,16 @@ a {
   width: 20px;
 }
 
-.sidebar-icon-frame-invoice {
-  height: 25px;
-  margin-inline: -2px;
-  width: 25px;
+.sidebar-icon-frame-emphasized {
+  height: 31px;
+  margin-inline: -5.5px;
+  width: 31px;
+}
+
+.sidebar-icon-frame-calendar {
+  height: 26px;
+  margin-inline: -3px;
+  width: 26px;
 }
 
 .sidebar-page-icon {
@@ -123,15 +129,16 @@ a {
   color: var(--sidebar-icon);
   display: flex;
   font-family: var(--font-body), system-ui, sans-serif;
-  font-size: 7px;
-  font-weight: 800;
-  height: 8px;
+  font-size: 10.5px;
+  font-weight: 900;
+  height: 10px;
   justify-content: center;
-  left: 5px;
+  left: 7px;
+  letter-spacing: -0.06em;
   line-height: 1;
   position: absolute;
-  top: 9px;
-  width: 10px;
+  top: 12px;
+  width: 12px;
 }
 
 .app-nav a[aria-current="page"] .sidebar-calendar-day,
