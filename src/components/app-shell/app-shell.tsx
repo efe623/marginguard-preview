@@ -6,15 +6,29 @@ import { getActivityCenterData } from "@/features/operations/queries";
 
 export async function AppShell({
   children,
+  timezone,
   user
 }: {
   children: React.ReactNode;
+  timezone: string;
   user: { displayName: string; role: string };
 }) {
   const activity = await getActivityCenterData();
+  let calendarDay: string;
+  try {
+    calendarDay = new Intl.DateTimeFormat("en", {
+      day: "numeric",
+      timeZone: timezone
+    }).format(new Date());
+  } catch {
+    calendarDay = new Intl.DateTimeFormat("en", {
+      day: "numeric",
+      timeZone: "Asia/Dubai"
+    }).format(new Date());
+  }
   return (
     <div className="app-frame">
-      <Sidebar user={user} />
+      <Sidebar calendarDay={calendarDay} user={user} />
       <main className="content-shell">
         <header className="app-topbar">
           <span className="app-topbar-label">UnitPulse workspace</span>

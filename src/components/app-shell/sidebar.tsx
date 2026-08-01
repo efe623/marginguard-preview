@@ -16,7 +16,13 @@ const links = [
   { href: "/reports", label: "Reports", icon: "/icons/sidebar/reports.png" }
 ];
 
-export function Sidebar({ user }: { user: { displayName: string; role: string } }) {
+export function Sidebar({
+  calendarDay,
+  user
+}: {
+  calendarDay: string;
+  user: { displayName: string; role: string };
+}) {
   const pathname = usePathname();
   const initial = user.displayName.trim().charAt(0).toUpperCase() || "U";
 
@@ -57,9 +63,19 @@ export function Sidebar({ user }: { user: { displayName: string; role: string } 
               ) : null}
               <span
                 aria-hidden
-                className="sidebar-page-icon"
-                style={{ "--sidebar-icon-image": `url(${icon})` } as CSSProperties}
-              />
+                className={cn(
+                  "sidebar-icon-frame",
+                  label === "Invoices" && "sidebar-icon-frame-invoice"
+                )}
+              >
+                <span
+                  className="sidebar-page-icon"
+                  style={{ "--sidebar-icon-image": `url(${icon})` } as CSSProperties}
+                />
+                {label === "Calendar" ? (
+                  <span className="sidebar-calendar-day">{calendarDay}</span>
+                ) : null}
+              </span>
               <span className="font-display text-[0.9rem] font-semibold">{label}</span>
             </Link>
           );

@@ -22,6 +22,7 @@ export default async function ProtectedLayout({
     }
     return (
       <AppShell
+        timezone={context.profile?.timezone || context.business?.timezone || "Asia/Dubai"}
         user={{
           displayName: context.profile?.display_name || "UnitPulse member",
           role: context.membership.role
@@ -31,5 +32,5 @@ export default async function ProtectedLayout({
       </AppShell>
     );
   }
-  return <AppShell user={{ displayName: "Preview owner", role: "owner" }}>{children}</AppShell>;
+  return <AppShell timezone="Asia/Dubai" user={{ displayName: "Preview owner", role: "owner" }}>{children}</AppShell>;
 }

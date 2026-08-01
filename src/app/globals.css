@@ -86,23 +86,57 @@ a {
   font-family: var(--font-display), system-ui, sans-serif;
 }
 
-.sidebar-page-icon {
-  background: var(--sidebar-icon);
+.sidebar-icon-frame {
   display: inline-block;
   flex: 0 0 auto;
   height: 20px;
+  position: relative;
+  width: 20px;
+}
+
+.sidebar-icon-frame-invoice {
+  height: 25px;
+  margin-inline: -2px;
+  width: 25px;
+}
+
+.sidebar-page-icon {
+  background: var(--sidebar-icon);
+  inset: 0;
   mask-image: var(--sidebar-icon-image);
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: contain;
+  position: absolute;
   transition: background-color 160ms ease, transform 160ms ease;
-  width: 20px;
 }
 
 .app-nav a[aria-current="page"] .sidebar-page-icon,
 .app-nav a:hover .sidebar-page-icon {
   background: var(--signal);
   transform: scale(1.05);
+}
+
+.sidebar-calendar-day {
+  align-items: center;
+  background: var(--sidebar);
+  color: var(--sidebar-icon);
+  display: flex;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 7px;
+  font-weight: 800;
+  height: 8px;
+  justify-content: center;
+  left: 5px;
+  line-height: 1;
+  position: absolute;
+  top: 9px;
+  width: 10px;
+}
+
+.app-nav a[aria-current="page"] .sidebar-calendar-day,
+.app-nav a:hover .sidebar-calendar-day {
+  color: var(--signal);
 }
 
 .app-frame {
