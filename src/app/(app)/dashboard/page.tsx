@@ -1,10 +1,11 @@
-import { ArrowRight, CircleCheck, FileWarning, Hourglass, Plus, Receipt, ShieldCheck } from "lucide-react";
+import { ArrowRight, CircleCheck, FileWarning, Hourglass, Receipt, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { IconClients, IconPlus } from "@/components/icons";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 import { listProjectViews } from "@/features/core/queries";
-import { getDashboardData } from "@/features/operations/queries";
+import { getActivityCenterData, getDashboardData } from "@/features/operations/queries";
 import { formatMoney } from "@/lib/money";
 import type { ProjectStatus } from "@/types/domain";
 
@@ -27,11 +28,26 @@ type Action = {
   icon: "invoice" | "task" | "block";
 };
 
+type WeekItem = { key: string; label: string; sub: string; href: string; tone: "danger" | "warning" | "neutral"; kind: "task" | "invoice" };
+
+const DAY = 86400000;
+
+function greeting(hour: number) {
+  if (hour < 5) return "Working late";
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 export default async function DashboardPage() {
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
-  const urgentCutoff = now.getTime() + 3 * 86400000;
-  const [data, projectViews] = await Promise.all([getDashboardData(), listProjectViews().catch(() => [])]);
+  const urgentCutoff = now.getTime() + 3 * DAY;
+  const [data, projectViews, activity] = await Promise.all([
+    getDashboardData(),
+    listProjectViews().catch(() => []),
+    getActivityCenterData().catch(() => [])
+  ]);
   const currency = data.business?.currency ?? "AED";
   const projects = data.projects as Array<{ id: string; name: string; quote_amount_minor: number; status: string }>;
   const expenses = data.expenses as Array<{ amount_minor: number; currency: string }>;
@@ -45,11 +61,16 @@ export default async function DashboardPage() {
     .filter((order) => ["approved", "awaiting_deposit", "authorized", "balance_due", "paid"].includes(order.status))
     .reduce((sum, order) => sum + Number(order.amount_minor), 0);
   const costs = expenses.filter((expense) => expense.currency === currency).reduce((sum, expense) => sum + Number(expense.amount_minor), 0);
-  const receivables = invoices.filter((invoice) => !["paid", "void"].includes(invoice.status)).reduce((sum, invoice) => sum + Number(invoice.amount_minor), 0);
-  const overdue = invoices.filter((invoice) => !["paid", "void"].includes(invoice.status) && invoice.due_date < today);
+  const live = invoices.filter((invoice) => invoice.status !== "void");
+  const paidTotal = live.filter((invoice) => invoice.status === "paid").reduce((sum, invoice) => sum + Number(invoice.amount_minor), 0);
+  const overdue = live.filter((invoice) => invoice.status !== "paid" && invoice.due_date < today);
+  const overdueTotal = overdue.reduce((sum, invoice) => sum + Number(invoice.amount_minor), 0);
+  const openTotal = live.filter((invoice) => invoice.status !== "paid" && invoice.due_date >= today).reduce((sum, invoice) => sum + Number(invoice.amount_minor), 0);
+  const invoicedTotal = paidTotal + openTotal + overdueTotal;
   const urgentTasks = tasks.filter((task) => task.status !== "done" && task.due_at && new Date(task.due_at).getTime() < urgentCutoff);
   const blocked = projectViews.filter((project) => project.status === "awaiting_deposit" || project.status === "awaiting_approval");
-  const profit = quoteValue + extras - costs;
+  const contract = quoteValue + extras;
+  const profit = contract - costs;
 
   const actions: Action[] = [
     ...blocked.map((project): Action => ({
@@ -72,143 +93,298 @@ export default async function DashboardPage() {
       badge: "Overdue",
       icon: "invoice"
     })),
-    ...urgentTasks.slice(0, 4).map((task): Action => ({
-      key: `task-${task.id}`,
-      title: task.title,
-      detail: projectNames.get(task.project_id) ?? "Project",
-      meta: task.due_at ? `Due ${new Date(task.due_at).toLocaleDateString("en", { weekday: "short", day: "numeric", month: "short" })}` : "",
-      href: `/projects/${task.project_id}/work`,
-      tone: task.due_at && new Date(task.due_at).getTime() < now.getTime() ? "danger" : "warning",
-      badge: task.due_at && new Date(task.due_at).getTime() < now.getTime() ? "Past due" : "Due soon",
-      icon: "task"
-    }))
+    ...urgentTasks.slice(0, 4).map((task): Action => {
+      const late = task.due_at ? new Date(task.due_at).getTime() < now.getTime() : false;
+      return {
+        key: `task-${task.id}`,
+        title: task.title,
+        detail: projectNames.get(task.project_id) ?? "Project",
+        meta: task.due_at ? `Due ${new Date(task.due_at).toLocaleDateString("en", { weekday: "short", day: "numeric", month: "short" })}` : "",
+        href: `/projects/${task.project_id}/work`,
+        tone: late ? "danger" : "warning",
+        badge: late ? "Past due" : "Due soon",
+        icon: "task"
+      };
+    })
   ].slice(0, 8);
 
-  const dateLabel = new Intl.DateTimeFormat("en", { weekday: "long", day: "numeric", month: "long" }).format(now);
+  // Seven-day agenda: today plus the next six days.
+  const week = Array.from({ length: 7 }, (_, index) => {
+    const day = new Date(now.getTime() + index * DAY);
+    const key = day.toISOString().slice(0, 10);
+    const items: WeekItem[] = [
+      ...tasks
+        .filter((task) => task.status !== "done" && task.due_at && task.due_at.slice(0, 10) === key)
+        .map((task): WeekItem => ({ key: `t-${task.id}`, label: task.title, sub: projectNames.get(task.project_id) ?? "Project", href: `/projects/${task.project_id}/work`, tone: "neutral", kind: "task" })),
+      ...live
+        .filter((invoice) => invoice.status !== "paid" && invoice.due_date === key)
+        .map((invoice): WeekItem => ({ key: `i-${invoice.id}`, label: `${invoice.invoice_number} due`, sub: formatMoney(Number(invoice.amount_minor), currency), href: `/projects/${invoice.project_id}/money`, tone: "warning", kind: "invoice" }))
+    ];
+    return {
+      key,
+      weekday: index === 0 ? "Today" : new Intl.DateTimeFormat("en", { weekday: "short" }).format(day),
+      date: new Intl.DateTimeFormat("en", { day: "numeric", month: "short" }).format(day),
+      items
+    };
+  });
+  const weekCount = week.reduce((sum, day) => sum + day.items.length, 0);
+
+  const invoicedByProject = new Map<string, { total: number; paid: number }>();
+  for (const invoice of live) {
+    const entry = invoicedByProject.get(invoice.project_id) ?? { total: 0, paid: 0 };
+    entry.total += Number(invoice.amount_minor);
+    if (invoice.status === "paid") entry.paid += Number(invoice.amount_minor);
+    invoicedByProject.set(invoice.project_id, entry);
+  }
+
+  const pct = (part: number, whole: number) => (whole > 0 ? Math.max(0, Math.min(100, (part / whole) * 100)) : 0);
   const icons = { invoice: Receipt, task: FileWarning, block: Hourglass } as const;
+  const dateLabel = new Intl.DateTimeFormat("en", { weekday: "long", day: "numeric", month: "long" }).format(now);
+
+  const brief = actions.length
+    ? `${actions.length} ${actions.length === 1 ? "thing needs" : "things need"} a decision${overdue.length ? `, and ${formatMoney(overdueTotal, currency)} is overdue` : ""}.`
+    : "Nothing is blocking money or work right now.";
 
   return (
-    <div className="page">
-      <PageHeader title="Today" description={dateLabel} />
+    <div className="page board">
+      <PageHeader
+        title={greeting(now.getHours())}
+        description={`${dateLabel}. ${brief}`}
+        actions={
+          <>
+            <ButtonLink href="/clients/new" variant="outline"><IconClients size={18} /> New client</ButtonLink>
+            <ButtonLink href="/projects/new"><IconPlus size={18} /> New project</ButtonLink>
+          </>
+        }
+      />
 
       {projectViews.length === 0 && projects.length === 0 ? (
         <section className="panel">
           <div className="empty" data-art="projects">
             <p className="empty-title">No projects yet</p>
             <p className="empty-text">Create a project to record its scope, price and approvals. Anything that needs a decision will show up here.</p>
-            <ButtonLink href="/projects/new"><Plus size={16} /> New project</ButtonLink>
+            <ButtonLink href="/projects/new"><IconPlus size={18} /> New project</ButtonLink>
           </div>
         </section>
       ) : (
-        <div className="split">
-          <div className="stack">
-            <section className="panel" aria-labelledby="needs-you">
-              <div className="panel-head">
-                <div>
-                  <h2 id="needs-you" className="panel-title">Needs you</h2>
-                  <p className="panel-sub">Ordered by what is blocking money or work.</p>
-                </div>
-                <Status tone={actions.length ? "warning" : "success"}>{actions.length ? `${actions.length} to decide` : "All clear"}</Status>
+        <>
+          <section className="panel" aria-labelledby="week-title">
+            <div className="panel-head">
+              <div>
+                <h2 id="week-title" className="panel-title">The next seven days</h2>
+                <p className="panel-sub">{weekCount ? `${weekCount} ${weekCount === 1 ? "item" : "items"} due: tasks and invoices.` : "Nothing is due this week."}</p>
               </div>
-              {actions.length ? (
-                <div className="rows">
-                  {actions.map((action) => {
-                    const Icon = icons[action.icon];
+              <ButtonLink href="/calendar" variant="outline" className="button-sm">Open calendar</ButtonLink>
+            </div>
+            <div className="week">
+              {week.map((day, index) => (
+                <div key={day.key} className={`week-day${index === 0 ? " is-today" : ""}`}>
+                  <p className="week-head"><strong>{day.weekday}</strong><span>{day.date}</span></p>
+                  {day.items.length ? (
+                    <ul className="week-list">
+                      {day.items.map((item) => (
+                        <li key={item.key}>
+                          <Link href={item.href} className={`week-item week-${item.kind}`}>
+                            <span className="week-item-title">{item.label}</span>
+                            <span className="week-item-sub">{item.sub}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="week-none">Free</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="split">
+            <div className="stack">
+              <section className="panel" aria-labelledby="needs-you">
+                <div className="panel-head">
+                  <div>
+                    <h2 id="needs-you" className="panel-title">Needs you</h2>
+                    <p className="panel-sub">Ordered by what is blocking money or work.</p>
+                  </div>
+                  <Status tone={actions.length ? "warning" : "success"}>{actions.length ? `${actions.length} to decide` : "All clear"}</Status>
+                </div>
+                {actions.length ? (
+                  <div className="rows">
+                    {actions.map((action) => {
+                      const Icon = icons[action.icon];
+                      return (
+                        <Link href={action.href} key={action.key} className="row">
+                          <span className="row-lead"><Icon size={18} aria-hidden /></span>
+                          <div className="row-main">
+                            <p className="row-title">{action.title}</p>
+                            <p className="row-sub">{action.detail}{action.meta ? ` · ${action.meta}` : ""}</p>
+                          </div>
+                          <div className="row-end">
+                            <Status tone={action.tone}>{action.badge}</Status>
+                            <ArrowRight size={16} className="faint" aria-hidden />
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="empty" data-art="clear">
+                    <CircleCheck size={22} className="signal" aria-hidden />
+                    <p className="empty-title">Nothing is waiting on you</p>
+                    <p className="empty-text">No overdue invoices, unconfirmed deposits or tasks due in the next three days.</p>
+                  </div>
+                )}
+              </section>
+
+              <section aria-labelledby="active-projects">
+                <div className="section-head">
+                  <div>
+                    <h2 id="active-projects" className="panel-title">Projects</h2>
+                    <p className="panel-sub">{projectViews.length} in your workspace</p>
+                  </div>
+                  <ButtonLink href="/projects" variant="outline" className="button-sm">View all</ButtonLink>
+                </div>
+                <div className="tiles">
+                  {projectViews.slice(0, 6).map((project) => {
+                    const status = statusLabels[project.status];
+                    const full = project.revisionUsed >= project.revisionLimit;
+                    const billed = invoicedByProject.get(project.id);
+                    const total = project.quoteMinor + project.approvedExtrasMinor;
                     return (
-                      <Link href={action.href} key={action.key} className="row">
-                        <span className="row-lead"><Icon size={18} aria-hidden /></span>
-                        <div className="row-main">
-                          <p className="row-title">{action.title}</p>
-                          <p className="row-sub">{action.detail}{action.meta ? ` · ${action.meta}` : ""}</p>
+                      <Link href={`/projects/${project.id}`} key={project.id} className="tile">
+                        <div className="tile-top">
+                          <span className="nav-dot" aria-hidden>{project.name.trim().charAt(0).toUpperCase()}</span>
+                          <Status tone={status.tone}>{status.label}</Status>
                         </div>
-                        <div className="row-end">
-                          <Status tone={action.tone}>{action.badge}</Status>
-                          <ArrowRight size={16} className="faint" aria-hidden />
+                        <p className="tile-title">{project.name}</p>
+                        <p className="row-sub">{project.clientName} · {project.code}</p>
+                        <div className="tile-bar" role="img" aria-label={billed ? `${formatMoney(billed.paid, project.currency)} paid of ${formatMoney(billed.total, project.currency)} invoiced` : "Nothing invoiced yet"}>
+                          <i style={{ width: `${pct(billed?.paid ?? 0, total)}%` }} />
+                          <b style={{ width: `${pct((billed?.total ?? 0) - (billed?.paid ?? 0), total)}%` }} />
+                        </div>
+                        <p className="tile-note">{billed ? `${formatMoney(billed.paid, project.currency)} paid of ${formatMoney(total, project.currency)}` : `Nothing invoiced yet of ${formatMoney(total, project.currency)}`}</p>
+                        <div className="tile-foot">
+                          <span className={`pips ${full ? "is-full" : ""}`} role="img" aria-label={`${project.revisionUsed} of ${project.revisionLimit} revisions used`}>
+                            {Array.from({ length: project.revisionLimit }).map((_, index) => (
+                              <i key={index} className={index < project.revisionUsed ? "on" : ""} />
+                            ))}
+                          </span>
+                          <span className="meta">{project.revisionUsed}/{project.revisionLimit} revisions</span>
                         </div>
                       </Link>
                     );
                   })}
                 </div>
-              ) : (
-                <div className="empty" data-art="clear">
-                  <CircleCheck size={22} className="signal" aria-hidden />
-                  <p className="empty-title">Nothing is waiting on you</p>
-                  <p className="empty-text">No overdue invoices, unconfirmed deposits or tasks due in the next three days.</p>
-                </div>
-              )}
-            </section>
+              </section>
+            </div>
 
-            <section className="panel" aria-labelledby="active-projects">
-              <div className="panel-head">
+            <aside className="stack" aria-label="Money">
+              <section className="panel">
+                <div className="panel-head">
+                  <div>
+                    <h2 className="panel-title">Where the money stands</h2>
+                    <p className="panel-sub">Before unrecorded labour costs</p>
+                  </div>
+                </div>
+                <div className="panel-body stack-sm">
+                  <div>
+                    <p className="bar-title">Contract value <strong>{formatMoney(contract, currency)}</strong></p>
+                    <div className="bar" role="img" aria-label={`Costs ${formatMoney(costs, currency)}, expected profit ${formatMoney(profit, currency)}`}>
+                      <i className="seg-cost" style={{ width: `${pct(costs, contract)}%` }} />
+                      <i className="seg-profit" style={{ width: `${pct(profit, contract)}%` }} />
+                    </div>
+                    <ul className="legend">
+                      <li><span className="swatch seg-cost" />Recorded costs<b>{formatMoney(costs, currency)}</b></li>
+                      <li><span className="swatch seg-profit" />Expected profit<b>{formatMoney(profit, currency)}</b></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="bar-title">Invoiced <strong>{formatMoney(invoicedTotal, currency)}</strong></p>
+                    <div className="bar" role="img" aria-label={`Paid ${formatMoney(paidTotal, currency)}, open ${formatMoney(openTotal, currency)}, overdue ${formatMoney(overdueTotal, currency)}`}>
+                      <i className="seg-paid" style={{ width: `${pct(paidTotal, invoicedTotal)}%` }} />
+                      <i className="seg-open" style={{ width: `${pct(openTotal, invoicedTotal)}%` }} />
+                      <i className="seg-late" style={{ width: `${pct(overdueTotal, invoicedTotal)}%` }} />
+                    </div>
+                    <ul className="legend">
+                      <li><span className="swatch seg-paid" />Paid<b>{formatMoney(paidTotal, currency)}</b></li>
+                      <li><span className="swatch seg-open" />Open<b>{formatMoney(openTotal, currency)}</b></li>
+                      <li><span className="swatch seg-late" />Overdue<b>{formatMoney(overdueTotal, currency)}</b></li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              <section className="panel">
+                <div className="panel-head">
+                  <div>
+                    <h2 className="panel-title">Invoices to chase</h2>
+                    <p className="panel-sub">Unpaid, soonest due first</p>
+                  </div>
+                  <ButtonLink href="/invoices" variant="outline" className="button-sm">All invoices</ButtonLink>
+                </div>
+                {live.filter((invoice) => invoice.status !== "paid").length ? (
+                  <div className="rows">
+                    {live
+                      .filter((invoice) => invoice.status !== "paid")
+                      .sort((a, b) => a.due_date.localeCompare(b.due_date))
+                      .slice(0, 4)
+                      .map((invoice) => {
+                        const late = invoice.due_date < today;
+                        const days = Math.round((new Date(invoice.due_date).getTime() - new Date(today).getTime()) / DAY);
+                        return (
+                          <Link key={invoice.id} href={`/projects/${invoice.project_id}/money`} className="row">
+                            <div className="row-main">
+                              <p className="row-title">{invoice.invoice_number}</p>
+                              <p className="row-sub">{projectNames.get(invoice.project_id) ?? "Project"}</p>
+                            </div>
+                            <div className="row-end">
+                              <span className="stack-end">
+                                <span className="num font-semibold">{formatMoney(Number(invoice.amount_minor), currency)}</span>
+                                <Status tone={late ? "danger" : "neutral"}>{late ? `${Math.abs(days)}d late` : days === 0 ? "Due today" : `in ${days}d`}</Status>
+                              </span>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                  </div>
+                ) : (
+                  <div className="empty empty-sm">
+                    <p className="empty-title">Everything is paid</p>
+                    <p className="empty-text">No unpaid invoices right now.</p>
+                  </div>
+                )}
+              </section>
+
+              {activity.length ? (
+                <section className="panel">
+                  <div className="panel-head">
+                    <h2 className="panel-title">Recent activity</h2>
+                    <ButtonLink href="/notifications" variant="outline" className="button-sm">View all</ButtonLink>
+                  </div>
+                  <div className="rows">
+                    {activity.slice(0, 4).map((item) => (
+                      <Link key={item.id} href={item.href ?? "/notifications"} className="row">
+                        <div className="row-main">
+                          <p className="row-title">{item.title}</p>
+                          <p className="row-sub">{new Date(item.createdAt).toLocaleDateString("en", { day: "numeric", month: "short" })} · {item.body}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+
+              <section className="rule">
+                <ShieldCheck size={20} className="signal" aria-hidden />
                 <div>
-                  <h2 id="active-projects" className="panel-title">Projects</h2>
-                  <p className="panel-sub">{projectViews.length} in your workspace</p>
-                </div>
-                <ButtonLink href="/projects" variant="outline" className="button-sm">View all</ButtonLink>
-              </div>
-              <div className="rows">
-                {projectViews.slice(0, 6).map((project) => {
-                  const status = statusLabels[project.status];
-                  const full = project.revisionUsed >= project.revisionLimit;
-                  return (
-                    <Link href={`/projects/${project.id}`} key={project.id} className="row">
-                      <div className="row-main">
-                        <p className="row-title">{project.name}</p>
-                        <p className="row-sub">{project.clientName} · {project.code}</p>
-                      </div>
-                      <div className="row-end">
-                        <span className={`pips ${full ? "is-full" : ""}`} role="img" aria-label={`${project.revisionUsed} of ${project.revisionLimit} revisions used`}>
-                          {Array.from({ length: project.revisionLimit }).map((_, index) => (
-                            <i key={index} className={index < project.revisionUsed ? "on" : ""} />
-                          ))}
-                        </span>
-                        <Status tone={status.tone}>{status.label}</Status>
-                        <span className="num w-28 font-semibold">{formatMoney(project.quoteMinor + project.approvedExtrasMinor, project.currency)}</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          </div>
-
-          <aside className="stack" aria-label="Money position">
-            <section className="panel">
-              <div className="panel-head">
-                <div>
-                  <h2 className="panel-title">Money position</h2>
-                  <p className="panel-sub">Before unrecorded labour costs</p>
-                </div>
-              </div>
-              <div className="panel-body">
-                <dl className="ledger">
-                  <div className="ledger-line"><dt className="ledger-label">Quoted work</dt><dd className="ledger-value">{formatMoney(quoteValue, currency)}</dd></div>
-                  <div className="ledger-line"><dt className="ledger-label">Approved extras</dt><dd className="ledger-value">{formatMoney(extras, currency)}</dd></div>
-                  <div className="ledger-line"><dt className="ledger-label">Recorded costs</dt><dd className="ledger-value">&minus; {formatMoney(costs, currency)}</dd></div>
-                  <div className="ledger-line is-total"><dt className="ledger-label">Expected profit</dt><dd className="ledger-value">{formatMoney(profit, currency)}</dd></div>
-                </dl>
-                <dl className="ledger" style={{ marginTop: 22 }}>
-                  <div className="ledger-line"><dt className="ledger-label">Open invoices</dt><dd className="ledger-value">{formatMoney(receivables, currency)}</dd></div>
-                  <div className="ledger-line"><dt className="ledger-label">Overdue</dt><dd className="ledger-value" style={overdue.length ? { color: "var(--danger)" } : undefined}>{overdue.length} {overdue.length === 1 ? "invoice" : "invoices"}</dd></div>
-                </dl>
-              </div>
-            </section>
-
-            <section className="panel">
-              <div className="panel-body">
-                <div className="cluster" style={{ marginBottom: 10 }}>
-                  <ShieldCheck size={18} className="signal" aria-hidden />
                   <h2 className="panel-title">No extra work starts without proof</h2>
+                  <p className="meta">Scope saved, change approved, payment confirmed. In that order, every time.</p>
                 </div>
-                <ol className="meta" style={{ display: "grid", gap: 8, paddingLeft: 18 }}>
-                  <li><strong style={{ color: "var(--ink)" }}>Scope saved.</strong> Deliverables, exclusions, price and revisions.</li>
-                  <li><strong style={{ color: "var(--ink)" }}>Change approved.</strong> Client decision and exact version recorded.</li>
-                  <li><strong style={{ color: "var(--ink)" }}>Payment confirmed.</strong> Stripe webhook, or an audited manual confirmation.</li>
-                </ol>
-              </div>
-            </section>
-          </aside>
-        </div>
+              </section>
+            </aside>
+          </div>
+        </>
       )}
     </div>
   );
