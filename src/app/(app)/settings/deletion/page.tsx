@@ -8,7 +8,7 @@ export default function DeletionPage() {
   return (
     <div className="page page-narrow">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Data and deletion" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "Data and deletion" }]}
         title="Data and deletion"
         description="Export business data or begin a recoverable 30-day deletion window."
       />

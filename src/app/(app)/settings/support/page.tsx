@@ -10,7 +10,7 @@ export default async function SupportAccessPage() {
   return (
     <div className="page page-narrow">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Support access" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "Support access" }]}
         title="Support access"
         description="UnitPulse support cannot open business data unless you create a narrow, time-limited grant."
       />

@@ -43,7 +43,7 @@ export default async function MembersPage({
   return (
     <div className="page">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Members" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "Members" }]}
         title="Members"
         description={`Staff see only the projects explicitly assigned to them. ${members.length} of 5 seats used.`}
       />

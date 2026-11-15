@@ -9,7 +9,7 @@ export default async function QuoteTemplatesPage() {
   return (
     <div className="page">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Quote templates" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "Quote templates" }]}
         title="Quote templates"
         description="Reuse safer introductions, terms, exclusions, and validity periods."
       />

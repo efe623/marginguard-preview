@@ -24,7 +24,7 @@ const pages: Item[] = [
   { id: "p-reports", group: "Go to", label: "Reports", href: "/reports", icon: <IconReports size={17} /> },
   { id: "p-calendar", group: "Go to", label: "Calendar", href: "/calendar", icon: <IconCalendar size={17} /> },
   { id: "p-activity", group: "Go to", label: "Activity", href: "/notifications", icon: <IconBell size={17} /> },
-  { id: "p-settings", group: "Go to", label: "Settings", href: "/settings", icon: <IconSettings size={17} /> },
+  { id: "p-settings", group: "Go to", label: "Settings", href: "/settings/business", icon: <IconSettings size={17} /> },
   { id: "a-project", group: "Create", label: "New project", href: "/projects/new", icon: <IconPlus size={17} /> },
   { id: "a-client", group: "Create", label: "New client", href: "/clients/new", icon: <IconPlus size={17} /> }
 ];

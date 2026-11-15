@@ -57,8 +57,8 @@ const groups: Array<{ label: string; items: NavItem[] }> = [
 ];
 
 const settingsSections: NavItem[] = [
-  { href: "/settings/appearance", label: "Appearance", icon: IconAppearance },
   { href: "/settings/business", label: "Business profile", icon: IconBusiness },
+  { href: "/settings/appearance", label: "Appearance", icon: IconAppearance },
   { href: "/settings/quotes", label: "Quote templates", icon: IconDocument },
   { href: "/settings/members", label: "Members", icon: IconClients },
   { href: "/settings/security", label: "Security", icon: IconShield },
@@ -167,7 +167,7 @@ export function Shell({
   }, [drawerOpen]);
 
   return (
-    <div className="shell" data-collapsed={collapsed ? "true" : "false"} data-drawer={drawerOpen ? "open" : "closed"} data-new={pathname === "/dashboard" ? "hide" : "show"}>
+    <div className="shell" data-collapsed={collapsed ? "true" : "false"} data-drawer={drawerOpen ? "open" : "closed"} data-new={pathname === "/dashboard" ? "hide" : "show"} data-settings={inSettings ? "true" : "false"}>
       <aside className="sidebar" aria-label="Sidebar">
         <div className="sidebar-top">
           <Link href="/dashboard" className="brand" aria-label="UnitPulse, go to Today">
@@ -184,26 +184,22 @@ export function Shell({
 
         {inSettings ? (
           <>
-            <Link href="/dashboard" className="nav-item nav-back" title="Back to app">
+            <Link href="/dashboard" className="nav-item nav-back swap-in" title="Back to app" style={{ "--i": 0 } as React.CSSProperties}>
               <IconArrowLeft size={20} />
               <span className="nav-text">Back to app</span>
             </Link>
             <nav className="sidebar-nav" aria-label="Settings">
               <div className="nav-group">
-                <p className="nav-group-label">Settings</p>
-                <Link href="/settings" className="nav-item" title="Overview" aria-current={pathname === "/settings" ? "page" : undefined}>
-                  <IconSettings size={20} />
-                  <span className="nav-text">Overview</span>
-                </Link>
-                {settingsSections.map(({ href, label, icon: Icon }) => (
-                  <Link key={href} href={href} className="nav-item" title={label} aria-current={isActive(pathname, href) ? "page" : undefined}>
+                <p className="nav-group-label swap-in" style={{ "--i": 1 } as React.CSSProperties}>Settings</p>
+                {settingsSections.map(({ href, label, icon: Icon }, index) => (
+                  <Link key={href} href={href} className="nav-item swap-in" title={label} style={{ "--i": index + 2 } as React.CSSProperties} aria-current={isActive(pathname, href) ? "page" : undefined}>
                     <Icon size={20} />
                     <span className="nav-text">{label}</span>
                   </Link>
                 ))}
               </div>
             </nav>
-            <div className="sidebar-foot">
+            <div className="sidebar-foot swap-in" style={{ "--i": settingsSections.length + 2 } as React.CSSProperties}>
               <SignOutButton variant="nav" />
             </div>
           </>
@@ -229,7 +225,7 @@ export function Shell({
                   <p className="account-name">{user.displayName}</p>
                   <p className="account-role">{user.role}</p>
                 </div>
-                <Link href="/settings" className="icon-button" aria-label="Settings" title="Settings">
+                <Link href="/settings/business" className="icon-button" aria-label="Settings" title="Settings">
                   <IconSettings size={20} />
                 </Link>
               </div>

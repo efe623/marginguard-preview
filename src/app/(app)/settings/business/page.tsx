@@ -14,7 +14,7 @@ export default async function BusinessSettingsPage() {
   return (
     <div className="page page-narrow">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Business profile" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "Business profile" }]}
         title="Business profile"
         description="Defaults used for project pricing, reports, invoices, and AI estimates."
       />

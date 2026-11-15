@@ -35,7 +35,7 @@ export default async function ConnectionsSettingsPage({
   return (
     <div className="page page-narrow">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Connections" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "Connections" }]}
         title="Connections"
         description="Sign-in and payment services connected to this workspace."
       />

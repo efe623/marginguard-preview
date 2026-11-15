@@ -8,7 +8,7 @@ export default function AppearancePage() {
   return (
     <div className="page page-narrow">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Appearance" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "Appearance" }]}
         title="Appearance"
         description="How UnitPulse looks and moves on this device. Saved here and applied before each page loads."
       />

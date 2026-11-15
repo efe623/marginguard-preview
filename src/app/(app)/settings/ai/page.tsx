@@ -12,7 +12,7 @@ export default async function AiSettingsPage() {
   return (
     <div className="page page-narrow">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "AI and privacy" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "AI and privacy" }]}
         title="AI and privacy"
         description="Gemini is draft-only and can be disabled for the whole business or individual projects."
       />

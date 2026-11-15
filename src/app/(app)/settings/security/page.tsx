@@ -13,7 +13,7 @@ export default function SecurityPage() {
   return (
     <div className="page page-narrow">
       <PageHeader
-        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Security" }]}
+        crumbs={[{ label: "Settings", href: "/settings/business" }, { label: "Security" }]}
         title="Security"
         description="MFA, recovery, trusted devices, and high-risk action controls."
       />
