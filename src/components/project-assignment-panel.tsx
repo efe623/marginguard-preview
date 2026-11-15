@@ -83,7 +83,7 @@ export async function ProjectAssignmentPanel({ projectId }: { projectId: string 
           ))}
         </div>
       ) : (
-        <div className="empty">
+        <div className="empty" data-art="clients">
           <p className="empty-title">No staff to assign</p>
           <p className="empty-text">Invite staff before assigning this project.</p>
         </div>

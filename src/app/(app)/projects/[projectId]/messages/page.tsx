@@ -87,7 +87,7 @@ export default async function ProjectMessagesPage({
                 ))}
               </div>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="messages">
                 <p className="empty-title">No messages saved</p>
                 <p className="empty-text">Paste the original client message below to keep it as evidence.</p>
               </div>
@@ -153,7 +153,7 @@ export default async function ProjectMessagesPage({
                 ))}
               </div>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="messages">
                 <p className="empty-title">No updates yet</p>
                 <p className="empty-text">Publish an update below to keep the team, and optionally the client, informed.</p>
               </div>

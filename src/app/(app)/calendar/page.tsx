@@ -83,7 +83,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
                 ); })}
               </div>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="calendar">
                 <CalendarDays size={22} aria-hidden className="text-[var(--ink-3)]" />
                 <p className="empty-title">No upcoming dates</p>
                 <p className="empty-text">Due dates for invoices, tasks and projects will show up here.</p>

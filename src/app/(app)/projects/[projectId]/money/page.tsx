@@ -130,7 +130,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
               </table>
             </div>
           ) : (
-            <div className="empty">
+            <div className="empty" data-art="money">
               <p className="empty-title">No invoices yet</p>
               <p className="empty-text">Create the first invoice below when work is ready to bill.</p>
             </div>
@@ -186,7 +186,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
               </table>
             </div>
           ) : (
-            <div className="empty">
+            <div className="empty" data-art="money">
               <p className="empty-title">No expenses recorded</p>
               <p className="empty-text">Record materials, subcontractors and travel so profit stays accurate.</p>
             </div>
@@ -250,7 +250,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
               ))}
             </div>
           ) : (
-            <div className="empty">
+            <div className="empty" data-art="money">
               <p className="empty-title">No quotes yet</p>
               <p className="empty-text">Draft a quote below to start the agreed price.</p>
             </div>

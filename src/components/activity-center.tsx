@@ -3,14 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, ChevronRight, History, X } from "lucide-react";
+import { ChevronRight, History } from "lucide-react";
+import { IconBell, IconClose } from "@/components/icons";
 import type { ActivityItem } from "@/features/operations/queries";
 
 function ActivityRow({ item, compact = false }: { item: ActivityItem; compact?: boolean }) {
   const content = (
     <div className={`activity-row ${compact ? "activity-row-compact" : ""}`}>
       <span className={`activity-icon activity-icon-${item.kind}`}>
-        {item.kind === "alert" ? <Bell size={16} /> : <History size={16} />}
+        {item.kind === "alert" ? <IconBell size={17} /> : <History size={16} />}
       </span>
       <div className="min-w-0">
         <div className="flex items-center gap-2">
@@ -57,14 +58,14 @@ export function ActivityCenter({ items }: { items: ActivityItem[] }) {
   return (
     <div className="activity-center" ref={rootRef}>
       <button className="icon-button" aria-current={pathname === "/notifications" ? "page" : undefined} type="button" aria-label={`Activity center${unread ? `, ${unread} unread` : ""}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-        <Bell size={18} />
+        <IconBell size={20} />
         {unread ? <span className="topbar-alert-count">{Math.min(unread, 9)}</span> : null}
       </button>
       {open ? (
         <section className="activity-popover" aria-label="Recent activity">
           <header className="activity-popover-header">
             <div><h2 className="panel-title">Recent activity</h2><p className="meta">Alerts and audit events</p></div>
-            <button type="button" aria-label="Close activity" onClick={() => setOpen(false)}><X size={18} /></button>
+            <button type="button" aria-label="Close activity" onClick={() => setOpen(false)}><IconClose size={18} /></button>
           </header>
           <div className="activity-popover-list">
             {items.slice(0, 6).map((item) => <ActivityRow key={item.id} item={item} compact />)}

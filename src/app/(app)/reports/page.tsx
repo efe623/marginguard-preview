@@ -85,7 +85,7 @@ export default async function ReportsPage() {
               </table>
             </div>
           ) : (
-            <div className="empty">
+            <div className="empty" data-art="money">
               <p className="empty-title">No projects to report on</p>
               <p className="empty-text">Profitability appears here once a project has a quote and some tracked work.</p>
             </div>
@@ -112,7 +112,7 @@ export default async function ReportsPage() {
               </table>
             </div>
           ) : (
-            <div className="empty">
+            <div className="empty" data-art="money">
               <p className="empty-title">No clients yet</p>
               <p className="empty-text">Add a client and a project to see which relationships pay best.</p>
             </div>

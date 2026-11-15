@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { IconMoon, IconSun } from "@/components/icons";
 import { useSyncExternalStore } from "react";
 
 type Theme = "light" | "dark";
@@ -28,11 +28,11 @@ export function ThemeToggle() {
 
   return (
     <div className="theme-switch" role="group" aria-label="Color theme">
-      <button type="button" aria-pressed={theme === "light"} onClick={() => chooseTheme("light")}>
-        <Sun size={16} /> Light
+      <button type="button" title="Light theme" aria-pressed={theme === "light"} onClick={() => chooseTheme("light")}>
+        <IconSun size={17} /> <span>Light</span>
       </button>
-      <button type="button" aria-pressed={theme === "dark"} onClick={() => chooseTheme("dark")}>
-        <Moon size={16} /> Dark
+      <button type="button" title="Dark theme" aria-pressed={theme === "dark"} onClick={() => chooseTheme("dark")}>
+        <IconMoon size={17} /> <span>Dark</span>
       </button>
     </div>
   );

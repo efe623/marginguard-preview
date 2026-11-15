@@ -1,18 +1,7 @@
 "use client";
 
-import {
-  ArrowRight,
-  Bell,
-  CalendarDays,
-  ChartPie,
-  FolderKanban,
-  LayoutDashboard,
-  Plus,
-  Receipt,
-  Search,
-  Settings,
-  Users
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { IconBell, IconCalendar, IconClients, IconInvoices, IconPlus, IconProjects, IconReports, IconSearch, IconSettings, IconToday } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
@@ -28,16 +17,16 @@ type Item = {
 };
 
 const pages: Item[] = [
-  { id: "p-today", group: "Go to", label: "Today", href: "/dashboard", icon: <LayoutDashboard size={17} /> },
-  { id: "p-projects", group: "Go to", label: "Projects", href: "/projects", icon: <FolderKanban size={17} /> },
-  { id: "p-clients", group: "Go to", label: "Clients", href: "/clients", icon: <Users size={17} /> },
-  { id: "p-invoices", group: "Go to", label: "Invoices", href: "/invoices", icon: <Receipt size={17} /> },
-  { id: "p-reports", group: "Go to", label: "Reports", href: "/reports", icon: <ChartPie size={17} /> },
-  { id: "p-calendar", group: "Go to", label: "Calendar", href: "/calendar", icon: <CalendarDays size={17} /> },
-  { id: "p-activity", group: "Go to", label: "Activity", href: "/notifications", icon: <Bell size={17} /> },
-  { id: "p-settings", group: "Go to", label: "Settings", href: "/settings", icon: <Settings size={17} /> },
-  { id: "a-project", group: "Create", label: "New project", href: "/projects/new", icon: <Plus size={17} /> },
-  { id: "a-client", group: "Create", label: "New client", href: "/clients/new", icon: <Plus size={17} /> }
+  { id: "p-today", group: "Go to", label: "Today", href: "/dashboard", icon: <IconToday size={17} /> },
+  { id: "p-projects", group: "Go to", label: "Projects", href: "/projects", icon: <IconProjects size={17} /> },
+  { id: "p-clients", group: "Go to", label: "Clients", href: "/clients", icon: <IconClients size={17} /> },
+  { id: "p-invoices", group: "Go to", label: "Invoices", href: "/invoices", icon: <IconInvoices size={17} /> },
+  { id: "p-reports", group: "Go to", label: "Reports", href: "/reports", icon: <IconReports size={17} /> },
+  { id: "p-calendar", group: "Go to", label: "Calendar", href: "/calendar", icon: <IconCalendar size={17} /> },
+  { id: "p-activity", group: "Go to", label: "Activity", href: "/notifications", icon: <IconBell size={17} /> },
+  { id: "p-settings", group: "Go to", label: "Settings", href: "/settings", icon: <IconSettings size={17} /> },
+  { id: "a-project", group: "Create", label: "New project", href: "/projects/new", icon: <IconPlus size={17} /> },
+  { id: "a-client", group: "Create", label: "New client", href: "/clients/new", icon: <IconPlus size={17} /> }
 ];
 
 export function CommandPalette({
@@ -65,7 +54,7 @@ export function CommandPalette({
         label: project.name,
         hint: project.detail,
         href: `/projects/${project.id}`,
-        icon: <FolderKanban size={17} />
+        icon: <IconProjects size={17} />
       })),
       ...clients.map((client) => ({
         id: `cli-${client.id}`,
@@ -73,7 +62,7 @@ export function CommandPalette({
         label: client.name,
         hint: client.detail,
         href: `/clients/${client.id}`,
-        icon: <Users size={17} />
+        icon: <IconClients size={17} />
       }))
     ];
     const needle = query.trim().toLowerCase();
@@ -123,7 +112,7 @@ export function CommandPalette({
     >
       <div className="palette" role="dialog" aria-modal="true" aria-label="Search and jump" onKeyDown={onKeyDown}>
         <div className="palette-field">
-          <Search size={18} aria-hidden />
+          <IconSearch size={19} aria-hidden />
           <input
             ref={inputRef}
             className="palette-input"

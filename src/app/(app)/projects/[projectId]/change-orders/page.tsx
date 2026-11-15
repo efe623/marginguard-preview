@@ -72,7 +72,7 @@ export default async function ChangeOrdersPage({
             ))}
           </div>
         ) : (
-          <div className="empty">
+          <div className="empty" data-art="tasks">
             <p className="empty-title">No change orders yet</p>
             <p className="empty-text">When the client asks for work outside the scope, price it here and send it for approval.</p>
             <ButtonLink href={`/projects/${project.id}/change-orders/new`}>New order</ButtonLink>

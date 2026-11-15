@@ -40,7 +40,7 @@ export default async function InvoicesPage() {
             </table>
           </div>
         ) : (
-          <div className="empty">
+          <div className="empty" data-art="money">
             <Receipt size={22} aria-hidden className="text-[var(--ink-3)]" />
             <p className="empty-title">No invoices yet</p>
             <p className="empty-text">Raise an invoice from a project&apos;s Money tab and it will be tracked here.</p>

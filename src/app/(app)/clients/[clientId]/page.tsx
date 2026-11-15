@@ -80,7 +80,7 @@ export default async function ClientPage({
                 ))}
               </div>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="clients">
                 <p className="empty-title">No projects yet</p>
                 <p className="empty-text">Start a project to send this client a quote.</p>
                 <ButtonLink href="/projects/new">New project</ButtonLink>
@@ -133,7 +133,7 @@ export default async function ClientPage({
               ))}
             </div>
           ) : (
-            <div className="empty">
+            <div className="empty" data-art="clients">
               <p className="empty-title">No change orders yet</p>
               <p className="empty-text">Approved scope changes will appear here with their payment status.</p>
             </div>
@@ -166,7 +166,7 @@ export default async function ClientPage({
               ))}
             </div>
           ) : (
-            <div className="empty">
+            <div className="empty" data-art="clients">
               <p className="empty-title">No invoices yet</p>
               <p className="empty-text">Invoices raised for this client will be listed here.</p>
             </div>

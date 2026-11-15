@@ -63,7 +63,7 @@ export default async function ProjectScopePage({
                 ))}
               </ol>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="tasks">
                 <p className="empty-title">No deliverables yet</p>
                 <p className="empty-text">List what the client is paying for so extra work can be spotted.</p>
                 <ButtonLink href={`/projects/${project.id}/scope/edit`}>Edit scope</ButtonLink>
@@ -102,7 +102,7 @@ export default async function ProjectScopePage({
                 ))}
               </ol>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="tasks">
                 <p className="empty-title">No exclusions recorded</p>
                 <p className="empty-text">Naming what is out of scope up front prevents disputes later.</p>
                 <ButtonLink href={`/projects/${project.id}/scope/edit`} variant="outline">Add exclusions</ButtonLink>

@@ -1,5 +1,5 @@
 import { DemoBanner } from "@/components/demo-banner";
-import { TopBar } from "@/components/app-shell/top-bar";
+import { Shell } from "@/components/app-shell/shell";
 import { AiAssistant } from "@/components/ai-assistant";
 import { listClientViews, listProjectViews } from "@/features/core/queries";
 import { getActivityCenterData } from "@/features/operations/queries";
@@ -19,18 +19,15 @@ export async function AppShell({
   ]);
 
   return (
-    <div className="app-frame">
-      <TopBar
-        user={user}
-        activity={activity}
-        projects={projects.map((project) => ({ id: project.id, name: project.name, detail: project.clientName }))}
-        clients={clients.map((client) => ({ id: client.id, name: client.name }))}
-      />
-      <DemoBanner />
-      <main className="content-shell">
-        {children}
-        <AiAssistant />
-      </main>
-    </div>
+    <Shell
+      user={user}
+      activity={activity}
+      projects={projects.map((project) => ({ id: project.id, name: project.name, detail: project.clientName }))}
+      clients={clients.map((client) => ({ id: client.id, name: client.name }))}
+      banner={<DemoBanner />}
+    >
+      {children}
+      <AiAssistant />
+    </Shell>
   );
 }

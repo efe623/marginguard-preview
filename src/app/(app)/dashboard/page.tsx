@@ -93,7 +93,7 @@ export default async function DashboardPage() {
 
       {projectViews.length === 0 && projects.length === 0 ? (
         <section className="panel">
-          <div className="empty">
+          <div className="empty" data-art="projects">
             <p className="empty-title">No projects yet</p>
             <p className="empty-text">Create a project to record its scope, price and approvals. Anything that needs a decision will show up here.</p>
             <ButtonLink href="/projects/new"><Plus size={16} /> New project</ButtonLink>
@@ -130,7 +130,7 @@ export default async function DashboardPage() {
                   })}
                 </div>
               ) : (
-                <div className="empty">
+                <div className="empty" data-art="clear">
                   <CircleCheck size={22} className="signal" aria-hidden />
                   <p className="empty-title">Nothing is waiting on you</p>
                   <p className="empty-text">No overdue invoices, unconfirmed deposits or tasks due in the next three days.</p>

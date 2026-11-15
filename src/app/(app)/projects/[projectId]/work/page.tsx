@@ -102,7 +102,7 @@ export default async function ProjectWorkPage({
                 })}
               </div>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="tasks">
                 <p className="empty-title">No tasks yet</p>
                 <p className="empty-text">Add the first deliverable below so deadlines stay visible.</p>
               </div>
@@ -172,7 +172,7 @@ export default async function ProjectWorkPage({
                 </table>
               </div>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="tasks">
                 <p className="empty-title">No time logged</p>
                 <p className="empty-text">Log minutes below to see effort against this job.</p>
               </div>

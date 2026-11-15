@@ -80,7 +80,7 @@ export default async function ProjectFilesPage({
               })}
             </div>
           ) : (
-            <div className="empty">
+            <div className="empty" data-art="files">
               <p className="empty-title">No project files yet</p>
               <p className="empty-text">Choose a file purpose and use Upload file to add the contract, quote or receipts.</p>
             </div>

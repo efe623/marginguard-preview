@@ -82,7 +82,7 @@ export default async function ChangeRequestsPage({
             })}
           </div>
         ) : (
-          <div className="empty">
+          <div className="empty" data-art="tasks">
             <p className="empty-title">No change requests yet</p>
             <p className="empty-text">Log the first thing the client asks for outside the agreed scope.</p>
             <ButtonLink href={`/projects/${project.id}/requests/new`}>New request</ButtonLink>

@@ -96,7 +96,7 @@ export default async function ProjectsPage({
 
       <section className="panel" aria-label="Project list">
         {shown.length === 0 ? (
-          <div className="empty">
+          <div className="empty" data-art="projects">
             <p className="empty-title">{all.length === 0 ? "No projects yet" : "No projects match this filter"}</p>
             <p className="empty-text">
               {all.length === 0 ? "Create a project to record its scope, price and approvals." : "Try a different filter to see the rest of your work."}

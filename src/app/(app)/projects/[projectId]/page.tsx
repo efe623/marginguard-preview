@@ -78,7 +78,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ projec
             </section>
           ) : (
             <section className="panel">
-              <div className="empty">
+              <div className="empty" data-art="clear">
                 <CircleCheck size={22} className="signal" aria-hidden />
                 <p className="empty-title">Nothing is waiting on you</p>
                 <p className="empty-text">No approved change is waiting on a deposit. Create a change order when the client asks for something outside the scope.</p>
@@ -116,7 +116,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ projec
                 })}
               </div>
             ) : (
-              <div className="empty">
+              <div className="empty" data-art="tasks">
                 <p className="empty-title">No change orders yet</p>
                 <p className="empty-text">When the client asks for extra work, price it here so it is approved and paid before it starts.</p>
                 <ButtonLink href={`/projects/${project.id}/change-orders/new`}>New change order</ButtonLink>

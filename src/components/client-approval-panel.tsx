@@ -87,7 +87,7 @@ export function ClientApprovalPanel({
   if (stage === "done") {
     return (
       <div className="panel mx-auto max-w-xl">
-        <div className="empty">
+        <div className="empty" data-art="clear">
           <span className="text-[var(--success)]"><Check size={28} aria-hidden /></span>
           <h1 className="page-title">Decision recorded</h1>
           <p className="empty-text">{message}</p>

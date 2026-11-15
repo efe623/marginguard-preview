@@ -41,7 +41,7 @@ export default async function ClientsPage() {
             })}
           </div>
         ) : (
-          <div className="empty">
+          <div className="empty" data-art="clients">
             <Users size={22} aria-hidden className="text-[var(--ink-3)]" />
             <p className="empty-title">No clients yet</p>
             <p className="empty-text">Add the first client so you can attach projects, quotes and invoices to them.</p>

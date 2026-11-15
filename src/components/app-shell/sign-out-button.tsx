@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LogOut } from "lucide-react";
+import { IconLogout } from "@/components/icons";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/env";
 
@@ -21,7 +21,7 @@ export function SignOutButton({ variant = "icon" }: { variant?: "icon" | "menu" 
   if (variant === "menu") {
     return (
       <button type="button" role="menuitem" className="menu-item" onClick={handleSignOut} disabled={pending}>
-        <LogOut size={17} /> {pending ? "Signing out" : "Sign out"}
+        <IconLogout size={18} /> {pending ? "Signing out" : "Sign out"}
       </button>
     );
   }
@@ -35,7 +35,7 @@ export function SignOutButton({ variant = "icon" }: { variant?: "icon" | "menu" 
       title="Sign out"
       className="icon-button"
     >
-      <LogOut size={17} />
+      <IconLogout size={18} />
     </button>
   );
 }
