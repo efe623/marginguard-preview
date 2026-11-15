@@ -1,15 +1,5 @@
-import {
-  Building2,
-  ChevronRight,
-  FileText,
-  KeyRound,
-  LifeBuoy,
-  Plug,
-  Sparkles,
-  Trash2,
-  Users,
-  type LucideIcon
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { IconArchive, IconBusiness, IconClients, IconDocument, IconLink, IconPen, IconShield, IconSupport } from "@/components/icons";
 import { SettingsTransitionLink } from "@/components/settings-transition-link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { PageHeader } from "@/components/ui/page-header";
@@ -19,7 +9,7 @@ import { getBusinessSettingsData } from "@/features/operations/queries";
 type Item = {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: typeof IconBusiness;
   href: string;
   state?: React.ReactNode;
 };
@@ -36,20 +26,20 @@ export default async function SettingsPage() {
         {
           title: "Business profile",
           description: "Business type, currency, timezone, and default hourly rate.",
-          icon: Building2,
+          icon: IconBusiness,
           href: "/settings/business",
           state: business ? <span className="meta">{business.currency} · {business.timezone}</span> : undefined
         },
         {
           title: "Quote templates",
           description: "Reusable proposal introductions, terms, and validity periods.",
-          icon: FileText,
+          icon: IconDocument,
           href: "/settings/quotes"
         },
         {
           title: "Members and permissions",
           description: "Invite staff, assign projects, and control financial access.",
-          icon: Users,
+          icon: IconClients,
           href: "/settings/members"
         }
       ]
@@ -61,26 +51,26 @@ export default async function SettingsPage() {
         {
           title: "Security and sessions",
           description: "MFA, recovery codes, trusted devices, and remote sign-out.",
-          icon: KeyRound,
+          icon: IconShield,
           href: "/settings/security"
         },
         {
           title: "Connections",
           description: "Connect Google sign-in and Stripe-hosted payment links.",
-          icon: Plug,
+          icon: IconLink,
           href: "/settings/connections"
         },
         {
           title: "AI and privacy",
           description: "Draft-only Gemini tools and external processing controls.",
-          icon: Sparkles,
+          icon: IconPen,
           href: "/settings/ai",
           state: business ? <Status tone={aiEnabled ? "success" : "neutral"}>{aiEnabled ? "On" : "Off"}</Status> : undefined
         },
         {
           title: "Support access",
           description: "Create a time-limited, audited support grant.",
-          icon: LifeBuoy,
+          icon: IconSupport,
           href: "/settings/support"
         }
       ]
@@ -92,7 +82,7 @@ export default async function SettingsPage() {
         {
           title: "Data and deletion",
           description: "Export data or begin the 30-day deletion window.",
-          icon: Trash2,
+          icon: IconArchive,
           href: "/settings/deletion"
         }
       ]
@@ -117,7 +107,7 @@ export default async function SettingsPage() {
             <div className="rows">
               {group.items.map(({ title, description, icon: Icon, href, state }) => (
                 <SettingsTransitionLink key={href} href={href} className="row">
-                  <span className="row-lead"><Icon size={18} aria-hidden="true" /></span>
+                  <span className="row-lead"><Icon size={20} /></span>
                   <div className="row-main">
                     <p className="row-title">{title}</p>
                     <p className="row-sub">{description}</p>

@@ -223,7 +223,7 @@ input, select, textarea { caret-color: var(--signal); accent-color: var(--signal
   transition: background-color 140ms ease;
 }
 .rows > .row:first-child, .panel-head + .rows > .row:first-child { border-top: 0; }
-.row-lead { align-items: center; background: var(--surface-2); border-radius: 11px; color: var(--ink-soft); display: flex; height: 36px; justify-content: center; width: 36px; }
+.row-lead { align-items: center; background: var(--surface-2); border-radius: 11px; color: var(--signal); display: flex; height: 36px; justify-content: center; width: 36px; }
 .row:not(:has(.row-lead)) { grid-template-columns: minmax(0, 1fr) auto; }
 .row-main { min-width: 0; }
 .row-title { font-size: 1rem; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }

@@ -197,6 +197,77 @@ export function IconSparkle(props: IconProps) {
   );
 }
 
+export function IconBusiness(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M4.5 9.5 6 4.5h12l1.5 5" />
+      <path d="M4.5 9.5h15v10a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1z" {...tone} />
+      <path d="M4.5 9.5h15v10a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1z" />
+      <path d="M10 20.5v-5h4v5" />
+    </Base>
+  );
+}
+
+export function IconDocument(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M6.5 3.5h7l4 4v13h-11z" {...tone} />
+      <path d="M6.5 3.5h7l4 4v13h-11z" />
+      <path d="M13.5 3.5v4h4M9.5 12.5h5M9.5 16h5" />
+    </Base>
+  );
+}
+
+export function IconShield(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M12 3.5 19 6v5.6c0 4.2-2.8 7.4-7 8.9-4.2-1.5-7-4.7-7-8.9V6z" {...tone} />
+      <path d="M12 3.5 19 6v5.6c0 4.2-2.8 7.4-7 8.9-4.2-1.5-7-4.7-7-8.9V6z" />
+      <path d="m9 12 2.2 2.2L15.2 10" />
+    </Base>
+  );
+}
+
+export function IconLink(props: IconProps) {
+  return (
+    <Base {...props}>
+      <rect x="3" y="9" width="10" height="6" rx="3" {...tone} />
+      <rect x="3" y="9" width="10" height="6" rx="3" />
+      <rect x="11" y="9" width="10" height="6" rx="3" />
+    </Base>
+  );
+}
+
+export function IconPen(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="m4 20 1-4.5L16.5 4a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8L8.5 19z" {...tone} />
+      <path d="m4 20 1-4.5L16.5 4a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8L8.5 19z" />
+      <path d="m14.5 6 3.5 3.5" />
+    </Base>
+  );
+}
+
+export function IconSupport(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5h-.5a2 2 0 0 1-2-2z" {...tone} />
+      <path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5h-.5a2 2 0 0 1-2-2z" />
+      <path d="M8.5 10.5h7" />
+    </Base>
+  );
+}
+
+export function IconArchive(props: IconProps) {
+  return (
+    <Base {...props}>
+      <rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5" {...tone} />
+      <rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5" />
+      <path d="M5 9v9a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 18V9M10 13h4" />
+    </Base>
+  );
+}
+
 /** Brand mark: a rounded tile with a pulse line. */
 export function BrandMark({ size = 30 }: { size?: number }) {
   return (
