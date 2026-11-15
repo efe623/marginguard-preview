@@ -180,6 +180,14 @@ export function IconLogout(props: IconProps) {
   );
 }
 
+export function IconArrowLeft(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M19 12H5M11 6l-6 6 6 6" />
+    </Base>
+  );
+}
+
 export function IconChevron(props: IconProps) {
   return (
     <Base {...props}>

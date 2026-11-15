@@ -672,3 +672,14 @@ html[data-density="compact"] .page-head { margin-bottom: 20px; }
 html[data-density="compact"] .stack { gap: 16px; }
 html[data-text="large"] { font-size: 112.5%; }
 html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+
+
+/* Settings mode: the sidebar swaps to the settings list */
+.nav-item.nav-back { color: var(--ink); }
+button.nav-item { background: transparent; border: 0; cursor: pointer; font: inherit; font-size: 0.9375rem; font-weight: 600; text-align: left; width: 100%; }
+.nav-signout:hover { color: var(--danger); }
+.nav-signout:hover > svg { color: var(--danger); }
+.page-narrow .page-head + .mt-6 { margin-top: 0; }
+@media (min-width: 1024px) {
+  .shell[data-collapsed="true"] button.nav-item { padding: 0; width: 48px; }
+}

@@ -8,7 +8,16 @@ import { CommandPalette, type PaletteEntity } from "@/components/app-shell/comma
 import { SignOutButton } from "@/components/app-shell/sign-out-button";
 import {
   BrandMark,
+  IconAppearance,
+  IconArchive,
+  IconBusiness,
+  IconDocument,
+  IconLink,
+  IconPen,
+  IconShield,
+  IconSupport,
   IconCalendar,
+  IconArrowLeft,
   IconChevron,
   IconClients,
   IconClose,
@@ -45,6 +54,18 @@ const groups: Array<{ label: string; items: NavItem[] }> = [
     label: "Plan",
     items: [{ href: "/calendar", label: "Calendar", icon: IconCalendar }]
   }
+];
+
+const settingsSections: NavItem[] = [
+  { href: "/settings/appearance", label: "Appearance", icon: IconAppearance },
+  { href: "/settings/business", label: "Business profile", icon: IconBusiness },
+  { href: "/settings/quotes", label: "Quote templates", icon: IconDocument },
+  { href: "/settings/members", label: "Members", icon: IconClients },
+  { href: "/settings/security", label: "Security", icon: IconShield },
+  { href: "/settings/connections", label: "Connections", icon: IconLink },
+  { href: "/settings/ai", label: "AI and privacy", icon: IconPen },
+  { href: "/settings/support", label: "Support access", icon: IconSupport },
+  { href: "/settings/deletion", label: "Data and deletion", icon: IconArchive }
 ];
 
 const dock: NavItem[] = [
@@ -122,6 +143,7 @@ export function Shell({
   const drawerOpen = drawerPath === pathname;
   const newOpen = newPath === pathname;
   const newRef = useDismiss(newOpen, () => setNewPath(null));
+  const inSettings = pathname === "/settings" || pathname.startsWith("/settings/");
   const initial = user.displayName.trim().charAt(0).toUpperCase() || "U";
 
   useEffect(() => {
@@ -160,33 +182,60 @@ export function Shell({
           </button>
         </div>
 
-        <nav className="sidebar-nav" aria-label="Primary">
-          {groups.map((group) => (
-            <div className="nav-group" key={group.label}>
-              {group.items.map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={href} className="nav-item" title={label} aria-current={isActive(pathname, href) ? "page" : undefined}>
-                  <Icon size={20} />
-                  <span className="nav-text">{label}</span>
+        {inSettings ? (
+          <>
+            <Link href="/dashboard" className="nav-item nav-back" title="Back to app">
+              <IconArrowLeft size={20} />
+              <span className="nav-text">Back to app</span>
+            </Link>
+            <nav className="sidebar-nav" aria-label="Settings">
+              <div className="nav-group">
+                <p className="nav-group-label">Settings</p>
+                <Link href="/settings" className="nav-item" title="Overview" aria-current={pathname === "/settings" ? "page" : undefined}>
+                  <IconSettings size={20} />
+                  <span className="nav-text">Overview</span>
                 </Link>
+                {settingsSections.map(({ href, label, icon: Icon }) => (
+                  <Link key={href} href={href} className="nav-item" title={label} aria-current={isActive(pathname, href) ? "page" : undefined}>
+                    <Icon size={20} />
+                    <span className="nav-text">{label}</span>
+                  </Link>
+                ))}
+              </div>
+            </nav>
+            <div className="sidebar-foot">
+              <SignOutButton variant="nav" />
+            </div>
+          </>
+        ) : (
+          <>
+            <nav className="sidebar-nav" aria-label="Primary">
+              {groups.map((group) => (
+                <div className="nav-group" key={group.label}>
+                  {group.items.map(({ href, label, icon: Icon }) => (
+                    <Link key={href} href={href} className="nav-item" title={label} aria-current={isActive(pathname, href) ? "page" : undefined}>
+                      <Icon size={20} />
+                      <span className="nav-text">{label}</span>
+                    </Link>
+                  ))}
+                </div>
               ))}
-            </div>
-          ))}
-        </nav>
+            </nav>
 
-        <div className="sidebar-foot">
-          <Link href="/settings" className="nav-item" title="Settings" aria-current={isActive(pathname, "/settings") ? "page" : undefined}>
-            <IconSettings size={20} />
-            <span className="nav-text">Settings</span>
-          </Link>
-          <div className="account">
-            <span className="avatar" aria-hidden>{initial}</span>
-            <div className="account-text">
-              <p className="account-name">{user.displayName}</p>
-              <p className="account-role">{user.role}</p>
+            <div className="sidebar-foot">
+              <div className="account">
+                <span className="avatar" aria-hidden>{initial}</span>
+                <div className="account-text">
+                  <p className="account-name">{user.displayName}</p>
+                  <p className="account-role">{user.role}</p>
+                </div>
+                <Link href="/settings" className="icon-button" aria-label="Settings" title="Settings">
+                  <IconSettings size={20} />
+                </Link>
+              </div>
             </div>
-            <SignOutButton />
-          </div>
-        </div>
+          </>
+        )}
       </aside>
 
       <button type="button" className="scrim" aria-label="Close menu" tabIndex={-1} onClick={() => setDrawerPath(null)} />
