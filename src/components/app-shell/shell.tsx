@@ -8,7 +8,6 @@ import { CommandPalette, type PaletteEntity } from "@/components/app-shell/comma
 import { SignOutButton } from "@/components/app-shell/sign-out-button";
 import {
   BrandMark,
-  IconBell,
   IconCalendar,
   IconChevron,
   IconClients,
@@ -45,10 +44,7 @@ const groups: Array<{ label: string; items: NavItem[] }> = [
   },
   {
     label: "Plan",
-    items: [
-      { href: "/calendar", label: "Calendar", icon: IconCalendar },
-      { href: "/notifications", label: "Activity", icon: IconBell }
-    ]
+    items: [{ href: "/calendar", label: "Calendar", icon: IconCalendar }]
   }
 ];
 
@@ -149,8 +145,6 @@ export function Shell({
     return () => window.removeEventListener("keydown", onKey);
   }, [drawerOpen]);
 
-  const recent = projects.slice(0, 4);
-
   return (
     <div className="shell" data-collapsed={collapsed ? "true" : "false"} data-drawer={drawerOpen ? "open" : "closed"}>
       <aside className="sidebar" aria-label="Sidebar">
@@ -159,20 +153,17 @@ export function Shell({
             <BrandMark />
             <span className="brand-name">UnitPulse</span>
           </Link>
+          <button type="button" className="icon-button collapse-toggle" aria-pressed={collapsed} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"} onClick={() => writeCollapsed(!collapsed)}>
+            <IconChevron size={16} />
+          </button>
           <button type="button" className="icon-button sidebar-close" aria-label="Close menu" onClick={() => setDrawerPath(null)}>
             <IconClose size={18} />
           </button>
         </div>
 
-        <Link href="/projects/new" className="button button-primary sidebar-new" title="New project">
-          <IconPlus size={17} />
-          <span className="nav-text">New project</span>
-        </Link>
-
         <nav className="sidebar-nav" aria-label="Primary">
           {groups.map((group) => (
             <div className="nav-group" key={group.label}>
-              <p className="nav-group-label">{group.label}</p>
               {group.items.map(({ href, label, icon: Icon }) => (
                 <Link key={href} href={href} className="nav-item" title={label} aria-current={isActive(pathname, href) ? "page" : undefined}>
                   <Icon size={20} />
@@ -181,24 +172,6 @@ export function Shell({
               ))}
             </div>
           ))}
-
-          {recent.length ? (
-            <div className="nav-group nav-recent">
-              <p className="nav-group-label">Recent projects</p>
-              {recent.map((project) => (
-                <Link
-                  key={project.id}
-                  href={`/projects/${project.id}`}
-                  className="nav-item nav-project"
-                  title={project.name}
-                  aria-current={isActive(pathname, `/projects/${project.id}`) ? "page" : undefined}
-                >
-                  <span className="nav-dot" aria-hidden>{project.name.trim().charAt(0).toUpperCase()}</span>
-                  <span className="nav-text">{project.name}</span>
-                </Link>
-              ))}
-            </div>
-          ) : null}
         </nav>
 
         <div className="sidebar-foot">
@@ -206,18 +179,15 @@ export function Shell({
             <IconSettings size={20} />
             <span className="nav-text">Settings</span>
           </Link>
-          <ThemeToggle />
           <div className="account">
             <span className="avatar" aria-hidden>{initial}</span>
             <div className="account-text">
               <p className="account-name">{user.displayName}</p>
               <p className="account-role">{user.role}</p>
             </div>
+            <ThemeToggle compact />
             <SignOutButton />
           </div>
-          <button type="button" className="collapse-toggle" aria-pressed={collapsed} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"} onClick={() => writeCollapsed(!collapsed)}>
-            <IconChevron size={16} />
-          </button>
         </div>
       </aside>
 
