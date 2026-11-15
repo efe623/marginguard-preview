@@ -31,11 +31,11 @@ export function PortalLinkButton({ clientId }: { clientId: string }) {
 
   return (
     <div>
-      <button className="button button-dark" type="button" onClick={create} disabled={pending}>
-        <Link2 size={16} /> {pending ? "Creating…" : "Create client portal link"}
+      <button className="button button-outline" type="button" onClick={create} disabled={pending}>
+        <Link2 size={16} aria-hidden="true" /> {pending ? "Creating…" : "Create client portal link"}
       </button>
       {url ? <input className="input mt-2 w-full" readOnly value={url} aria-label="Client portal link" /> : null}
-      {message ? <p className="quiet mt-2 text-xs" role="status">{message}</p> : null}
+      {message ? <p className="hint mt-2" role="status">{message}</p> : null}
     </div>
   );
 }

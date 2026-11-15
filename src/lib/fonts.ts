@@ -1,13 +1,15 @@
-import { Karla, Syne } from "next/font/google";
+import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
 
-export const displayFont = Syne({
+// Display: page titles and a few large figures only.
+export const displayFont = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
   weight: ["500", "600", "700"]
 });
 
-export const bodyFont = Karla({
+// Body: every label, control, table and paragraph.
+export const bodyFont = Hanken_Grotesk({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",

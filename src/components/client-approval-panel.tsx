@@ -86,52 +86,53 @@ export function ClientApprovalPanel({
 
   if (stage === "done") {
     return (
-      <div className="card mx-auto max-w-2xl p-10 text-center">
-        <span className="mx-auto grid size-16 place-items-center border border-[var(--success)] text-[var(--success)]">
-          <Check size={30} />
-        </span>
-        <h1 className="font-display mt-7 text-5xl font-bold">Decision recorded.</h1>
-        <p className="quiet mt-4 leading-7">{message}</p>
-        <p className="mt-8 text-sm">You may close this page.</p>
+      <div className="panel mx-auto max-w-xl">
+        <div className="empty">
+          <span className="text-[var(--success)]"><Check size={28} aria-hidden /></span>
+          <h1 className="page-title">Decision recorded</h1>
+          <p className="empty-text">{message}</p>
+          <p className="meta mt-2">You may close this page.</p>
+        </div>
       </div>
     );
   }
 
   if (stage !== "document") {
     return (
-      <div className="card mx-auto max-w-xl p-9">
-        <ShieldCheck size={30} />
-        <p className="eyebrow mt-7">Protected client document</p>
-        <h1 className="font-display mt-4 text-5xl font-bold tracking-tight">
-          Verify your email.
-        </h1>
-        <p className="quiet mt-4 leading-7">
-          A one-time code is required before this Change Order can be viewed or
-          approved.
-        </p>
-        {stage === "request" ? (
-          <Button className="mt-8 w-full" onClick={requestCode} disabled={pending}>
-            {pending ? <LoaderCircle className="animate-spin" size={16} /> : <MailCheck size={16} />}
-            Send verification code
-          </Button>
-        ) : (
-          <div className="mt-8">
-            <label>
-              <span className="field-label">Six-digit code</span>
-              <input
-                className="input text-center text-2xl tracking-[0.5em]"
-                inputMode="numeric"
-                maxLength={6}
-                value={code}
-                onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))}
-              />
-            </label>
-            <Button className="mt-5 w-full" onClick={verifyCode} disabled={pending || code.length !== 6}>
-              Verify and open document
+      <div className="panel mx-auto max-w-xl">
+        <div className="panel-body stack-sm">
+          <ShieldCheck size={26} aria-hidden className="signal" />
+          <h1 className="page-title">Verify your email</h1>
+          <p className="quiet leading-7">
+            This is a protected client document. A one-time code is required
+            before this change order can be viewed or approved.
+          </p>
+          {stage === "request" ? (
+            <Button className="w-full" onClick={requestCode} disabled={pending}>
+              {pending ? <LoaderCircle className="animate-spin" size={16} aria-hidden /> : <MailCheck size={16} aria-hidden />}
+              Send verification code
             </Button>
-          </div>
-        )}
-        {message ? <p role="status" className="mt-4 text-sm">{message}</p> : null}
+          ) : (
+            <div className="stack-sm">
+              <div className="field">
+                <label className="field-label" htmlFor="approval-code">Six-digit code</label>
+                <input
+                  id="approval-code"
+                  className="input num text-center text-2xl"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={code}
+                  onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))}
+                />
+              </div>
+              <Button className="w-full" onClick={verifyCode} disabled={pending || code.length !== 6}>
+                Verify and open document
+              </Button>
+            </div>
+          )}
+          {message ? <p role="status" className="text-sm">{message}</p> : null}
+        </div>
       </div>
     );
   }
@@ -153,53 +154,62 @@ export function ClientApprovalPanel({
   );
 
   return (
-    <div className="mx-auto grid max-w-6xl grid-cols-[1fr_360px] border border-[var(--line)] bg-[var(--paper-white)]">
-      <section className="p-12">
-        <div className="flex items-start justify-between border-b border-[var(--line)] pb-8">
+    <div className="split mx-auto max-w-5xl">
+      <section className="panel">
+        <div className="panel-head">
           <div>
-            <p className="font-display text-3xl font-bold">UnitPulse</p>
-            <p className="eyebrow mt-2">{visibleOrder.businessName}</p>
+            <p className="panel-sub">{visibleOrder.businessName} · {visibleOrder.projectName}</p>
+            <p className="panel-title">UnitPulse</p>
           </div>
           <div className="text-right">
-            <p className="font-display text-2xl font-semibold">{visibleOrder.orderNumber}</p>
-            <p className="quiet mt-1 text-xs">Verified approval copy</p>
+            <p className="font-semibold num">{visibleOrder.orderNumber}</p>
+            <p className="panel-sub">Verified approval copy</p>
           </div>
         </div>
-        <p className="eyebrow mt-9">{visibleOrder.projectName}</p>
-        <h1 className="font-display mt-3 text-5xl font-bold tracking-tight">{visibleOrder.title}</h1>
-        <p className="mt-6 text-lg leading-8">{visibleOrder.description}</p>
-        <dl className="mt-9 border border-[var(--line)]">
-          {[
-            ["Timeline impact", visibleOrder.timelineImpact],
-            ["Additional price", formatMoney(visibleOrder.amountMinor, visibleOrder.currency)],
-            ["Required deposit", `${visibleOrder.depositBasisPoints / 100}% · ${formatMoney(depositMinor, visibleOrder.currency)}`]
-          ].map(([term, value]) => (
-            <div key={term} className="grid grid-cols-[180px_1fr] border-b border-[var(--line)] last:border-0">
-              <dt className="bg-[var(--paper-deep)] p-5 text-xs font-bold uppercase tracking-[0.07em]">{term}</dt>
-              <dd className="border-l border-[var(--line)] p-5 font-semibold">{value}</dd>
+        <div className="panel-body stack">
+          <div>
+            <h1 className="page-title">{visibleOrder.title}</h1>
+            <p className="mt-3 leading-7">{visibleOrder.description}</p>
+          </div>
+          <dl className="ledger">
+            <div className="ledger-line">
+              <dt className="ledger-label">Timeline impact</dt>
+              <dd className="ledger-value">{visibleOrder.timelineImpact}</dd>
             </div>
-          ))}
-        </dl>
-      </section>
-      <aside className="border-l border-[var(--line)] bg-[var(--paper-deep)] p-8">
-        <MailCheck size={25} />
-        <p className="eyebrow mt-6">Email verified</p>
-        <h2 className="font-display mt-3 text-3xl font-semibold">Your decision applies to this exact version.</h2>
-        <p className="quiet mt-4 text-sm leading-6">
-          Any later change to price, scope, or deadline invalidates this approval.
-        </p>
-        <div className="mt-8 space-y-3">
-          <Button className="w-full" onClick={() => decide("approved")} disabled={pending}>
-            <Check size={16} /> Approve change order
-          </Button>
-          <Button className="w-full" variant="outline" onClick={() => decide("rejected")} disabled={pending}>
-            <X size={16} /> Reject
-          </Button>
+            <div className="ledger-line">
+              <dt className="ledger-label">Required deposit ({visibleOrder.depositBasisPoints / 100}%)</dt>
+              <dd className="ledger-value num">{formatMoney(depositMinor, visibleOrder.currency)}</dd>
+            </div>
+            <div className="ledger-line is-total">
+              <dt className="ledger-label">Additional price</dt>
+              <dd className="ledger-value num">{formatMoney(visibleOrder.amountMinor, visibleOrder.currency)}</dd>
+            </div>
+          </dl>
         </div>
-        {message ? <p role="status" className="mt-4 text-sm">{message}</p> : null}
-        <p className="quiet mt-8 border-t border-[var(--line)] pt-5 text-xs leading-5">
-          This is workflow approval evidence, not a regulated electronic signature.
-        </p>
+      </section>
+      <aside className="panel">
+        <div className="panel-body stack-sm">
+          <p className="notice notice-success">
+            <MailCheck size={16} aria-hidden />
+            <span>Email verified</span>
+          </p>
+          <h2 className="panel-title">Your decision applies to this exact version.</h2>
+          <p className="quiet text-sm leading-6">
+            Any later change to price, scope, or deadline invalidates this approval.
+          </p>
+          <div className="stack-sm">
+            <Button className="w-full" onClick={() => decide("approved")} disabled={pending}>
+              <Check size={16} aria-hidden /> Approve change order
+            </Button>
+            <Button className="w-full" variant="outline" onClick={() => decide("rejected")} disabled={pending}>
+              <X size={16} aria-hidden /> Reject
+            </Button>
+          </div>
+          {message ? <p role="status" className="text-sm">{message}</p> : null}
+          <p className="meta border-t border-[var(--line)] pt-4">
+            This is workflow approval evidence, not a regulated electronic signature.
+          </p>
+        </div>
       </aside>
     </div>
   );

@@ -1,26 +1,40 @@
+import Link from "next/link";
+
+export type Crumb = { label: string; href?: string };
+
 export function PageHeader({
-  eyebrow,
   title,
   description,
-  actions
+  actions,
+  crumbs,
+  eyebrow
 }: {
-  eyebrow?: string;
   title: string;
   description?: string;
   actions?: React.ReactNode;
+  crumbs?: Crumb[];
+  /** Deprecated: shown as a plain crumb line. Prefer `crumbs`. */
+  eyebrow?: string;
 }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5 border-b border-[var(--line)] pb-6">
-      <div className="max-w-4xl">
-        {eyebrow ? <p className="eyebrow mb-4">{eyebrow}</p> : null}
-        <h1 className="page-title">{title}</h1>
-        {description ? (
-          <p className="quiet mt-5 max-w-2xl text-[1.05rem] leading-7">
-            {description}
-          </p>
+    <header className="page-head">
+      <div className="min-w-0">
+        {crumbs?.length ? (
+          <nav className="crumbs" aria-label="Breadcrumb">
+            {crumbs.map((crumb, index) => (
+              <span key={`${crumb.label}-${index}`} className="inline-flex items-center gap-1.5">
+                {index > 0 ? <span aria-hidden>/</span> : null}
+                {crumb.href ? <Link href={crumb.href}>{crumb.label}</Link> : <span>{crumb.label}</span>}
+              </span>
+            ))}
+          </nav>
+        ) : eyebrow ? (
+          <p className="crumbs">{eyebrow}</p>
         ) : null}
+        <h1 className="page-title">{title}</h1>
+        {description ? <p className="page-sub">{description}</p> : null}
       </div>
-      {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
+      {actions ? <div className="page-actions">{actions}</div> : null}
     </header>
   );
 }

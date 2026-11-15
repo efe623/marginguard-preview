@@ -2,15 +2,17 @@
 
 import { useActionState } from "react";
 import { requestPasswordReset } from "@/features/auth/actions";
+import { AuthNotice } from "@/components/auth/auth-shell";
 
 export function ForgotPasswordForm() {
   const [state, action, pending] = useActionState(requestPasswordReset, {});
 
   return (
-    <form action={action} className="mt-8 grid gap-6">
-      <label className="block">
-        <span className="field-label">Email</span>
+    <form action={action} className="grid gap-4">
+      <div className="field">
+        <label className="field-label" htmlFor="forgot-email">Work email</label>
         <input
+          id="forgot-email"
           className="auth-input"
           name="email"
           type="email"
@@ -18,18 +20,10 @@ export function ForgotPasswordForm() {
           placeholder="you@business.com"
           required
         />
-      </label>
-      {state.error ? (
-        <p role="alert" className="rounded-xl border border-[var(--danger)] bg-[#fff5f3] p-3 text-sm text-[var(--danger)]">
-          {state.error}
-        </p>
-      ) : null}
-      {state.success ? (
-        <p role="status" className="rounded-xl border border-[var(--success)] bg-[color-mix(in_srgb,var(--success)_8%,var(--paper-white))] p-3 text-sm text-[var(--success)]">
-          {state.success}
-        </p>
-      ) : null}
-      <button className="auth-button auth-button-primary mt-1 w-full" disabled={pending}>
+      </div>
+      {state.error ? <AuthNotice tone="danger">{state.error}</AuthNotice> : null}
+      {state.success ? <AuthNotice tone="success">{state.success}</AuthNotice> : null}
+      <button className="auth-button auth-button-primary w-full" disabled={pending}>
         {pending ? "Sending secure link…" : "Send recovery link"}
       </button>
     </form>

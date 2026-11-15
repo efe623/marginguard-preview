@@ -1,7 +1,6 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChangeOrderEditor } from "@/components/change-order-editor";
+import { PageHeader } from "@/components/ui/page-header";
 import { getProjectView } from "@/features/core/queries";
 
 export default async function NewChangeOrderPage({
@@ -14,13 +13,16 @@ export default async function NewChangeOrderPage({
   if (!project) notFound();
 
   return (
-    <div className="p-5">
-      <div className="mb-4 flex items-center justify-between">
-        <Link href={`/projects/${project.id}/change-orders`} className="inline-flex items-center gap-2 text-sm font-semibold hover:text-[var(--signal)]">
-          <ArrowLeft size={16} /> Change orders
-        </Link>
-        <p className="quiet text-sm">{project.name}</p>
-      </div>
+    <div className="page">
+      <PageHeader
+        crumbs={[
+          { label: "Projects", href: "/projects" },
+          { label: project.name, href: `/projects/${project.id}` },
+          { label: "Change orders", href: `/projects/${project.id}/change-orders` }
+        ]}
+        title="New change order"
+        description="Describe the extra work and set the price. The document preview updates as you type."
+      />
       <ChangeOrderEditor
         projectId={project.id}
         projectName={project.name}

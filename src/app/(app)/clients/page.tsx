@@ -1,8 +1,7 @@
-import { ArrowRight, Plus } from "lucide-react";
+import { ChevronRight, Mail, MapPin, Phone, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
-import { Status } from "@/components/ui/status";
 import { listClientViews, listProjectViews } from "@/features/core/queries";
 
 export default async function ClientsPage() {
@@ -10,34 +9,45 @@ export default async function ClientsPage() {
   return (
     <div className="page">
       <PageHeader
-        eyebrow={`${clients.length} clients`}
         title="Clients"
         description="Contact, project, approval, and payment history without hidden risk scores."
-        actions={<ButtonLink href="/clients/new"><Plus size={16} /> New client</ButtonLink>}
+        actions={<ButtonLink href="/clients/new"><Plus size={16} aria-hidden /> New client</ButtonLink>}
       />
-      <section className="card mt-8">
-        {clients.map((client) => {
-          const clientProjects = projects.filter((project) => project.clientId === client.id);
-          return (
-            <Link
-              key={client.id}
-              href={`/clients/${client.id}`}
-              className="group grid grid-cols-[1.1fr_1fr_150px_140px_30px] items-center gap-4 border-b border-[var(--line)] p-7 last:border-0 hover:bg-[var(--paper-deep)]"
-            >
-              <div>
-                <p className="font-display text-2xl font-semibold">{client.name}</p>
-                <p className="quiet mt-1 text-sm">{client.location}</p>
-              </div>
-              <div>
-                <p className="text-sm">{client.email}</p>
-                <p className="quiet mt-1 text-sm">{client.phone}</p>
-              </div>
-              <p className="font-semibold">{clientProjects.length} active</p>
-              <Status tone="success">Current</Status>
-              <ArrowRight size={17} className="transition group-hover:translate-x-1" />
-            </Link>
-          );
-        })}
+      <section className="panel">
+        <div className="panel-head">
+          <h2 className="panel-title">All clients</h2>
+          <p className="panel-sub">{clients.length} {clients.length === 1 ? "client" : "clients"}</p>
+        </div>
+        {clients.length ? (
+          <div className="rows">
+            {clients.map((client) => {
+              const count = projects.filter((project) => project.clientId === client.id).length;
+              return (
+                <Link key={client.id} href={`/clients/${client.id}`} className="row">
+                  <div className="row-main">
+                    <p className="row-title">{client.name}</p>
+                    <p className="row-sub flex flex-wrap gap-x-4 gap-y-0.5">
+                      {client.location ? <span className="inline-flex items-center gap-1.5"><MapPin size={13} aria-hidden /> {client.location}</span> : null}
+                      {client.email ? <span className="inline-flex items-center gap-1.5"><Mail size={13} aria-hidden /> {client.email}</span> : null}
+                      {client.phone ? <span className="inline-flex items-center gap-1.5"><Phone size={13} aria-hidden /> {client.phone}</span> : null}
+                    </p>
+                  </div>
+                  <div className="row-end">
+                    <span className="font-semibold">{count} active {count === 1 ? "project" : "projects"}</span>
+                    <ChevronRight size={17} aria-hidden className="text-[var(--ink-3)]" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty">
+            <Users size={22} aria-hidden className="text-[var(--ink-3)]" />
+            <p className="empty-title">No clients yet</p>
+            <p className="empty-text">Add the first client so you can attach projects, quotes and invoices to them.</p>
+            <ButtonLink href="/clients/new"><Plus size={16} aria-hidden /> New client</ButtonLink>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -38,24 +38,24 @@ export function PaymentActions({
   }
 
   return (
-    <div className="mt-7 border-t border-[var(--line)] pt-6">
+    <div className="stack-sm mt-6 border-t border-[var(--line)] pt-5">
       <button className="button button-primary w-full" type="button" disabled={pending} onClick={createLink}>
-        <CreditCard size={16} /> Create Stripe payment link (if connected)
+        <CreditCard size={16} aria-hidden="true" /> Create Stripe payment link (if connected)
       </button>
-      <details className="mt-3 border border-[var(--line)] p-4">
-        <summary className="cursor-pointer text-sm font-semibold">Stripe unavailable? Record external deposit</summary>
-        <form action={confirmManualPayment} className="mt-4 space-y-3">
+      <details>
+        <summary className="cursor-pointer text-sm font-semibold min-h-10 flex items-center">Stripe unavailable? Record external deposit</summary>
+        <form action={confirmManualPayment} className="stack-sm mt-2">
           <input type="hidden" name="paymentRequestId" value={paymentRequestId ?? ""} />
           <input type="hidden" name="projectId" value={projectId} />
           <input type="hidden" name="changeOrderId" value={changeOrderId} />
-          <input className="input" name="method" required placeholder="Bank transfer, cash, cheque…" />
-          <input className="input" name="reference" placeholder="Reference or receipt note" />
-          <button className="button button-dark w-full" disabled={!paymentRequestId}>
+          <div className="field"><label className="field-label" htmlFor="pay-method">Payment method</label><input id="pay-method" className="input" name="method" required placeholder="Bank transfer, cash, cheque…" /></div>
+          <div className="field"><label className="field-label" htmlFor="pay-ref">Reference</label><input id="pay-ref" className="input" name="reference" placeholder="Reference or receipt note" /></div>
+          <button className="button button-outline w-full" disabled={!paymentRequestId}>
             Confirm exact requested amount
           </button>
         </form>
       </details>
-      {message ? <p role="status" className="mt-3 text-xs">{message}</p> : null}
+      {message ? <p role="status" className="hint">{message}</p> : null}
     </div>
   );
 }

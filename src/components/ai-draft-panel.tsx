@@ -1,6 +1,6 @@
 "use client";
 
-import { FileUp, Sparkles } from "lucide-react";
+import { FileUp, Info, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -86,37 +86,37 @@ export function AiDraftPanel({
   }
 
   return (
-    <section className="card p-6">
-      <div className="flex items-center gap-3">
-        <Sparkles className="signal" size={22} />
+    <section className="panel">
+      <div className="panel-head">
         <div>
-          <p className="eyebrow">Gemini draft assistant</p>
-          <h2 className="section-title mt-1">Analyse without taking action</h2>
+          <h2 className="panel-title">New draft</h2>
+          <p className="panel-sub">Analyse client text with Gemini without taking action.</p>
         </div>
       </div>
-      <div className="mt-6 grid gap-5 lg:grid-cols-2">
-        <label>
-          <span className="field-label">Workflow</span>
-          <select className="input" value={type} onChange={(event) => setType(event.target.value as typeof type)}>
+      <div className="panel-body stack">
+      <div className="field">
+          <label className="field-label" htmlFor="ai-workflow">Workflow</label>
+          <select id="ai-workflow" className="select" value={type} onChange={(event) => setType(event.target.value as typeof type)}>
             {workflows.map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
             ))}
           </select>
-        </label>
-        <div className="border border-[var(--line)] bg-[var(--paper-deep)] p-4 text-sm leading-6">
-          AI output is always a draft. UnitPulse never sends, approves, prices, or confirms payment automatically.
-        </div>
       </div>
-      <label className="mt-5 block">
-        <span className="field-label">Quote, email, WhatsApp chat, or instructions</span>
+      <p className="notice notice-info">
+        <Info size={18} aria-hidden="true" />
+        <span>AI output is always a draft. UnitPulse never sends, approves, prices, or confirms payment automatically.</span>
+      </p>
+      <div className="field">
+        <label className="field-label" htmlFor="ai-source">Quote, email, WhatsApp chat, or instructions</label>
         <textarea
-          className="input min-h-48 resize-y"
+          id="ai-source"
+          className="textarea min-h-48"
           value={sourceText}
           onChange={(event) => setSourceText(event.target.value)}
           placeholder="Paste the client text or quote you want analysed…"
         />
-      </label>
-      <div className="mt-3 flex flex-wrap items-center gap-3">
+      </div>
+      <div className="cluster">
         <input
           ref={wordInput}
           className="sr-only"
@@ -128,20 +128,19 @@ export function AiDraftPanel({
           }}
         />
         <button
-          className="button button-dark"
+          className="button button-outline"
           type="button"
           disabled={pending}
           onClick={() => wordInput.current?.click()}
         >
-          <FileUp size={16} /> Import Word quote
+          <FileUp size={16} aria-hidden="true" /> Import Word quote
         </button>
-        <p className="quiet text-xs">
+        <p className="hint">
           DOCX only, up to 5 MB. Text is extracted before AI consent.
         </p>
       </div>
-      <label className="mt-5 flex items-start gap-3 text-sm leading-6">
+      <label className="check">
         <input
-          className="mt-1"
           type="checkbox"
           checked={consent}
           onChange={(event) => setConsent(event.target.checked)}
@@ -150,15 +149,18 @@ export function AiDraftPanel({
           I confirm I am allowed to send this text to Google Gemini. I understand the free tier may use submitted content to improve Google products.
         </span>
       </label>
+      <div className="form-actions">
       <button
-        className="button button-primary mt-5"
+        className="button button-primary"
         type="button"
         disabled={pending || !consent || sourceText.trim().length < 10}
         onClick={generate}
       >
-        <Sparkles size={16} /> {pending ? "Creating draft…" : "Create AI draft"}
+        <Sparkles size={16} aria-hidden="true" /> {pending ? "Creating draft…" : "Create AI draft"}
       </button>
-      {message ? <p className="mt-3 text-sm" role="status">{message}</p> : null}
+      </div>
+      {message ? <p className="text-sm" role="status">{message}</p> : null}
+      </div>
     </section>
   );
 }

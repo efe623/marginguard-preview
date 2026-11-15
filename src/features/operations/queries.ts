@@ -2,6 +2,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { getAuthenticatedBusinessContext } from "@/features/auth/context";
 import { createClient } from "@/lib/supabase/server";
 import type { CalendarEvent } from "@/lib/calendar";
+import { buildPreviewData } from "@/data/preview-data";
 
 export type OperationsProjectData = {
   tasks: Array<Record<string, unknown>>;
@@ -14,21 +15,23 @@ export type OperationsProjectData = {
   quotes: Array<Record<string, unknown>>;
 };
 
-const emptyProjectData: OperationsProjectData = {
-  tasks: [],
-  timeEntries: [],
-  expenses: [],
-  invoices: [],
-  messages: [],
-  aiDrafts: [],
-  updates: [],
-  quotes: []
-};
-
 export async function getOperationsProjectData(
   projectId: string
 ): Promise<OperationsProjectData> {
-  if (!isSupabaseConfigured) return emptyProjectData;
+  if (!isSupabaseConfigured) {
+    const preview = buildPreviewData();
+    const own = <T extends { project_id: string }>(rows: T[]) => rows.filter((row) => row.project_id === projectId);
+    return {
+      tasks: own(preview.tasks),
+      timeEntries: own(preview.timeEntries),
+      expenses: own(preview.expenses),
+      invoices: own(preview.invoices),
+      messages: own(preview.messages),
+      aiDrafts: own(preview.aiDrafts),
+      updates: own(preview.updates),
+      quotes: own(preview.quotes)
+    };
+  }
   const supabase = await createClient();
   const [
     tasks,
@@ -97,16 +100,17 @@ export async function getOperationsProjectData(
 
 export async function getBusinessOperationsData() {
   if (!isSupabaseConfigured) {
+    const preview = buildPreviewData();
     return {
-      business: null,
-      projects: [],
-      clients: [],
-      tasks: [],
-      timeEntries: [],
-      expenses: [],
-      invoices: [],
-      changeOrders: [],
-      notifications: []
+      business: { currency: "AED" } as Record<string, unknown> | null,
+      projects: preview.projects as Array<Record<string, unknown>>,
+      clients: preview.clients as Array<Record<string, unknown>>,
+      tasks: preview.tasks as Array<Record<string, unknown>>,
+      timeEntries: preview.timeEntries as Array<Record<string, unknown>>,
+      expenses: preview.expenses as Array<Record<string, unknown>>,
+      invoices: preview.invoices as Array<Record<string, unknown>>,
+      changeOrders: preview.changeOrders as Array<Record<string, unknown>>,
+      notifications: [] as Array<Record<string, unknown>>
     };
   }
   const context = await getAuthenticatedBusinessContext();
@@ -291,11 +295,25 @@ export async function getInvoicesPageData() {
 
 export async function getCalendarEvents(): Promise<CalendarEvent[]> {
   if (!isSupabaseConfigured) {
-    return [
-      { id: "demo-invoice-1", date: "2026-07-31", title: "Invoice INV-204 due", detail: "E-commerce Redesign · AED 12,500", href: "/projects/ecommerce-redesign/money", kind: "invoice", status: "sent" },
-      { id: "demo-task-1", date: "2026-08-03", title: "Homepage review", detail: "E-commerce Redesign · High priority", href: "/projects/ecommerce-redesign/work", kind: "task", status: "in_progress" },
-      { id: "demo-project-1", date: "2026-08-07", title: "Branding Package deadline", detail: "Project deadline", href: "/projects/brand-package", kind: "project", status: "active" }
+    const preview = buildPreviewData();
+    const names = new Map(preview.projects.map((project) => [project.id, project.name]));
+    const events: CalendarEvent[] = [
+      ...preview.projects.map((project): CalendarEvent => ({
+        id: `project-${project.id}`, date: project.due_date, title: `${project.name} deadline`,
+        detail: "Project deadline", href: `/projects/${project.id}`, kind: "project", status: project.status
+      })),
+      ...preview.tasks.filter((task) => task.status !== "done").map((task): CalendarEvent => ({
+        id: task.id, date: task.due_at.slice(0, 10), title: task.title,
+        detail: `${names.get(task.project_id) ?? "Project"} · ${task.priority} priority`,
+        href: `/projects/${task.project_id}/work`, kind: "task", status: task.status
+      })),
+      ...preview.invoices.filter((invoice) => invoice.status !== "paid").map((invoice): CalendarEvent => ({
+        id: invoice.id, date: invoice.due_date, title: `Invoice ${invoice.invoice_number} due`,
+        detail: `${names.get(invoice.project_id) ?? "Project"} · ${invoice.currency} ${(Number(invoice.amount_minor) / 100).toLocaleString()}`,
+        href: `/projects/${invoice.project_id}/money`, kind: "invoice", status: invoice.status
+      }))
     ];
+    return events.sort((left, right) => left.date.localeCompare(right.date));
   }
   const context = await getAuthenticatedBusinessContext();
   if (!context) return [];
@@ -333,13 +351,19 @@ export async function getCalendarEvents(): Promise<CalendarEvent[]> {
 
 export async function getDashboardData() {
   if (!isSupabaseConfigured) {
+    const preview = buildPreviewData();
     return {
-      business: null,
-      projects: [],
-      tasks: [],
-      expenses: [],
-      invoices: [],
-      changeOrders: []
+      business: { currency: "AED" },
+      projects: preview.projects.map((project) => ({
+        id: project.id,
+        name: project.name,
+        quote_amount_minor: project.quote_amount_minor,
+        status: project.status
+      })),
+      tasks: preview.tasks,
+      expenses: preview.expenses,
+      invoices: preview.invoices,
+      changeOrders: preview.changeOrders
     };
   }
   const context = await getAuthenticatedBusinessContext();
@@ -398,7 +422,9 @@ export async function getDashboardData() {
 }
 
 export async function getProjectContext(projectId: string) {
-  if (!isSupabaseConfigured) return null;
+  if (!isSupabaseConfigured) {
+    return buildPreviewData().projects.find((project) => project.id === projectId) ?? null;
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from("projects")

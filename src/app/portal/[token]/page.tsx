@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { ExternalLink } from "lucide-react";
+import { ExternalShell } from "@/components/external-shell";
 import { Status } from "@/components/ui/status";
 import { digestOpaqueToken } from "@/lib/security-tokens";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -27,19 +29,80 @@ export default async function ClientPortalPage({ params }: { params: Promise<{ t
   await admin.from("client_portal_tokens").update({ last_used_at: new Date().toISOString() }).eq("id", access.id);
 
   return (
-    <main className="min-h-screen bg-[var(--paper)] p-5 md:p-10">
-      <div className="mx-auto max-w-5xl">
-        <header className="border-b border-[var(--line)] pb-7">
-          <p className="eyebrow">{business?.name}</p>
-          <h1 className="font-display mt-3 text-5xl font-bold">Welcome, {client?.name}</h1>
-          <p className="quiet mt-3">Private project status, updates, and invoices. UnitPulse does not process payments.</p>
+    <ExternalShell width="lg" businessName={business?.name}>
+      <div className="stack">
+        <header>
+          <h1 className="page-title">Welcome, {client?.name}</h1>
+          <p className="page-sub">Private project status, updates, and invoices. UnitPulse does not process payments.</p>
         </header>
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <section className="card p-6"><h2 className="section-title">Projects</h2><div className="mt-5 space-y-4">{(projects ?? []).map((project) => <article key={project.id} className="border border-[var(--line)] p-4"><div className="flex justify-between gap-4"><strong>{project.name}</strong><Status tone={project.status === "completed" ? "success" : "neutral"}>{project.status.replace("_", " ")}</Status></div>{project.due_date ? <p className="quiet mt-2 text-sm">Target: {project.due_date}</p> : null}</article>)}</div></section>
-          <section className="card p-6"><h2 className="section-title">Invoices</h2><div className="mt-5 space-y-4">{(invoices ?? []).map((invoice) => <article key={invoice.id} className="border border-[var(--line)] p-4"><div className="flex justify-between gap-4"><div><strong>{invoice.invoice_number}</strong><p className="quiet mt-1 text-sm">Due {invoice.due_date}</p></div><div className="text-right"><strong>{formatMoney(Number(invoice.amount_minor), invoice.currency)}</strong><br /><Status tone={invoice.status === "paid" ? "success" : "warning"}>{invoice.status.replace("_", " ")}</Status></div></div>{invoice.external_payment_url ? <a className="button button-primary mt-4" href={invoice.external_payment_url} rel="noreferrer" target="_blank">Open external payment page</a> : null}</article>)}</div></section>
-        </div>
-        <section className="card mt-6 p-6"><h2 className="section-title">Updates</h2><div className="mt-5 space-y-4">{(updates ?? []).map((update) => <article key={update.id} className="border-l-4 border-[var(--signal)] bg-[var(--paper-deep)] p-5"><div className="flex justify-between gap-4"><strong>{update.title}</strong><time className="quiet text-xs">{new Date(update.created_at).toLocaleDateString()}</time></div><p className="mt-3 whitespace-pre-wrap text-sm leading-6">{update.body}</p></article>)}</div></section>
+
+        <section className="panel" aria-labelledby="portal-projects">
+          <div className="panel-head"><h2 className="panel-title" id="portal-projects">Projects</h2></div>
+          {(projects ?? []).length ? (
+            <div className="rows">
+              {(projects ?? []).map((project) => (
+                <div key={project.id} className="row">
+                  <span aria-hidden="true" />
+                  <div className="row-main">
+                    <p className="row-title">{project.name}</p>
+                    {project.due_date ? <p className="row-sub">Target: {project.due_date}</p> : null}
+                  </div>
+                  <div className="row-end"><Status tone={project.status === "completed" ? "success" : "neutral"}>{project.status.replace("_", " ")}</Status></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty"><p className="empty-title">No projects yet</p><p className="empty-text">Projects shared with you will appear here.</p></div>
+          )}
+        </section>
+
+        <section className="panel" aria-labelledby="portal-invoices">
+          <div className="panel-head"><h2 className="panel-title" id="portal-invoices">Invoices</h2></div>
+          {(invoices ?? []).length ? (
+            <div className="rows">
+              {(invoices ?? []).map((invoice) => (
+                <div key={invoice.id} className="row">
+                  <span aria-hidden="true" />
+                  <div className="row-main">
+                    <p className="row-title">{invoice.invoice_number}</p>
+                    <p className="row-sub">Due {invoice.due_date}</p>
+                    {invoice.external_payment_url ? (
+                      <a className="button button-primary button-sm mt-2 w-fit" href={invoice.external_payment_url} rel="noreferrer" target="_blank">
+                        Open external payment page <ExternalLink size={14} aria-hidden="true" />
+                      </a>
+                    ) : null}
+                  </div>
+                  <div className="row-end grid justify-items-end gap-1">
+                    <span className="num font-semibold">{formatMoney(Number(invoice.amount_minor), invoice.currency)}</span>
+                    <Status tone={invoice.status === "paid" ? "success" : "warning"}>{invoice.status.replace("_", " ")}</Status>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty"><p className="empty-title">No invoices yet</p><p className="empty-text">Invoices sent to you will appear here.</p></div>
+          )}
+        </section>
+
+        <section className="panel" aria-labelledby="portal-updates">
+          <div className="panel-head"><h2 className="panel-title" id="portal-updates">Updates</h2></div>
+          {(updates ?? []).length ? (
+            <div className="rows">
+              {(updates ?? []).map((update) => (
+                <article key={update.id} className="row" style={{ display: "block" }}>
+                  <div className="flex justify-between gap-4">
+                    <h3 className="row-title">{update.title}</h3>
+                    <time className="meta shrink-0" dateTime={update.created_at}>{new Date(update.created_at).toLocaleDateString()}</time>
+                  </div>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{update.body}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="empty"><p className="empty-title">No updates yet</p><p className="empty-text">Updates your contractor shares will appear here.</p></div>
+          )}
+        </section>
       </div>
-    </main>
+    </ExternalShell>
   );
 }

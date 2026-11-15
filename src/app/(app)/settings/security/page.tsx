@@ -4,49 +4,74 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 
+const sessions = [
+  ["Windows · Chrome", "Dubai · Active now", "Current device"],
+  ["Windows · Edge", "Dubai · 2 days ago", "Trusted"]
+];
+
 export default function SecurityPage() {
   return (
-    <div className="page">
+    <div className="page page-narrow">
       <PageHeader
-        eyebrow="Account protection"
+        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Security" }]}
         title="Security"
         description="MFA, recovery, trusted devices, and high-risk action controls."
       />
       <SettingsNav active="security" />
-      <div className="mt-7 grid grid-cols-2 gap-6">
-        <section className="card p-7">
-          <div className="flex items-center justify-between">
-            <ShieldCheck size={24} />
-            <Status tone="success">Enabled</Status>
+      <div className="stack mt-6">
+        <section className="panel" aria-labelledby="sec-protection">
+          <div className="panel-head">
+            <h2 className="panel-title" id="sec-protection">Sign-in protection</h2>
           </div>
-          <h2 className="section-title mt-8">Authenticator MFA</h2>
-          <p className="quiet mt-3 leading-7">Required for owner access and binding financial actions.</p>
-          <Button className="mt-7" variant="outline">Manage authenticator</Button>
+          <div className="rows">
+            <div className="row">
+              <span className="row-lead"><ShieldCheck size={18} aria-hidden="true" /></span>
+              <div className="row-main">
+                <p className="row-title">Authenticator MFA</p>
+                <p className="row-sub">Required for owner access and binding financial actions.</p>
+              </div>
+              <div className="row-end">
+                <Status tone="success">Enabled</Status>
+                <Button variant="outline">Manage authenticator</Button>
+              </div>
+            </div>
+            <div className="row">
+              <span className="row-lead"><KeyRound size={18} aria-hidden="true" /></span>
+              <div className="row-main">
+                <p className="row-title">Recovery codes</p>
+                <p className="row-sub">8 unused one-time codes. Regenerating them invalidates the current set, so save the new ones straight away.</p>
+              </div>
+              <div className="row-end">
+                <Button variant="outline">Regenerate codes</Button>
+              </div>
+            </div>
+          </div>
         </section>
-        <section className="card p-7">
-          <KeyRound size={24} />
-          <h2 className="section-title mt-8">Recovery codes</h2>
-          <p className="quiet mt-3 leading-7">8 unused one-time codes. Regenerating them invalidates the current set.</p>
-          <Button className="mt-7" variant="outline">Regenerate codes</Button>
+
+        <section className="panel" aria-labelledby="sec-sessions">
+          <div className="panel-head">
+            <div>
+              <h2 className="panel-title" id="sec-sessions">Sessions</h2>
+              <p className="panel-sub">Devices signed in to this account.</p>
+            </div>
+          </div>
+          <div className="rows">
+            {sessions.map(([device, meta, state]) => (
+              <div key={device} className="row">
+                <span className="row-lead"><Laptop size={18} aria-hidden="true" /></span>
+                <div className="row-main">
+                  <p className="row-title">{device}</p>
+                  <p className="row-sub">{meta}</p>
+                </div>
+                <div className="row-end">
+                  <Status tone={state === "Current device" ? "success" : "neutral"}>{state}</Status>
+                  <Button variant="outline" disabled={state === "Current device"}>Sign out</Button>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
       </div>
-      <section className="card mt-6">
-        <div className="border-b border-[var(--line)] p-7">
-          <p className="eyebrow mb-3">Active devices</p>
-          <h2 className="section-title">Sessions</h2>
-        </div>
-        {[
-          ["Windows · Chrome", "Dubai · Active now", "Current device"],
-          ["Windows · Edge", "Dubai · 2 days ago", "Trusted"]
-        ].map(([device, meta, state]) => (
-          <div key={device} className="grid grid-cols-[48px_1fr_160px_140px] items-center gap-4 border-b border-[var(--line)] p-6 last:border-0">
-            <span className="grid size-11 place-items-center border border-[var(--line)]"><Laptop size={20} /></span>
-            <div><p className="font-semibold">{device}</p><p className="quiet mt-1 text-xs">{meta}</p></div>
-            <Status tone={state === "Current device" ? "success" : "neutral"}>{state}</Status>
-            <Button variant="outline" disabled={state === "Current device"}>Sign out</Button>
-          </div>
-        ))}
-      </section>
     </div>
   );
 }

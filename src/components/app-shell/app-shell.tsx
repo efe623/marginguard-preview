@@ -1,44 +1,33 @@
 import { DemoBanner } from "@/components/demo-banner";
-import { Sidebar } from "@/components/app-shell/sidebar";
+import { TopBar } from "@/components/app-shell/top-bar";
 import { AiAssistant } from "@/components/ai-assistant";
-import { ActivityCenter } from "@/components/activity-center";
-import { SettingsNavLink } from "@/components/app-shell/settings-nav-link";
+import { listClientViews, listProjectViews } from "@/features/core/queries";
 import { getActivityCenterData } from "@/features/operations/queries";
 
 export async function AppShell({
   children,
-  timezone,
   user
 }: {
   children: React.ReactNode;
-  timezone: string;
+  timezone?: string;
   user: { displayName: string; role: string };
 }) {
-  const activity = await getActivityCenterData();
-  let calendarDay: string;
-  try {
-    calendarDay = new Intl.DateTimeFormat("en", {
-      day: "numeric",
-      timeZone: timezone
-    }).format(new Date());
-  } catch {
-    calendarDay = new Intl.DateTimeFormat("en", {
-      day: "numeric",
-      timeZone: "Asia/Dubai"
-    }).format(new Date());
-  }
+  const [activity, projects, clients] = await Promise.all([
+    getActivityCenterData(),
+    listProjectViews().catch(() => []),
+    listClientViews().catch(() => [])
+  ]);
+
   return (
     <div className="app-frame">
-      <Sidebar calendarDay={calendarDay} user={user} />
+      <TopBar
+        user={user}
+        activity={activity}
+        projects={projects.map((project) => ({ id: project.id, name: project.name, detail: project.clientName }))}
+        clients={clients.map((client) => ({ id: client.id, name: client.name }))}
+      />
+      <DemoBanner />
       <main className="content-shell">
-        <header className="app-topbar">
-          <span className="app-topbar-label">UnitPulse workspace</span>
-          <div className="app-topbar-actions">
-            <SettingsNavLink />
-            <ActivityCenter items={activity} />
-          </div>
-        </header>
-        <DemoBanner />
         {children}
         <AiAssistant />
       </main>

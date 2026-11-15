@@ -1,6 +1,6 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { createClient } from "@/features/core/actions";
 
 export default async function NewClientPage({
@@ -10,38 +10,45 @@ export default async function NewClientPage({
 }) {
   const { error } = await searchParams;
   return (
-    <div className="page max-w-5xl">
-      <Link href="/clients" className="mb-8 inline-flex items-center gap-2 text-sm font-semibold hover:text-[var(--signal)]">
-        <ArrowLeft size={16} /> Back to clients
-      </Link>
-      <p className="eyebrow mb-4">Client directory</p>
-      <h1 className="page-title">Add a client.</h1>
-      {error ? <p className="mt-6 border border-[var(--danger)] p-4 text-sm">{error}</p> : null}
-      <form action={createClient} className="card mt-10 grid grid-cols-2 gap-6 p-8">
-        <label>
-          <span className="field-label">Client or business name</span>
-          <input className="input" name="name" required />
-        </label>
-        <label>
-          <span className="field-label">Primary contact email</span>
-          <input className="input" name="email" type="email" />
-        </label>
-        <label>
-          <span className="field-label">Phone</span>
-          <input className="input" name="phone" type="tel" />
-        </label>
-        <label>
-          <span className="field-label">Location</span>
-          <input className="input" name="location" placeholder="Dubai, UAE" />
-        </label>
-        <label className="col-span-2">
-          <span className="field-label">Internal notes</span>
-          <textarea className="textarea" name="notes" />
-        </label>
-        <div className="col-span-2 flex justify-end border-t border-[var(--line)] pt-6">
-          <Button type="submit">Save client</Button>
-        </div>
-      </form>
+    <div className="page page-narrow">
+      <PageHeader
+        crumbs={[{ label: "Clients", href: "/clients" }, { label: "New client" }]}
+        title="Add a client"
+        description="Only the name is required. You can fill in the rest later."
+      />
+      <div className="stack">
+        {error ? <div className="notice notice-danger" role="alert"><AlertCircle size={16} aria-hidden /><p>{error}</p></div> : null}
+        <form action={createClient} className="panel">
+          <div className="panel-body stack">
+            <div className="form-grid">
+              <div className="field">
+                <label className="field-label" htmlFor="client-name">Client or business name</label>
+                <input id="client-name" className="input" name="name" required />
+              </div>
+              <div className="field">
+                <label className="field-label" htmlFor="client-email">Primary contact email</label>
+                <input id="client-email" className="input" name="email" type="email" />
+              </div>
+              <div className="field">
+                <label className="field-label" htmlFor="client-phone">Phone</label>
+                <input id="client-phone" className="input" name="phone" type="tel" />
+              </div>
+              <div className="field">
+                <label className="field-label" htmlFor="client-location">Location</label>
+                <input id="client-location" className="input" name="location" placeholder="Dubai, UAE" />
+              </div>
+            </div>
+            <div className="field">
+              <label className="field-label" htmlFor="client-notes">Internal notes</label>
+              <textarea id="client-notes" className="textarea" name="notes" />
+              <p className="hint">Private to your team. Clients never see these.</p>
+            </div>
+            <div className="form-actions">
+              <Button type="submit">Save client</Button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

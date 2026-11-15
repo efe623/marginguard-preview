@@ -54,7 +54,7 @@ export function FileUploadButton({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="flex flex-wrap items-start gap-2">
+    <div className="cluster">
       <input
         ref={input}
         className="sr-only"
@@ -66,7 +66,7 @@ export function FileUploadButton({ projectId }: { projectId: string }) {
         }}
       />
       <select
-        className="input w-auto min-w-36"
+        className="select w-auto min-w-36"
         aria-label="File purpose"
         value={kind}
         onChange={(event) => setKind(event.target.value)}
@@ -80,7 +80,7 @@ export function FileUploadButton({ projectId }: { projectId: string }) {
       <button className="button button-primary" disabled={pending} onClick={() => input.current?.click()}>
         <Upload size={16} /> {pending ? "Uploading…" : "Upload file"}
       </button>
-      {message ? <p role="status" className="w-full max-w-md text-xs">{message}</p> : null}
+      {message ? <p role="status" className="hint w-full max-w-md">{message}</p> : null}
     </div>
   );
 }

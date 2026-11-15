@@ -6,7 +6,7 @@ import { useSyncExternalStore } from "react";
 type Theme = "light" | "dark";
 
 function getCurrentTheme(): Theme {
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
 
 function subscribe(listener: () => void) {
@@ -14,34 +14,25 @@ function subscribe(listener: () => void) {
   return () => window.removeEventListener("unitpulse-theme-change", listener);
 }
 
-export function ThemeToggle({ expanded = false }: { expanded?: boolean }) {
-  const theme = useSyncExternalStore(subscribe, getCurrentTheme, () => "light");
+export function ThemeToggle() {
+  const theme = useSyncExternalStore(subscribe, getCurrentTheme, () => "dark" as Theme);
 
   function chooseTheme(nextTheme: Theme) {
     document.documentElement.dataset.theme = nextTheme;
     document.documentElement.style.colorScheme = nextTheme;
-    localStorage.setItem("unitpulse-theme", nextTheme);
+    try {
+      localStorage.setItem("unitpulse-theme", nextTheme);
+    } catch {}
     window.dispatchEvent(new Event("unitpulse-theme-change"));
   }
 
   return (
-    <div className={expanded ? "theme-switch theme-switch-expanded" : "theme-switch"} aria-label="Color theme">
-      <button
-        type="button"
-        aria-label="Use light theme"
-        aria-pressed={theme === "light"}
-        onClick={() => chooseTheme("light")}
-      >
-        <Sun size={expanded ? 18 : 15} /> {expanded ? <span>Light</span> : null}
+    <div className="theme-switch" role="group" aria-label="Color theme">
+      <button type="button" aria-pressed={theme === "light"} onClick={() => chooseTheme("light")}>
+        <Sun size={16} /> Light
       </button>
-      {!expanded ? <span aria-hidden="true" className="theme-pulse" /> : null}
-      <button
-        type="button"
-        aria-label="Use dark theme"
-        aria-pressed={theme === "dark"}
-        onClick={() => chooseTheme("dark")}
-      >
-        <Moon size={expanded ? 18 : 15} /> {expanded ? <span>Dark</span> : null}
+      <button type="button" aria-pressed={theme === "dark"} onClick={() => chooseTheme("dark")}>
+        <Moon size={16} /> Dark
       </button>
     </div>
   );

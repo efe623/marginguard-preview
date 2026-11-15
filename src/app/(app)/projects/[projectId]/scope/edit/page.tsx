@@ -1,6 +1,6 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { TriangleAlert } from "lucide-react";
+import { Button, ButtonLink } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { publishScope } from "@/features/core/actions";
 
 export default async function EditScopePage({
@@ -12,50 +12,79 @@ export default async function EditScopePage({
 }) {
   const [{ projectId }, { error }] = await Promise.all([params, searchParams]);
   return (
-    <div className="page max-w-5xl">
-      <Link href={`/projects/${projectId}/scope`} className="mb-8 inline-flex items-center gap-2 text-sm font-semibold">
-        <ArrowLeft size={16} /> Back to scope
-      </Link>
-      <p className="eyebrow">Structured agreement</p>
-      <h1 className="page-title mt-4">Publish the source of truth.</h1>
-      <p className="quiet mt-4 max-w-2xl leading-7">
-        Enter one item per line. Use a vertical bar to separate the title from details.
-      </p>
-      {error ? <p className="mt-6 border border-[var(--danger)] p-4 text-sm">{error}</p> : null}
-      <form action={publishScope} className="card mt-8 grid grid-cols-2 gap-6 p-8">
-        <input type="hidden" name="projectId" value={projectId} />
-        <input type="hidden" name="currency" value="AED" />
-        <label className="col-span-2">
-          <span className="field-label">Deliverables</span>
-          <textarea className="textarea min-h-40" name="deliverables" required placeholder={"Five landing pages | Home, About, Contact, FAQ, Journal\nCheckout flow | Cart through confirmation"} />
-        </label>
-        <label className="col-span-2">
-          <span className="field-label">Explicit exclusions</span>
-          <textarea className="textarea min-h-32" name="exclusions" placeholder={"Arabic localization | RTL and translation are excluded\nProduct photography | Supplied by client"} />
-        </label>
-        <label>
-          <span className="field-label">Timeline</span>
-          <input className="input" name="timeline" required placeholder="8 weeks from deposit confirmation" />
-        </label>
-        <label>
-          <span className="field-label">Included revisions</span>
-          <input className="input" name="revisionLimit" type="number" min="0" max="100" defaultValue="2" required />
-        </label>
-        <label>
-          <span className="field-label">Extra-work pricing</span>
-          <select className="select" name="pricingMethod" defaultValue="hourly">
-            <option value="hourly">Hourly</option>
-            <option value="fixed">Fixed per request</option>
-          </select>
-        </label>
-        <label>
-          <span className="field-label">Hourly rate</span>
-          <input className="input" name="hourlyRate" inputMode="decimal" defaultValue="350.00" />
-        </label>
-        <div className="col-span-2 flex justify-end border-t border-[var(--line)] pt-6">
-          <Button type="submit">Publish scope</Button>
-        </div>
-      </form>
+    <div className="page page-narrow">
+      <PageHeader
+        crumbs={[
+          { label: "Projects", href: "/projects" },
+          { label: "Project", href: `/projects/${projectId}` },
+          { label: "Scope", href: `/projects/${projectId}/scope` }
+        ]}
+        title="Publish the scope"
+        description="Enter one item per line. Use a vertical bar to separate the title from details."
+      />
+      <div className="stack">
+        {error ? (
+          <p className="notice notice-danger" role="alert">
+            <TriangleAlert size={16} aria-hidden />
+            <span>{error}</span>
+          </p>
+        ) : null}
+        <form action={publishScope} className="stack">
+          <input type="hidden" name="projectId" value={projectId} />
+          <input type="hidden" name="currency" value="AED" />
+          <section className="panel">
+            <div className="panel-head">
+              <div>
+                <h2 className="panel-title">Included and excluded work</h2>
+                <p className="panel-sub">Example line: Five landing pages | Home, About, Contact</p>
+              </div>
+            </div>
+            <div className="panel-body stack">
+              <div className="field">
+                <label className="field-label" htmlFor="deliverables">Deliverables (included)</label>
+                <textarea id="deliverables" className="textarea min-h-40" name="deliverables" required placeholder={"Five landing pages | Home, About, Contact, FAQ, Journal\nCheckout flow | Cart through confirmation"} />
+              </div>
+              <div className="field">
+                <label className="field-label" htmlFor="exclusions">Explicit exclusions (not included)</label>
+                <textarea id="exclusions" className="textarea min-h-32" name="exclusions" placeholder={"Arabic localization | RTL and translation are excluded\nProduct photography | Supplied by client"} />
+                <p className="hint">Anything listed here can later become a change order.</p>
+              </div>
+            </div>
+          </section>
+          <section className="panel">
+            <div className="panel-head">
+              <h2 className="panel-title">Commercial terms</h2>
+            </div>
+            <div className="panel-body stack">
+              <div className="form-grid">
+                <div className="field">
+                  <label className="field-label" htmlFor="timeline">Timeline</label>
+                  <input id="timeline" className="input" name="timeline" required placeholder="8 weeks from deposit confirmation" />
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="revisionLimit">Included revisions</label>
+                  <input id="revisionLimit" className="input num" name="revisionLimit" type="number" min="0" max="100" defaultValue="2" required />
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="pricingMethod">Extra-work pricing</label>
+                  <select id="pricingMethod" className="select" name="pricingMethod" defaultValue="hourly">
+                    <option value="hourly">Hourly</option>
+                    <option value="fixed">Fixed per request</option>
+                  </select>
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="hourlyRate">Hourly rate</label>
+                  <input id="hourlyRate" className="input num" name="hourlyRate" inputMode="decimal" defaultValue="350.00" />
+                </div>
+              </div>
+              <div className="form-actions justify-end border-t border-[var(--line)] pt-5">
+                <ButtonLink href={`/projects/${projectId}/scope`} variant="outline">Cancel</ButtonLink>
+                <Button type="submit">Publish scope</Button>
+              </div>
+            </div>
+          </section>
+        </form>
+      </div>
     </div>
   );
 }

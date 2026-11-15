@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
+import Link from "next/link";
+import { KeyRound, ShieldCheck } from "lucide-react";
 import QRCode from "qrcode";
+import { AuthNotice, AuthShell, authLinkClass } from "@/components/auth/auth-shell";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 
@@ -86,65 +89,64 @@ export function MfaPanel({ next = "/dashboard" }: { next?: string }) {
 
   if (recoveryCodes.length) {
     return (
-      <div className="card w-full max-w-2xl p-9">
-        <p className="eyebrow">Save once</p>
-        <h1 className="font-display mt-4 text-5xl font-bold">Recovery codes</h1>
-        <p className="quiet mt-4 leading-7">
-          Store these somewhere safe. UnitPulse only stores protected digests and cannot show them again.
-        </p>
-        <pre className="mt-7 grid grid-cols-2 gap-3 border border-[var(--line)] bg-[var(--paper-deep)] p-6 font-mono text-sm">
-          {recoveryCodes.map((recoveryCode) => <span key={recoveryCode}>{recoveryCode}</span>)}
-        </pre>
-        <button className="button button-primary mt-7 w-full" onClick={() => window.location.assign(next)}>
+      <AuthShell
+        icon={<KeyRound size={24} />}
+        title="Save your recovery codes"
+        description="Store these somewhere safe. UnitPulse only stores protected digests and cannot show them again."
+      >
+        <ul className="m-0 grid list-none grid-cols-2 gap-2 rounded-[var(--radius-sm)] border border-[var(--line)] bg-[var(--surface-2)] p-4 font-mono text-sm">
+          {recoveryCodes.map((recoveryCode) => <li key={recoveryCode}>{recoveryCode}</li>)}
+        </ul>
+        <button className="auth-button auth-button-primary w-full" onClick={() => window.location.assign(next)}>
           I saved the codes
         </button>
-      </div>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="card w-full max-w-lg p-9">
-      <p className="eyebrow">{enrollment ? "Set up second factor" : "Second factor"}</p>
-      <h1 className="font-display mt-4 text-5xl font-bold tracking-tight">
-        {enrollment ? "Scan, then verify." : "Enter your authenticator code."}
-      </h1>
+    <AuthShell
+      icon={<ShieldCheck size={24} />}
+      title={enrollment ? "Scan, then verify" : "Enter your authenticator code"}
+      description={enrollment ? "Scan the QR code with an authenticator app, then enter the six-digit code it shows." : "Use the six-digit code from Google Authenticator or another TOTP app."}
+      footer={<Link href="/recovery" className={authLinkClass}>Use a recovery code</Link>}
+    >
       {enrollment ? (
-        <div className="mt-7">
+        <div className="grid justify-items-center gap-3">
           <Image
-            className="mx-auto border border-[var(--line)]"
+            className="rounded-[var(--radius-sm)] border border-[var(--line)]"
             alt="Authenticator QR code"
             src={enrollment.qrCode}
-            width={220}
-            height={220}
+            width={200}
+            height={200}
             unoptimized
           />
-          <p className="quiet mt-4 break-all text-center font-mono text-xs">{enrollment.secret}</p>
+          <p className="hint text-center">Can’t scan? Enter this key instead:</p>
+          <p className="break-all text-center font-mono text-xs">{enrollment.secret}</p>
         </div>
-      ) : (
-        <p className="quiet mt-4 leading-7">
-          Use the six-digit code from Google Authenticator or another TOTP app.
-        </p>
-      )}
-      <label className="mt-8 block">
-        <span className="field-label">Six-digit code</span>
+      ) : null}
+      <div className="field">
+        <label className="field-label" htmlFor="mfa-code">Six-digit code</label>
         <input
-          className="input text-center text-2xl tracking-[0.5em]"
+          id="mfa-code"
+          className="auth-input text-center text-xl tracking-[0.4em]"
           inputMode="numeric"
           autoComplete="one-time-code"
           maxLength={6}
           value={code}
           onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))}
+          aria-invalid={error ? true : undefined}
         />
-      </label>
-      {error ? <p role="alert" className="mt-4 text-sm text-[var(--danger)]">{error}</p> : null}
+      </div>
+      {error ? <AuthNotice tone="danger">{error}</AuthNotice> : null}
       <button
-        className="button button-primary mt-5 w-full"
+        className="auth-button auth-button-primary w-full"
         type="button"
         disabled={pending || code.length !== 6 || (isSupabaseConfigured && !factorId)}
         onClick={verify}
       >
         {pending ? "Verifying…" : "Verify code"}
       </button>
-    </div>
+    </AuthShell>
   );
 }

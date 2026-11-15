@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { publicEnv } from "@/lib/env";
+import { AuthNotice } from "@/components/auth/auth-shell";
 
 function GoogleMark() {
   return (
@@ -39,24 +40,20 @@ export function OAuthButtons() {
   }
 
   return (
-    <div className="mt-6">
-      <div className="relative flex items-center justify-center">
+    <div className="grid gap-3">
+      <div className="relative flex items-center justify-center" aria-hidden="true">
         <span className="absolute inset-x-0 border-t border-[var(--line)]" />
-        <span className="relative bg-[var(--paper)] px-3 text-xs font-bold uppercase tracking-[0.1em] text-[var(--ink-soft)]">
-          Or continue with
-        </span>
+        <span className="meta relative bg-[var(--surface)] px-3">or</span>
       </div>
-      <div className="mt-5">
-        <button
-          className="auth-button auth-button-provider w-full"
-          type="button"
-          disabled={Boolean(pending)}
-          onClick={continueWithGoogle}
-        >
-          <GoogleMark /> {pending === "google" ? "Connecting..." : "Google"}
-        </button>
-      </div>
-      {error ? <p className="mt-3 text-center text-sm text-[var(--danger)]" role="alert">{error}</p> : null}
+      <button
+        className="auth-button auth-button-provider w-full"
+        type="button"
+        disabled={Boolean(pending)}
+        onClick={continueWithGoogle}
+      >
+        <GoogleMark /> {pending === "google" ? "Connecting..." : "Continue with Google"}
+      </button>
+      {error ? <AuthNotice tone="danger">{error}</AuthNotice> : null}
     </div>
   );
 }

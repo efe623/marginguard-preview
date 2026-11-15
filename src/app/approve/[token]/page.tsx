@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { ClientApprovalPanel } from "@/components/client-approval-panel";
+import { ExternalShell } from "@/components/external-shell";
 import { getServerEnv, isSupabaseConfigured } from "@/lib/env";
 import {
   digestOpaqueToken,
@@ -25,9 +26,9 @@ export default async function ApprovalPage({
 
   if (!isSupabaseConfigured) {
     return (
-      <main className="min-h-screen p-10">
+      <ExternalShell width="lg">
         <ClientApprovalPanel token={token} verified={false} />
-      </main>
+      </ExternalShell>
     );
   }
 
@@ -98,8 +99,8 @@ export default async function ApprovalPage({
   }
 
   return (
-    <main className="min-h-screen p-10">
+    <ExternalShell width="lg" businessName={order?.businessName}>
       <ClientApprovalPanel token={token} verified={verified} order={order} />
-    </main>
+    </ExternalShell>
   );
 }

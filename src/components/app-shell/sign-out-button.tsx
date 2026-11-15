@@ -5,7 +5,7 @@ import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/env";
 
-export function SignOutButton() {
+export function SignOutButton({ variant = "icon" }: { variant?: "icon" | "menu" }) {
   const [pending, setPending] = useState(false);
 
   async function handleSignOut() {
@@ -18,6 +18,14 @@ export function SignOutButton() {
     window.location.replace("/sign-in");
   }
 
+  if (variant === "menu") {
+    return (
+      <button type="button" role="menuitem" className="menu-item" onClick={handleSignOut} disabled={pending}>
+        <LogOut size={17} /> {pending ? "Signing out" : "Sign out"}
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -25,7 +33,7 @@ export function SignOutButton() {
       disabled={pending}
       aria-label={pending ? "Signing out" : "Sign out"}
       title="Sign out"
-      className="grid size-9 place-items-center rounded-full text-white/50 transition hover:bg-white/10 hover:text-white disabled:opacity-50"
+      className="icon-button"
     >
       <LogOut size={17} />
     </button>

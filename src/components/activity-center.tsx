@@ -18,11 +18,11 @@ function ActivityRow({ item, compact = false }: { item: ActivityItem; compact?: 
           {item.unread ? <span className="activity-unread" aria-label="Unread" /> : null}
         </div>
         <p className="quiet mt-1 line-clamp-2 text-xs leading-5">{item.body}</p>
-        <time className="quiet mt-2 block text-[0.65rem] uppercase tracking-[0.08em]">
+        <time className="faint mt-1 block text-xs">
           {new Date(item.createdAt).toLocaleString()}
         </time>
       </div>
-      {item.href ? <ChevronRight className="quiet" size={16} /> : <span className="eyebrow">{item.category}</span>}
+      {item.href ? <ChevronRight className="quiet" size={16} /> : <span className="meta">{item.category}</span>}
     </div>
   );
   return item.href ? <Link href={item.href}>{content}</Link> : content;
@@ -56,14 +56,14 @@ export function ActivityCenter({ items }: { items: ActivityItem[] }) {
 
   return (
     <div className="activity-center" ref={rootRef}>
-      <button className={`topbar-icon-button ${pathname === "/notifications" ? "topbar-icon-button-active" : ""}`} type="button" aria-label={`Activity center${unread ? `, ${unread} unread` : ""}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-        <Bell size={19} />
+      <button className="icon-button" aria-current={pathname === "/notifications" ? "page" : undefined} type="button" aria-label={`Activity center${unread ? `, ${unread} unread` : ""}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+        <Bell size={18} />
         {unread ? <span className="topbar-alert-count">{Math.min(unread, 9)}</span> : null}
       </button>
       {open ? (
         <section className="activity-popover" aria-label="Recent activity">
           <header className="activity-popover-header">
-            <div><p className="eyebrow">Alerts + audit</p><h2 className="font-display mt-1 text-2xl font-bold">Recent activity</h2></div>
+            <div><h2 className="panel-title">Recent activity</h2><p className="meta">Alerts and audit events</p></div>
             <button type="button" aria-label="Close activity" onClick={() => setOpen(false)}><X size={18} /></button>
           </header>
           <div className="activity-popover-list">

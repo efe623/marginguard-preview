@@ -1,4 +1,4 @@
-import { ArrowRight, MessageSquareText, Plus } from "lucide-react";
+import { ChevronRight, MessageSquareText, Plus, TriangleAlert } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
 import { ButtonLink } from "@/components/ui/button";
@@ -15,58 +15,79 @@ export default async function ChangeRequestsPage({
   const project = await getProjectView(projectId);
   if (!project) notFound();
 
+  const requests = [
+    {
+      date: "29 Jul 2026",
+      title: "Arabic localization",
+      source: "Meeting note",
+      evidence: "No source evidence",
+      status: "Converted to CO-004",
+      tone: "warning" as const
+    },
+    {
+      date: "17 Jul 2026",
+      title: "Additional product photography",
+      source: "Email excerpt",
+      evidence: "Evidence attached",
+      status: "Paid",
+      tone: "success" as const
+    }
+  ];
+
   return (
     <div className="page">
       <PageHeader
-        eyebrow={project.name}
+        crumbs={[
+          { label: "Projects", href: "/projects" },
+          { label: project.name, href: `/projects/${project.id}` }
+        ]}
         title="Change requests"
         description="Record the request first. Supporting evidence helps, but is not required."
         actions={
           <ButtonLink href={`/projects/${project.id}/requests/new`}>
-            <Plus size={16} /> New request
+            <Plus size={16} aria-hidden /> New request
           </ButtonLink>
         }
       />
       <ProjectTabs projectId={project.id} active="requests" />
 
-      <section className="card mt-7">
-        {[
-          {
-            date: "29 Jul 2026",
-            title: "Arabic localization",
-            source: "Meeting note",
-            evidence: "No source evidence",
-            status: "Converted to CO-004",
-            tone: "warning" as const
-          },
-          {
-            date: "17 Jul 2026",
-            title: "Additional product photography",
-            source: "Email excerpt",
-            evidence: "Evidence attached",
-            status: "Paid",
-            tone: "success" as const
-          }
-        ].map((item) => (
-          <article
-            key={item.title}
-            className="group grid grid-cols-[48px_1fr_180px_160px_30px] items-center gap-5 border-b border-[var(--line)] p-7 last:border-0 hover:bg-[var(--paper-deep)]"
-          >
-            <div className="grid size-12 place-items-center border border-[var(--line)]">
-              <MessageSquareText size={21} />
-            </div>
-            <div>
-              <p className="eyebrow">{item.date} · {item.source}</p>
-              <h2 className="mt-2 text-lg font-semibold">{item.title}</h2>
-              <p className={`mt-1 text-sm ${item.evidence.startsWith("No") ? "text-[var(--warning)]" : "quiet"}`}>
-                {item.evidence}
-              </p>
-            </div>
-            <p className="quiet text-sm">Client request</p>
-            <Status tone={item.tone}>{item.status}</Status>
-            <ArrowRight size={17} className="transition group-hover:translate-x-1" />
-          </article>
-        ))}
+      <section className="panel">
+        <div className="panel-head">
+          <div>
+            <h2 className="panel-title">Requests</h2>
+            <p className="panel-sub">Newest first</p>
+          </div>
+        </div>
+        {requests.length ? (
+          <div className="rows">
+            {requests.map((item) => {
+              const missing = item.evidence.startsWith("No");
+              return (
+                <div key={item.title} className="row">
+                  <span className="row-lead"><MessageSquareText size={18} aria-hidden /></span>
+                  <div className="row-main">
+                    <p className="row-title">{item.title}</p>
+                    <p className="row-sub">{item.date} · {item.source} · Client request</p>
+                    <p className="row-sub inline-flex items-center gap-1.5">
+                      {missing ? <TriangleAlert size={13} aria-hidden className="text-[var(--warning)]" /> : null}
+                      {item.evidence}
+                    </p>
+                  </div>
+                  <div className="row-end">
+                    <Status tone={item.tone}>{item.status}</Status>
+                    <ChevronRight size={16} aria-hidden className="faint" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty">
+            <p className="empty-title">No change requests yet</p>
+            <p className="empty-text">Log the first thing the client asks for outside the agreed scope.</p>
+            <ButtonLink href={`/projects/${project.id}/requests/new`}>New request</ButtonLink>
+          </div>
+        )}
       </section>
     </div>
   );

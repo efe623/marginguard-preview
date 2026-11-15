@@ -23,24 +23,30 @@ export default async function ProjectAuditPage({
   return (
     <div className="page">
       <PageHeader
-        eyebrow={project.name}
-        title="Project audit"
+        crumbs={[
+          { label: "Projects", href: "/projects" },
+          { label: project.name, href: `/projects/${project.id}` }
+        ]}
+        title="History"
         description="An append-only record of decisions, approvals, permissions, and payments."
       />
       <ProjectTabs projectId={project.id} active="audit" />
-      <section className="card mt-7">
-        {events.map(([time, title, detail, Icon]) => (
-          <article key={title} className="grid grid-cols-[100px_42px_1fr] gap-5 border-b border-[var(--line)] p-6 last:border-0">
-            <time className="eyebrow pt-3">{time}</time>
-            <span className="grid size-10 place-items-center border border-[var(--line)]">
-              <Icon size={18} />
-            </span>
-            <div>
-              <h2 className="font-semibold">{title}</h2>
-              <p className="quiet mt-1 text-sm">{detail}</p>
-            </div>
-          </article>
-        ))}
+      <section className="panel" aria-labelledby="audit-title">
+        <div className="panel-head">
+          <h2 className="panel-title" id="audit-title">Newest first</h2>
+        </div>
+        <ol className="rows">
+          {events.map(([time, title, detail, Icon]) => (
+            <li key={title} className="row" style={{ gridTemplateColumns: "72px 32px minmax(0, 1fr)" }}>
+              <time className="num quiet" style={{ textAlign: "left" }}>{time}</time>
+              <span className="row-lead"><Icon size={18} aria-hidden="true" /></span>
+              <div className="row-main">
+                <p className="row-title">{title}</p>
+                <p className="row-sub">{detail}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </section>
     </div>
   );

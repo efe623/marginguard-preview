@@ -28,6 +28,14 @@ export function ButtonLink({
   variant?: Variant;
   className?: string;
 }) {
+  // API routes (downloads, exports) are plain anchors: Next must not prefetch them.
+  if (href.startsWith("/api/")) {
+    return (
+      <a className={cn("button", `button-${variant}`, className)} href={href}>
+        {children}
+      </a>
+    );
+  }
   return (
     <Link className={cn("button", `button-${variant}`, className)} href={href}>
       {children}

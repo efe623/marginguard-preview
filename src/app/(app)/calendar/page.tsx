@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, CheckSquare, ChevronLeft, ChevronRight, FolderKanban, Receipt } from "lucide-react";
 import Link from "next/link";
 import { CalendarFeedPanel } from "@/components/calendar-feed-panel";
 import { PageHeader } from "@/components/ui/page-header";
@@ -8,10 +8,11 @@ import { getMonthDays, monthKey, parseMonth, type CalendarEventKind } from "@/li
 import { isSupabaseConfigured } from "@/lib/env";
 
 const kindLabel: Record<CalendarEventKind, string> = { invoice: "Invoice", task: "Task", project: "Project" };
+const kindIcon: Record<CalendarEventKind, typeof Receipt> = { invoice: Receipt, task: CheckSquare, project: FolderKanban };
 const kindClass: Record<CalendarEventKind, string> = {
-  invoice: "border-[var(--signal)] bg-[color-mix(in_srgb,var(--signal)_12%,var(--paper-white))]",
-  task: "border-[var(--ink)] bg-[var(--paper-white)]",
-  project: "border-[var(--success)] bg-[color-mix(in_srgb,var(--success)_10%,var(--paper-white))]"
+  invoice: "bg-[var(--accent-soft)]",
+  task: "bg-[var(--surface-2)]",
+  project: "bg-[color-mix(in_srgb,var(--success)_12%,var(--surface))]"
 };
 
 export default async function CalendarPage({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
@@ -34,40 +35,62 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
     }
   }
 
+  const monthLabel = new Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format(new Date(year, monthIndex, 1));
+
   return (
     <div className="page">
-      <PageHeader eyebrow={`${events.length} dated items`} title="Calendar" description="See the dates that affect delivery and cash flow—without rebuilding your schedule by hand." />
-      <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_330px]">
-        <section className="card min-w-0 overflow-hidden">
-          <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] p-5">
-            <div><p className="eyebrow">Working month</p><h2 className="section-title mt-2">{new Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format(new Date(year, monthIndex, 1))}</h2></div>
-            <div className="flex gap-2">
-              <Link className="button button-outline min-h-10 px-3" aria-label="Previous month" href={`/calendar?month=${monthKey(previous.getFullYear(), previous.getMonth())}`}><ChevronLeft size={17} /></Link>
-              <Link className="button button-outline min-h-10 px-4" href="/calendar">Today</Link>
-              <Link className="button button-outline min-h-10 px-3" aria-label="Next month" href={`/calendar?month=${monthKey(next.getFullYear(), next.getMonth())}`}><ChevronRight size={17} /></Link>
+      <PageHeader title="Calendar" description="See the dates that affect delivery and cash flow—without rebuilding your schedule by hand." />
+      <div className="split">
+        <section className="panel min-w-0">
+          <div className="panel-head">
+            <div>
+              <h2 className="panel-title">{monthLabel}</h2>
+              <p className="panel-sub">{events.length} dated items in total</p>
             </div>
-          </header>
-          <div className="overflow-x-auto">
-            <div className="min-w-[840px]">
-              <div className="grid grid-cols-7 border-b border-[var(--line)]">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((day) => <div className="eyebrow px-3 py-3" key={day}>{day}</div>)}</div>
+            <div className="cluster">
+              <Link className="button button-outline button-icon" aria-label="Previous month" href={`/calendar?month=${monthKey(previous.getFullYear(), previous.getMonth())}`}><ChevronLeft size={17} aria-hidden /></Link>
+              <Link className="button button-outline" href="/calendar">Today</Link>
+              <Link className="button button-outline button-icon" aria-label="Next month" href={`/calendar?month=${monthKey(next.getFullYear(), next.getMonth())}`}><ChevronRight size={17} aria-hidden /></Link>
+            </div>
+          </div>
+          <div className="table-wrap">
+            <div className="min-w-[720px]">
+              <div className="grid grid-cols-7 border-b border-[var(--line)]">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((day) => <div className="px-3 py-2.5 text-[0.8125rem] font-semibold text-[var(--ink-soft)]" key={day}>{day}</div>)}</div>
               <div className="grid grid-cols-7">
                 {days.map((day) => (
-                  <div key={day.date} className={`min-h-36 border-b border-r border-[var(--line)] p-2 ${day.inMonth ? "" : "bg-[var(--paper-deep)] opacity-55"}`}>
-                    <time className={`grid size-7 place-items-center text-xs font-bold ${day.date === today ? "rounded-full bg-[var(--signal)] text-[var(--on-signal)]" : ""}`}>{day.dayNumber}</time>
-                    <div className="mt-2 space-y-1.5">{(eventsByDate.get(day.date) ?? []).slice(0, 3).map((event) => <Link href={event.href} key={`${event.kind}-${event.id}`} className={`block border-l-[3px] p-2 text-xs leading-4 ${kindClass[event.kind]}`}><span className="block font-bold">{event.title}</span><span className="quiet mt-0.5 block truncate">{event.detail}</span></Link>)}</div>
+                  <div key={day.date} className={`min-h-32 min-w-0 overflow-hidden border-b border-r border-[var(--line)] p-1.5 ${day.inMonth ? "" : "bg-[var(--surface-2)] opacity-60"}`}>
+                    <time dateTime={day.date} className={`grid size-7 place-items-center text-xs font-bold ${day.date === today ? "rounded-full bg-[var(--signal)] text-[var(--on-signal)]" : ""}`}>{day.dayNumber}</time>
+                    <div className="mt-1.5 grid grid-cols-[minmax(0,1fr)] gap-1">{(eventsByDate.get(day.date) ?? []).slice(0, 3).map((event) => { const Icon = kindIcon[event.kind]; return <Link href={event.href} key={`${event.kind}-${event.id}`} className={`block rounded-md px-2 py-1.5 text-xs leading-4 hover:outline hover:outline-1 hover:outline-[var(--line-strong)] ${kindClass[event.kind]}`}><span className="flex items-start gap-1.5 font-semibold"><Icon size={12} aria-hidden className="mt-0.5 flex-none" /><span className="min-w-0"><span className="sr-only">{kindLabel[event.kind]}: </span>{event.title}</span></span><span className="mt-0.5 block truncate pl-[18px] text-[var(--ink-soft)]">{event.detail}</span></Link>; })}</div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
         </section>
-        <div className="space-y-6">
-          <CalendarFeedPanel enabled={feedEnabled} available={isSupabaseConfigured} />
-          <section className="card p-6">
-            <p className="eyebrow">Next up</p>
-            <div className="mt-4 space-y-4">{upcoming.map((event) => <Link className="block border-l-2 border-[var(--line)] pl-4 hover:border-[var(--signal)]" href={event.href} key={`${event.kind}-${event.id}`}><p className="text-xs font-bold uppercase tracking-[0.08em]">{new Date(`${event.date}T12:00:00`).toLocaleDateString("en", { month: "short", day: "numeric" })} · {kindLabel[event.kind]}</p><p className="mt-1 text-sm font-semibold">{event.title}</p><p className="quiet mt-1 text-xs">{event.detail}</p></Link>)}</div>
-            {!upcoming.length ? <p className="quiet mt-4 text-sm">No upcoming dates yet.</p> : null}
+        <div className="stack">
+          <section className="panel">
+            <div className="panel-head"><h2 className="panel-title">Next up</h2></div>
+            {upcoming.length ? (
+              <div className="rows">
+                {upcoming.map((event) => { const Icon = kindIcon[event.kind]; return (
+                  <Link className="row" href={event.href} key={`${event.kind}-${event.id}`}>
+                    <span className="row-lead"><Icon size={18} aria-hidden /></span>
+                    <div className="row-main">
+                      <p className="row-title">{event.title}</p>
+                      <p className="row-sub">{new Date(`${event.date}T12:00:00`).toLocaleDateString("en", { weekday: "short", day: "numeric", month: "short" })} · {kindLabel[event.kind]} · {event.detail}</p>
+                    </div>
+                  </Link>
+                ); })}
+              </div>
+            ) : (
+              <div className="empty">
+                <CalendarDays size={22} aria-hidden className="text-[var(--ink-3)]" />
+                <p className="empty-title">No upcoming dates</p>
+                <p className="empty-text">Due dates for invoices, tasks and projects will show up here.</p>
+              </div>
+            )}
           </section>
+          <CalendarFeedPanel enabled={feedEnabled} available={isSupabaseConfigured} />
         </div>
       </div>
     </div>

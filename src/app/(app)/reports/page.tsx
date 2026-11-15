@@ -1,4 +1,4 @@
-import { Download, TrendingUp } from "lucide-react";
+import { Download } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
@@ -37,22 +37,88 @@ export default async function ReportsPage() {
   const overdueValue = invoices.filter((invoice) => !["paid", "void"].includes(invoice.status) && invoice.due_date < today && invoice.currency === currency).reduce((sum, invoice) => sum + Number(invoice.amount_minor) - Number(invoice.paid_amount_minor), 0);
   const unbilledTimeValue = projectRows.reduce((sum, project) => sum + (project.hourly_rate_minor ? Math.round((project.minutes / 60) * Number(project.hourly_rate_minor)) : 0), 0);
 
+  const unprofitable = projectRows.filter((row) => row.profit < 0).length;
+  const riskTone = (risk: number) => (risk >= 60 ? "danger" : risk >= 30 ? "warning" : "success") as "danger" | "warning" | "success";
+
   return (
     <div className="page">
-      <PageHeader eyebrow="Decision intelligence" title="Reports" description="Money leaks, project risk, best clients, and safer future pricing." actions={<ButtonLink href="/api/export"><Download size={16} /> Export accounting data</ButtonLink>} />
-      <div className="mt-8 grid gap-4 md:grid-cols-3">
-        <div className="card p-5"><p className="eyebrow">Overdue invoices</p><p className="mt-2 text-3xl font-bold text-[var(--danger)]">{formatMoney(overdueValue, currency)}</p></div>
-        <div className="card p-5"><p className="eyebrow">Tracked billable effort</p><p className="mt-2 text-3xl font-bold">{formatMoney(unbilledTimeValue, currency)}</p><p className="quiet mt-2 text-xs">Compare with invoices before billing</p></div>
-        <div className="card p-5"><p className="eyebrow">Unprofitable projects</p><p className="mt-2 text-3xl font-bold">{projectRows.filter((row) => row.profit < 0).length}</p></div>
+      <PageHeader title="Reports" description="Money leaks, project risk, best clients, and safer future pricing." actions={<ButtonLink href="/api/export"><Download size={16} aria-hidden /> Export accounting data</ButtonLink>} />
+      <div className="stack">
+        <section className="panel">
+          <div className="panel-head">
+            <div>
+              <h2 className="panel-title">Position today</h2>
+              <p className="panel-sub">Compare tracked effort with invoices before billing.</p>
+            </div>
+          </div>
+          <div className="panel-body">
+            <dl className="ledger">
+              <div className="ledger-line"><dt className="ledger-label">Overdue invoices</dt><dd className={`ledger-value ${overdueValue > 0 ? "text-[var(--danger)]" : ""}`}>{formatMoney(overdueValue, currency)}</dd></div>
+              <div className="ledger-line"><dt className="ledger-label">Tracked billable effort</dt><dd className="ledger-value">{formatMoney(unbilledTimeValue, currency)}</dd></div>
+              <div className="ledger-line"><dt className="ledger-label">Unprofitable projects</dt><dd className={`ledger-value ${unprofitable > 0 ? "text-[var(--danger)]" : ""}`}>{unprofitable}</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-head">
+            <div>
+              <h2 className="panel-title">Project profitability and quote intelligence</h2>
+              <p className="panel-sub">The most profitable completed job types are the safest evidence for future pricing.</p>
+            </div>
+          </div>
+          {projectRows.length ? (
+            <div className="table-wrap">
+              <table className="table min-w-[640px]">
+                <thead><tr><th>Project</th><th className="num">Revenue</th><th className="num">Estimated profit</th><th className="num">Tracked time</th><th>Risk</th></tr></thead>
+                <tbody>
+                  {projectRows.map((project) => (
+                    <tr key={project.id}>
+                      <td><strong>{project.name}</strong></td>
+                      <td className="num">{formatMoney(project.revenue, currency)}</td>
+                      <td className={`num font-semibold ${project.profit < 0 ? "text-[var(--danger)]" : "text-[var(--success)]"}`}>{formatMoney(project.profit, currency)}</td>
+                      <td className="num">{Math.round(project.minutes / 60)}h</td>
+                      <td><Status tone={riskTone(project.risk)}>{project.risk}/100</Status></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="empty">
+              <p className="empty-title">No projects to report on</p>
+              <p className="empty-text">Profitability appears here once a project has a quote and some tracked work.</p>
+            </div>
+          )}
+        </section>
+
+        <section className="panel">
+          <div className="panel-head"><h2 className="panel-title">Best-client report</h2></div>
+          {clientRows.length ? (
+            <div className="table-wrap">
+              <table className="table min-w-[600px]">
+                <thead><tr><th>Client</th><th className="num">Projects</th><th className="num">Profit</th><th className="num">Overdue invoices</th><th>Risk</th></tr></thead>
+                <tbody>
+                  {clientRows.map((client) => (
+                    <tr key={client.id}>
+                      <td><strong>{client.name}</strong></td>
+                      <td className="num">{client.projects}</td>
+                      <td className="num">{formatMoney(client.profit, currency)}</td>
+                      <td className="num">{client.overdue}</td>
+                      <td><Status tone={riskTone(client.risk)}>{client.risk}/100</Status></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="empty">
+              <p className="empty-title">No clients yet</p>
+              <p className="empty-text">Add a client and a project to see which relationships pay best.</p>
+            </div>
+          )}
+        </section>
       </div>
-      <section className="card mt-6 overflow-x-auto">
-        <div className="border-b border-[var(--line)] p-6"><h2 className="section-title flex items-center gap-2"><TrendingUp size={20} /> Project profitability and quote intelligence</h2><p className="quiet mt-2 text-sm">The most profitable completed job types are the safest evidence for future pricing.</p></div>
-        <table className="data-table min-w-[720px]"><thead><tr><th>Project</th><th>Revenue</th><th>Estimated profit</th><th>Tracked time</th><th>Risk</th></tr></thead><tbody>{projectRows.map((project) => <tr key={project.id}><td><strong>{project.name}</strong></td><td>{formatMoney(project.revenue, currency)}</td><td className={project.profit < 0 ? "text-[var(--danger)]" : "text-[var(--success)]"}>{formatMoney(project.profit, currency)}</td><td>{Math.round(project.minutes / 60)}h</td><td><Status tone={project.risk >= 60 ? "danger" : project.risk >= 30 ? "warning" : "success"}>{project.risk}/100</Status></td></tr>)}</tbody></table>
-      </section>
-      <section className="card mt-6 overflow-x-auto">
-        <div className="border-b border-[var(--line)] p-6"><h2 className="section-title">Best-client report</h2></div>
-        <table className="data-table min-w-[650px]"><thead><tr><th>Client</th><th>Projects</th><th>Profit</th><th>Overdue invoices</th><th>Risk</th></tr></thead><tbody>{clientRows.map((client) => <tr key={client.id}><td><strong>{client.name}</strong></td><td>{client.projects}</td><td>{formatMoney(client.profit, currency)}</td><td>{client.overdue}</td><td><Status tone={client.risk >= 60 ? "danger" : client.risk >= 30 ? "warning" : "success"}>{client.risk}/100</Status></td></tr>)}</tbody></table>
-      </section>
     </div>
   );
 }

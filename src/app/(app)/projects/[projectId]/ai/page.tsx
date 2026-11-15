@@ -37,42 +37,59 @@ export default async function ProjectAiPage({
   return (
     <div className="page">
       <PageHeader
-        eyebrow={project.code}
-        title="AI draft workspace"
-        description="Extract, detect, compare, estimate, and draft—always with human review."
-        actions={<Link className="button button-dark" href="/settings/ai">AI settings</Link>}
+        crumbs={[
+          { label: "Projects", href: "/projects" },
+          { label: project.name, href: `/projects/${projectId}` }
+        ]}
+        title="AI drafts"
+        description="Extract, detect, compare, estimate, and draft, always with human review."
+        actions={<Link className="button button-outline" href="/settings/ai">AI settings</Link>}
       />
       <ProjectTabs projectId={projectId} active="ai" />
-      <div className="mt-8">
+      <div className="stack">
         <AiDraftPanel projectId={projectId} defaultSource={defaultSource} />
-      </div>
-      <section className="mt-6 space-y-4">
-        {drafts.map((draft) => (
-          <article key={draft.id} className="card p-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p className="eyebrow">{draft.generation_type.replaceAll("_", " ")}</p>
-                <p className="quiet mt-2 text-xs">{draft.model} · {new Date(draft.created_at).toLocaleString()}</p>
-              </div>
-              <Status tone={draft.status === "accepted" ? "success" : draft.status === "dismissed" ? "danger" : "warning"}>{draft.status}</Status>
+        <section className="panel" aria-labelledby="drafts-title">
+          <div className="panel-head">
+            <div>
+              <h2 className="panel-title" id="drafts-title">Drafts for review</h2>
+              <p className="panel-sub">{drafts.length} generated</p>
             </div>
-            <pre className="mt-5 max-h-96 overflow-auto whitespace-pre-wrap border border-[var(--line)] bg-[var(--paper-deep)] p-4 text-xs leading-6">{JSON.stringify(draft.output, null, 2)}</pre>
-            {draft.status === "draft" ? (
-              <div className="mt-4 flex gap-3">
-                {(["accepted", "dismissed"] as const).map((status) => (
-                  <form action={reviewAiDraft} key={status}>
-                    <input type="hidden" name="projectId" value={projectId} />
-                    <input type="hidden" name="generationId" value={draft.id} />
-                    <input type="hidden" name="status" value={status} />
-                    <button className={`button ${status === "accepted" ? "button-primary" : "button-dark"}`} type="submit">{status === "accepted" ? "Accept as reviewed draft" : "Dismiss"}</button>
-                  </form>
-                ))}
-              </div>
-            ) : null}
-          </article>
-        ))}
-        {!drafts.length ? <div className="card p-10 text-center quiet">No AI drafts yet.</div> : null}
-      </section>
+          </div>
+          {drafts.length ? (
+            <div className="rows">
+              {drafts.map((draft) => (
+                <article key={draft.id} className="row" style={{ display: "block" }}>
+                  <div className="cluster justify-between">
+                    <div>
+                      <p className="row-title capitalize">{draft.generation_type.replaceAll("_", " ")}</p>
+                      <p className="row-sub">{draft.model} · {new Date(draft.created_at).toLocaleString()}</p>
+                    </div>
+                    <Status tone={draft.status === "accepted" ? "success" : draft.status === "dismissed" ? "danger" : "warning"}>{draft.status}</Status>
+                  </div>
+                  <pre className="mt-3 max-h-96 overflow-auto whitespace-pre-wrap rounded-[var(--radius-sm)] border border-[var(--line)] bg-[var(--surface-2)] p-4 text-xs leading-6">{JSON.stringify(draft.output, null, 2)}</pre>
+                  {draft.status === "draft" ? (
+                    <div className="cluster mt-3">
+                      {(["accepted", "dismissed"] as const).map((status) => (
+                        <form action={reviewAiDraft} key={status}>
+                          <input type="hidden" name="projectId" value={projectId} />
+                          <input type="hidden" name="generationId" value={draft.id} />
+                          <input type="hidden" name="status" value={status} />
+                          <button className={`button ${status === "accepted" ? "button-primary" : "button-outline"}`} type="submit">{status === "accepted" ? "Accept as reviewed draft" : "Dismiss"}</button>
+                        </form>
+                      ))}
+                    </div>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="empty">
+              <p className="empty-title">No AI drafts yet</p>
+              <p className="empty-text">Pick a workflow above, paste the client text and create your first draft.</p>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

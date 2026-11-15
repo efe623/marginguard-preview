@@ -1,5 +1,6 @@
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
 import { getOwnerAal2 } from "@/features/auth/authorization";
 import {
   assignProject,
@@ -11,9 +12,18 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export async function ProjectAssignmentPanel({ projectId }: { projectId: string }) {
   if (!isSupabaseConfigured) {
     return (
-      <section className="card mt-6 p-7">
-        <p className="eyebrow">Project access</p>
-        <p className="quiet mt-3 text-sm">Preview: Sam Morgan is assigned. Owners always retain access.</p>
+      <section className="panel">
+        <div className="panel-head">
+          <h2 className="panel-title">Project access</h2>
+        </div>
+        <div className="row">
+          <span className="row-lead"><UserPlus size={18} aria-hidden /></span>
+          <div className="row-main">
+            <p className="row-title">Sam Morgan</p>
+            <p className="row-sub">Preview: assigned. Owners always retain access.</p>
+          </div>
+          <div className="row-end"><Status tone="success">Assigned</Status></div>
+        </div>
       </section>
     );
   }
@@ -42,29 +52,42 @@ export async function ProjectAssignmentPanel({ projectId }: { projectId: string 
     };
   }));
   return (
-    <section className="card mt-6 p-7">
-      <div className="flex items-center gap-3">
-        <UserPlus size={20} />
+    <section className="panel">
+      <div className="panel-head">
         <div>
-          <p className="eyebrow">Project access</p>
-          <p className="quiet mt-1 text-sm">Staff only see projects assigned here.</p>
+          <h2 className="panel-title">Project access</h2>
+          <p className="panel-sub">Staff only see projects assigned here.</p>
         </div>
       </div>
-      <div className="mt-5 space-y-3">
-        {people.map((person) => (
-          <div key={person.id} className="flex items-center justify-between border border-[var(--line)] p-4">
-            <span className="font-semibold">{person.name}</span>
-            <form action={person.assigned ? removeProjectAssignment : assignProject}>
-              <input type="hidden" name="projectId" value={projectId} />
-              <input type="hidden" name="membershipId" value={person.id} />
-              <Button type="submit" variant="outline">
-                {person.assigned ? "Remove access" : "Assign project"}
-              </Button>
-            </form>
-          </div>
-        ))}
-        {!people.length ? <p className="quiet text-sm">Invite staff before assigning this project.</p> : null}
-      </div>
+      {people.length ? (
+        <div className="rows">
+          {people.map((person) => (
+            <div key={person.id} className="row">
+              <span className="row-lead"><UserPlus size={18} aria-hidden /></span>
+              <div className="row-main">
+                <p className="row-title">{person.name}</p>
+              </div>
+              <div className="row-end">
+                <Status tone={person.assigned ? "success" : "neutral"}>
+                  {person.assigned ? "Assigned" : "No access"}
+                </Status>
+                <form action={person.assigned ? removeProjectAssignment : assignProject}>
+                  <input type="hidden" name="projectId" value={projectId} />
+                  <input type="hidden" name="membershipId" value={person.id} />
+                  <Button type="submit" variant="outline" className="button-sm">
+                    {person.assigned ? "Remove access" : "Assign project"}
+                  </Button>
+                </form>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="empty">
+          <p className="empty-title">No staff to assign</p>
+          <p className="empty-text">Invite staff before assigning this project.</p>
+        </div>
+      )}
     </section>
   );
 }

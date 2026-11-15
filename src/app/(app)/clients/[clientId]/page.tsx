@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone } from "lucide-react";
+import { FileText, FolderKanban, Mail, MapPin, Phone, Receipt } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { PortalLinkButton } from "@/components/portal-link-button";
@@ -44,83 +44,135 @@ export default async function ClientPage({
   return (
     <div className="page">
       <PageHeader
-        eyebrow="Client profile"
+        crumbs={[{ label: "Clients", href: "/clients" }, { label: client.name }]}
         title={client.name}
-        actions={<div className="flex flex-wrap gap-3"><PortalLinkButton clientId={clientId} /><ButtonLink href="/projects/new">New project</ButtonLink></div>}
+        actions={<><PortalLinkButton clientId={clientId} /><ButtonLink href="/projects/new">New project</ButtonLink></>}
       />
-      <div className="mt-6 flex flex-wrap gap-6 text-sm">
-        <span className="flex items-center gap-2"><MapPin size={16} /> {client.location}</span>
-        <a className="flex items-center gap-2 hover:text-[var(--signal)]" href={`mailto:${client.email}`}><Mail size={16} /> {client.email}</a>
-        <span className="flex items-center gap-2"><Phone size={16} /> {client.phone}</span>
-      </div>
+      <div className="stack">
+        <div className="cluster text-sm">
+          <span className="inline-flex items-center gap-2"><MapPin size={16} aria-hidden className="text-[var(--ink-soft)]" /> {client.location}</span>
+          <a className="inline-flex items-center gap-2 hover:text-[var(--signal)]" href={`mailto:${client.email}`}><Mail size={16} aria-hidden className="text-[var(--ink-soft)]" /> {client.email}</a>
+          <span className="inline-flex items-center gap-2"><Phone size={16} aria-hidden className="text-[var(--ink-soft)]" /> {client.phone}</span>
+        </div>
 
-      <div className="mt-10 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <section className="card">
-          <div className="border-b border-[var(--line)] p-7">
-            <p className="eyebrow mb-3">Current work</p>
-            <h2 className="section-title">Projects</h2>
-          </div>
-          {clientProjects.map((project) => (
-            <div key={project.id} className="grid gap-4 border-b border-[var(--line)] p-6 last:border-0 md:grid-cols-[1fr_180px_150px] md:items-center">
-              <div>
-                <p className="font-semibold">{project.name}</p>
-                <p className="quiet mt-1 text-xs">{project.code}</p>
-              </div>
-              <p className="font-semibold">{formatMoney(project.quoteMinor, project.currency)}</p>
-              <Status tone={project.status === "authorized" ? "success" : "warning"}>
-                {project.status.replaceAll("_", " ")}
-              </Status>
+        <div className="split">
+          <section className="panel">
+            <div className="panel-head">
+              <h2 className="panel-title">Projects</h2>
+              <p className="panel-sub">{clientProjects.length} total</p>
             </div>
-          ))}
-        </section>
-        <aside className="card p-7">
-          <p className="eyebrow">Internal notes</p>
-          <form action={updateClientNotes} className="mt-5">
-            <input type="hidden" name="clientId" value={clientId} />
-            <textarea
-              className="input min-h-44 resize-y"
-              name="notes"
-              defaultValue={client.notes}
-              placeholder="Private context, preferences, or follow-up notes"
-            />
-            <button className="button button-dark mt-3" type="submit">Save notes</button>
+            {clientProjects.length ? (
+              <div className="rows">
+                {clientProjects.map((project) => (
+                  <div key={project.id} className="row">
+                    <span className="row-lead"><FolderKanban size={18} aria-hidden /></span>
+                    <div className="row-main">
+                      <p className="row-title">{project.name}</p>
+                      <p className="row-sub">{project.code}</p>
+                    </div>
+                    <div className="row-end">
+                      <span className="num font-semibold">{formatMoney(project.quoteMinor, project.currency)}</span>
+                      <Status tone={project.status === "authorized" ? "success" : "warning"}>
+                        {project.status.replaceAll("_", " ")}
+                      </Status>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty">
+                <p className="empty-title">No projects yet</p>
+                <p className="empty-text">Start a project to send this client a quote.</p>
+                <ButtonLink href="/projects/new">New project</ButtonLink>
+              </div>
+            )}
+          </section>
+
+          <form action={updateClientNotes} className="panel">
+            <div className="panel-head"><h2 className="panel-title">Internal notes</h2></div>
+            <div className="panel-body stack-sm">
+              <input type="hidden" name="clientId" value={clientId} />
+              <div className="field">
+                <label className="field-label" htmlFor="client-notes">Notes</label>
+                <textarea
+                  id="client-notes"
+                  className="textarea min-h-44"
+                  name="notes"
+                  defaultValue={client.notes}
+                  placeholder="Private context, preferences, or follow-up notes"
+                />
+              </div>
+              <div className="form-actions">
+                <button className="button button-dark" type="submit">Save notes</button>
+              </div>
+            </div>
           </form>
-        </aside>
+        </div>
+
+        <section className="panel">
+          <div className="panel-head">
+            <div>
+              <h2 className="panel-title">Change orders and payments</h2>
+              <p className="panel-sub">Commercial history across this client&apos;s projects</p>
+            </div>
+          </div>
+          {orders.length ? (
+            <div className="rows">
+              {orders.map((order) => (
+                <div key={order.id} className="row">
+                  <span className="row-lead"><FileText size={18} aria-hidden /></span>
+                  <div className="row-main">
+                    <p className="row-title">{order.title}</p>
+                    <p className="row-sub">{order.number}</p>
+                  </div>
+                  <div className="row-end">
+                    <span className="num font-semibold">{formatMoney(order.amountMinor, order.currency)}</span>
+                    <Status tone={order.status === "paid" ? "success" : "warning"}>{order.status}</Status>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty">
+              <p className="empty-title">No change orders yet</p>
+              <p className="empty-text">Approved scope changes will appear here with their payment status.</p>
+            </div>
+          )}
+        </section>
+
+        <section className="panel">
+          <div className="panel-head">
+            <div>
+              <h2 className="panel-title">Invoices</h2>
+              <p className="panel-sub">Payment history</p>
+            </div>
+          </div>
+          {invoices.length ? (
+            <div className="rows">
+              {invoices.map((invoice) => (
+                <div key={invoice.id} className="row">
+                  <span className="row-lead"><Receipt size={18} aria-hidden /></span>
+                  <div className="row-main">
+                    <p className="row-title">{invoice.invoice_number}</p>
+                    <p className="row-sub">Due {invoice.due_date}</p>
+                  </div>
+                  <div className="row-end">
+                    <span className="num font-semibold">{formatMoney(Number(invoice.amount_minor), invoice.currency)}</span>
+                    <Status tone={invoice.status === "paid" ? "success" : invoice.status === "overdue" ? "danger" : "warning"}>
+                      {invoice.status.replaceAll("_", " ")}
+                    </Status>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty">
+              <p className="empty-title">No invoices yet</p>
+              <p className="empty-text">Invoices raised for this client will be listed here.</p>
+            </div>
+          )}
+        </section>
       </div>
-
-      <section className="card mt-6">
-        <div className="border-b border-[var(--line)] p-7">
-          <p className="eyebrow mb-3">Commercial history</p>
-          <h2 className="section-title">Change orders and payments</h2>
-        </div>
-        {orders.length ? orders.map((order) => (
-          <div key={order.id} className="grid gap-4 border-b border-[var(--line)] p-6 last:border-0 md:grid-cols-[110px_1fr_180px_150px] md:items-center">
-            <p className="font-display text-lg font-semibold">{order.number}</p>
-            <p>{order.title}</p>
-            <p className="font-semibold">{formatMoney(order.amountMinor, order.currency)}</p>
-            <Status tone={order.status === "paid" ? "success" : "warning"}>{order.status}</Status>
-          </div>
-        )) : (
-          <p className="quiet p-7">No Change Orders yet.</p>
-        )}
-      </section>
-
-      <section className="card mt-6">
-        <div className="border-b border-[var(--line)] p-7">
-          <p className="eyebrow mb-3">Payment history</p>
-          <h2 className="section-title">Invoices</h2>
-        </div>
-        {invoices.length ? invoices.map((invoice) => (
-          <div key={invoice.id} className="grid gap-3 border-b border-[var(--line)] p-6 last:border-0 md:grid-cols-[140px_1fr_180px_150px] md:items-center">
-            <p className="font-semibold">{invoice.invoice_number}</p>
-            <p className="quiet text-sm">Due {invoice.due_date}</p>
-            <p className="font-semibold">{formatMoney(Number(invoice.amount_minor), invoice.currency)}</p>
-            <Status tone={invoice.status === "paid" ? "success" : invoice.status === "overdue" ? "danger" : "warning"}>
-              {invoice.status.replaceAll("_", " ")}
-            </Status>
-          </div>
-        )) : <p className="quiet p-7">No invoices yet.</p>}
-      </section>
     </div>
   );
 }

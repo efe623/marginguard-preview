@@ -1,6 +1,7 @@
-import { Clock3, ListTodo } from "lucide-react";
+import { CircleCheck, CircleDashed, Clock3, OctagonAlert } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 import { createTask, logTime, updateTaskStatus } from "@/features/operations/actions";
@@ -40,94 +41,167 @@ export default async function ProjectWorkPage({
   const entries = data.timeEntries as TimeRow[];
   const today = new Date().toISOString().slice(0, 10);
   const totalMinutes = entries.reduce((sum, entry) => sum + Number(entry.minutes), 0);
+  const open = tasks.filter((task) => task.status !== "done").length;
+  const crumbs = [
+    { label: "Projects", href: "/projects" },
+    { label: project.name, href: `/projects/${projectId}` }
+  ];
 
   return (
     <div className="page">
       <PageHeader
-        eyebrow={project.code}
+        crumbs={crumbs}
         title="Tasks and time"
-        description="Keep deliverables, owners, deadlines, and effort connected to the job."
+        description="Keep deliverables, deadlines, and effort connected to the job."
       />
       <ProjectTabs projectId={projectId} active="work" />
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-        <section className="card p-6">
-          <div className="flex items-center justify-between">
-            <h2 className="section-title flex items-center gap-2"><ListTodo size={20} /> Task board</h2>
-            <span className="quiet text-sm">{tasks.filter((task) => task.status !== "done").length} open</span>
-          </div>
-          <form action={createTask} className="mt-6 grid gap-3 border border-[var(--line)] p-4 md:grid-cols-2">
-            <input type="hidden" name="projectId" value={projectId} />
-            <label>
-              <span className="field-label">Task</span>
-              <input className="input" name="title" required placeholder="Prepare first design draft" />
-            </label>
-            <label>
-              <span className="field-label">Priority</span>
-              <select className="input" name="priority" defaultValue="normal">
-                <option value="low">Low</option><option value="normal">Normal</option>
-                <option value="high">High</option><option value="urgent">Urgent</option>
-              </select>
-            </label>
-            <label>
-              <span className="field-label">Due</span>
-              <input className="input" name="dueAt" type="datetime-local" />
-            </label>
-            <label>
-              <span className="field-label">Description</span>
-              <input className="input" name="description" placeholder="Acceptance notes" />
-            </label>
-            <button className="button button-primary md:col-span-2" type="submit">Add task</button>
-          </form>
-          <div className="mt-5 space-y-3">
-            {tasks.length ? tasks.map((task) => (
-              <article key={task.id} className="border border-[var(--line)] p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-semibold">{task.title}</h3>
-                      <Status tone={task.status === "done" ? "success" : task.status === "blocked" ? "danger" : "neutral"}>
-                        {task.status.replace("_", " ")}
-                      </Status>
-                    </div>
-                    {task.description ? <p className="quiet mt-2 text-sm">{task.description}</p> : null}
-                    <p className="quiet mt-2 text-xs">{task.priority} priority{task.due_at ? ` · due ${new Date(task.due_at).toLocaleString()}` : ""}</p>
-                  </div>
-                  <form action={updateTaskStatus} className="flex gap-2">
-                    <input type="hidden" name="projectId" value={projectId} />
-                    <input type="hidden" name="taskId" value={task.id} />
-                    <select className="input min-w-36" name="status" defaultValue={task.status}>
-                      <option value="todo">To do</option><option value="in_progress">In progress</option>
-                      <option value="blocked">Blocked</option><option value="done">Done</option>
-                    </select>
-                    <button className="button button-dark" type="submit">Save</button>
-                  </form>
-                </div>
-              </article>
-            )) : <p className="quiet py-8 text-center">No tasks yet.</p>}
-          </div>
-        </section>
-
-        <section className="card p-6">
-          <h2 className="section-title flex items-center gap-2"><Clock3 size={20} /> Time tracking</h2>
-          <p className="mt-2 text-3xl font-bold">{Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m</p>
-          <form action={logTime} className="mt-6 space-y-4">
-            <input type="hidden" name="projectId" value={projectId} />
-            <label><span className="field-label">Minutes</span><input className="input" name="minutes" type="number" min="1" max="1440" required /></label>
-            <label><span className="field-label">Date</span><input className="input" name="workDate" type="date" defaultValue={today} required /></label>
-            <label><span className="field-label">Work completed</span><textarea className="input min-h-24" name="description" /></label>
-            <label className="flex gap-2 text-sm"><input name="billable" type="checkbox" defaultChecked /> Billable time</label>
-            <button className="button button-primary w-full" type="submit">Log time</button>
-          </form>
-          <div className="mt-6 space-y-3 border-t border-[var(--line)] pt-5">
-            {entries.slice(0, 8).map((entry) => (
-              <div key={entry.id} className="flex justify-between gap-4 text-sm">
-                <div><p>{entry.description || "Project work"}</p><p className="quiet">{entry.work_date}</p></div>
-                <strong>{entry.minutes}m</strong>
+      <div className="split">
+        <div className="stack">
+          <section className="panel" aria-labelledby="tasks-title">
+            <div className="panel-head">
+              <div>
+                <h2 className="panel-title" id="tasks-title">Tasks</h2>
+                <p className="panel-sub">{open} open of {tasks.length}</p>
               </div>
-            ))}
-          </div>
-        </section>
+            </div>
+            {tasks.length ? (
+              <div className="rows">
+                {tasks.map((task) => {
+                  const Icon = task.status === "done" ? CircleCheck : task.status === "blocked" ? OctagonAlert : CircleDashed;
+                  return (
+                    <div key={task.id} className="row">
+                      <span className="row-lead"><Icon size={18} aria-hidden="true" /></span>
+                      <div className="row-main">
+                        <p className="row-title">{task.title}</p>
+                        {task.description ? <p className="row-sub">{task.description}</p> : null}
+                        <p className="row-sub">
+                          <span className="capitalize">{task.priority}</span> priority
+                          {task.due_at
+                            ? ` · due ${new Date(task.due_at).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}`
+                            : " · no due date"}
+                        </p>
+                      </div>
+                      <div className="row-end">
+                        <Status tone={task.status === "done" ? "success" : task.status === "blocked" ? "danger" : task.status === "in_progress" ? "warning" : "neutral"}>
+                          {task.status.replace("_", " ")}
+                        </Status>
+                        <form action={updateTaskStatus} className="cluster">
+                          <input type="hidden" name="projectId" value={projectId} />
+                          <input type="hidden" name="taskId" value={task.id} />
+                          <label className="sr-only" htmlFor={`status-${task.id}`}>Status for {task.title}</label>
+                          <select id={`status-${task.id}`} className="select" name="status" defaultValue={task.status}>
+                            <option value="todo">To do</option><option value="in_progress">In progress</option>
+                            <option value="blocked">Blocked</option><option value="done">Done</option>
+                          </select>
+                          <Button variant="outline" className="button-sm" type="submit">Save</Button>
+                        </form>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="empty">
+                <p className="empty-title">No tasks yet</p>
+                <p className="empty-text">Add the first deliverable below so deadlines stay visible.</p>
+              </div>
+            )}
+          </section>
+
+          <form action={createTask} className="panel">
+            <div className="panel-head"><h2 className="panel-title">Add a task</h2></div>
+            <div className="panel-body stack">
+              <input type="hidden" name="projectId" value={projectId} />
+              <div className="form-grid">
+                <div className="field">
+                  <label className="field-label" htmlFor="task-title">Task</label>
+                  <input id="task-title" className="input" name="title" required placeholder="Prepare first design draft" />
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="task-priority">Priority</label>
+                  <select id="task-priority" className="select" name="priority" defaultValue="normal">
+                    <option value="low">Low</option><option value="normal">Normal</option>
+                    <option value="high">High</option><option value="urgent">Urgent</option>
+                  </select>
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="task-due">Due</label>
+                  <input id="task-due" className="input" name="dueAt" type="datetime-local" />
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="task-desc">Description</label>
+                  <input id="task-desc" className="input" name="description" placeholder="Acceptance notes" />
+                </div>
+              </div>
+              <div className="form-actions"><Button type="submit">Add task</Button></div>
+            </div>
+          </form>
+        </div>
+
+        <div className="stack">
+          <section className="panel" aria-labelledby="time-title">
+            <div className="panel-head">
+              <div>
+                <h2 className="panel-title" id="time-title">Time</h2>
+                <p className="panel-sub">Total logged</p>
+              </div>
+              <span className="num inline-flex items-center gap-2 font-semibold">
+                <Clock3 size={16} aria-hidden="true" />
+                {Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m
+              </span>
+            </div>
+            {entries.length ? (
+              <div className="table-wrap">
+                <table className="table">
+                  <thead>
+                    <tr><th>Date</th><th>Work</th><th className="num">Time</th></tr>
+                  </thead>
+                  <tbody>
+                    {entries.slice(0, 8).map((entry) => (
+                      <tr key={entry.id}>
+                        <td className="whitespace-nowrap">{entry.work_date}</td>
+                        <td>
+                          {entry.description || "Project work"}
+                          {entry.billable ? null : <span className="quiet"> (non-billable)</span>}
+                        </td>
+                        <td className="num">{entry.minutes}m</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="empty">
+                <p className="empty-title">No time logged</p>
+                <p className="empty-text">Log minutes below to see effort against this job.</p>
+              </div>
+            )}
+          </section>
+
+          <form action={logTime} className="panel">
+            <div className="panel-head"><h2 className="panel-title">Log time</h2></div>
+            <div className="panel-body stack">
+              <input type="hidden" name="projectId" value={projectId} />
+              <div className="form-grid">
+                <div className="field">
+                  <label className="field-label" htmlFor="time-minutes">Minutes</label>
+                  <input id="time-minutes" className="input" name="minutes" type="number" min="1" max="1440" required />
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="time-date">Date</label>
+                  <input id="time-date" className="input" name="workDate" type="date" defaultValue={today} required />
+                </div>
+              </div>
+              <div className="field">
+                <label className="field-label" htmlFor="time-desc">Work completed</label>
+                <textarea id="time-desc" className="textarea" name="description" />
+              </div>
+              <label className="check"><input name="billable" type="checkbox" defaultChecked /> Billable time</label>
+              <div className="form-actions"><Button type="submit">Log time</Button></div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

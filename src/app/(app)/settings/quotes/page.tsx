@@ -1,4 +1,5 @@
 import { SettingsNav } from "@/components/settings-nav";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { createQuoteTemplate } from "@/features/operations/actions";
 import { getQuoteTemplates } from "@/features/operations/queries";
@@ -8,32 +9,62 @@ export default async function QuoteTemplatesPage() {
   return (
     <div className="page">
       <PageHeader
-        eyebrow="Commercial defaults"
+        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Quote templates" }]}
         title="Quote templates"
         description="Reuse safer introductions, terms, exclusions, and validity periods."
       />
-      <div className="card mt-8"><SettingsNav active="quotes" /></div>
-      <div className="mt-6 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <form action={createQuoteTemplate} className="card space-y-4 p-6">
-          <h2 className="section-title">New template</h2>
-          <label><span className="field-label">Template name</span><input className="input" name="name" required /></label>
-          <label><span className="field-label">Proposal title</span><input className="input" name="title" required /></label>
-          <label><span className="field-label">Introduction</span><textarea className="input min-h-28" name="introduction" /></label>
-          <label><span className="field-label">Terms and exclusions</span><textarea className="input min-h-36" name="terms" /></label>
-          <label><span className="field-label">Valid for (days)</span><input className="input" name="validDays" type="number" min="1" max="365" defaultValue="14" required /></label>
-          <button className="button button-primary" type="submit">Save template</button>
-        </form>
-        <section className="card">
-          {templates.map((template) => (
-            <article key={template.id} className="border-b border-[var(--line)] p-6 last:border-0">
-              <p className="eyebrow">{template.name}</p>
-              <h2 className="mt-2 font-semibold">{template.title}</h2>
-              <p className="quiet mt-2 line-clamp-3 text-sm">{template.terms || "No default terms"}</p>
-              <p className="quiet mt-3 text-xs">Valid for {template.default_valid_days} days</p>
-            </article>
-          ))}
-          {!templates.length ? <p className="quiet p-7">No reusable templates yet.</p> : null}
+      <SettingsNav active="quotes" />
+      <div className="split mt-6">
+        <section className="panel" aria-labelledby="saved-templates">
+          <div className="panel-head">
+            <h2 className="panel-title" id="saved-templates">Saved templates</h2>
+          </div>
+          {templates.length ? (
+            <div className="rows">
+              {templates.map((template) => (
+                <article key={template.id} className="row" style={{ display: "block" }}>
+                  <h3 className="row-title">{template.name}</h3>
+                  <p className="row-sub">{template.title}</p>
+                  <p className="mt-2 line-clamp-3 text-sm text-[var(--ink-soft)]">{template.terms || "No default terms"}</p>
+                  <p className="meta mt-2">Valid for {template.default_valid_days} days</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="empty">
+              <p className="empty-title">No reusable templates yet</p>
+              <p className="empty-text">Save your first template using the form and it will appear here.</p>
+            </div>
+          )}
         </section>
+        <form action={createQuoteTemplate} className="panel">
+          <div className="panel-head"><h2 className="panel-title">New template</h2></div>
+          <div className="panel-body stack">
+            <div className="field">
+              <label className="field-label" htmlFor="qt-name">Template name</label>
+              <input id="qt-name" className="input" name="name" required />
+            </div>
+            <div className="field">
+              <label className="field-label" htmlFor="qt-title">Proposal title</label>
+              <input id="qt-title" className="input" name="title" required />
+            </div>
+            <div className="field">
+              <label className="field-label" htmlFor="qt-intro">Introduction</label>
+              <textarea id="qt-intro" className="textarea min-h-28" name="introduction" />
+            </div>
+            <div className="field">
+              <label className="field-label" htmlFor="qt-terms">Terms and exclusions</label>
+              <textarea id="qt-terms" className="textarea min-h-36" name="terms" />
+            </div>
+            <div className="field">
+              <label className="field-label" htmlFor="qt-days">Valid for (days)</label>
+              <input id="qt-days" className="input" name="validDays" type="number" min="1" max="365" defaultValue="14" required />
+            </div>
+            <div className="form-actions border-t border-[var(--line)] pt-4">
+              <Button type="submit">Save template</Button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -33,10 +33,16 @@ export default async function ConnectionsSettingsPage({
       : params.error;
 
   return (
-    <div className="page">
-      <PageHeader eyebrow="Account access" title="Connections" description="Sign-in and payment services connected to this workspace." />
+    <div className="page page-narrow">
+      <PageHeader
+        crumbs={[{ label: "Settings", href: "/settings" }, { label: "Connections" }]}
+        title="Connections"
+        description="Sign-in and payment services connected to this workspace."
+      />
       <SettingsNav active="connections" />
-      <ConnectionsPanel stripeConnected={stripeConnected} stripeReady={stripeReady} message={message} />
+      <div className="mt-6">
+        <ConnectionsPanel stripeConnected={stripeConnected} stripeReady={stripeReady} message={message} />
+      </div>
     </div>
   );
 }

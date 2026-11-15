@@ -1,56 +1,144 @@
 import {
-  ArrowUpRight,
   Building2,
+  ChevronRight,
   FileText,
   KeyRound,
   LifeBuoy,
   Plug,
   Sparkles,
   Trash2,
-  Users
+  Users,
+  type LucideIcon
 } from "lucide-react";
 import { SettingsTransitionLink } from "@/components/settings-transition-link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { PageHeader } from "@/components/ui/page-header";
+import { Status } from "@/components/ui/status";
+import { getBusinessSettingsData } from "@/features/operations/queries";
 
-const settings = [
-  ["Business profile", "Business type, currency, timezone, and default hourly rate.", Building2, "/settings/business"],
-  ["Quote templates", "Reusable proposal introductions, terms, and validity periods.", FileText, "/settings/quotes"],
-  ["AI and privacy", "Draft-only Gemini tools and external processing controls.", Sparkles, "/settings/ai"],
-  ["Members & permissions", "Invite staff, assign projects, and control financial access.", Users, "/settings/members"],
-  ["Security & sessions", "MFA, recovery codes, trusted devices, and remote sign-out.", KeyRound, "/settings/security"],
-  ["Connections", "Connect Google sign-in and Stripe-hosted payment links.", Plug, "/settings/connections"],
-  ["Support access", "Create a time-limited, audited support grant.", LifeBuoy, "/settings/support"],
-  ["Deletion", "Export data or begin the 30-day deletion window.", Trash2, "/settings/deletion"]
-] as const;
+type Item = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  href: string;
+  state?: React.ReactNode;
+};
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const business = await getBusinessSettingsData();
+  const aiEnabled = Boolean(business?.ai_enabled);
+
+  const groups: { title: string; description: string; items: Item[] }[] = [
+    {
+      title: "Workspace",
+      description: "How your business is set up and who works in it.",
+      items: [
+        {
+          title: "Business profile",
+          description: "Business type, currency, timezone, and default hourly rate.",
+          icon: Building2,
+          href: "/settings/business",
+          state: business ? <span className="meta">{business.currency} · {business.timezone}</span> : undefined
+        },
+        {
+          title: "Quote templates",
+          description: "Reusable proposal introductions, terms, and validity periods.",
+          icon: FileText,
+          href: "/settings/quotes"
+        },
+        {
+          title: "Members and permissions",
+          description: "Invite staff, assign projects, and control financial access.",
+          icon: Users,
+          href: "/settings/members"
+        }
+      ]
+    },
+    {
+      title: "Access and privacy",
+      description: "Sign-in, connected services, and what leaves your workspace.",
+      items: [
+        {
+          title: "Security and sessions",
+          description: "MFA, recovery codes, trusted devices, and remote sign-out.",
+          icon: KeyRound,
+          href: "/settings/security"
+        },
+        {
+          title: "Connections",
+          description: "Connect Google sign-in and Stripe-hosted payment links.",
+          icon: Plug,
+          href: "/settings/connections"
+        },
+        {
+          title: "AI and privacy",
+          description: "Draft-only Gemini tools and external processing controls.",
+          icon: Sparkles,
+          href: "/settings/ai",
+          state: business ? <Status tone={aiEnabled ? "success" : "neutral"}>{aiEnabled ? "On" : "Off"}</Status> : undefined
+        },
+        {
+          title: "Support access",
+          description: "Create a time-limited, audited support grant.",
+          icon: LifeBuoy,
+          href: "/settings/support"
+        }
+      ]
+    },
+    {
+      title: "Data",
+      description: "Export your records or close the workspace.",
+      items: [
+        {
+          title: "Data and deletion",
+          description: "Export data or begin the 30-day deletion window.",
+          icon: Trash2,
+          href: "/settings/deletion"
+        }
+      ]
+    }
+  ];
+
   return (
-    <div className="page">
+    <div className="page page-narrow">
       <PageHeader
-        eyebrow="Owner controls"
         title="Settings"
-        description="One place for the rules, access, and services behind your workspace."
+        description="The rules, access, and services behind your workspace."
       />
-      <div className="settings-home mt-10">
-        <aside className="settings-home-aside">
-          <p className="eyebrow">Appearance</p>
-          <h2 className="font-display mt-3 text-2xl font-semibold tracking-tight">Choose your workspace light.</h2>
-          <p className="quiet mt-3 text-sm leading-6">Saved on this device and applied before the page loads.</p>
-          <ThemeToggle expanded />
-        </aside>
-        <section className="settings-directory" aria-label="Settings directory">
-          <p className="settings-directory-label">Control / configure</p>
-          {settings.map(([title, description, Icon, href]) => (
-            <SettingsTransitionLink key={title} href={href} className="settings-directory-row group">
-              <Icon size={19} strokeWidth={1.6} />
+      <div className="stack">
+        {groups.map((group) => (
+          <section key={group.title} className="panel" aria-labelledby={`settings-${group.title}`}>
+            <div className="panel-head">
               <div>
-                <h2>{title}</h2>
-                <p>{description}</p>
+                <h2 className="panel-title" id={`settings-${group.title}`}>{group.title}</h2>
+                <p className="panel-sub">{group.description}</p>
               </div>
-              <ArrowUpRight size={18} className="settings-directory-arrow" />
-            </SettingsTransitionLink>
-          ))}
+            </div>
+            <div className="rows">
+              {group.items.map(({ title, description, icon: Icon, href, state }) => (
+                <SettingsTransitionLink key={href} href={href} className="row">
+                  <span className="row-lead"><Icon size={18} aria-hidden="true" /></span>
+                  <div className="row-main">
+                    <p className="row-title">{title}</p>
+                    <p className="row-sub">{description}</p>
+                  </div>
+                  <div className="row-end">
+                    {state}
+                    <ChevronRight size={16} className="text-[var(--ink-3)]" aria-hidden="true" />
+                  </div>
+                </SettingsTransitionLink>
+              ))}
+            </div>
+          </section>
+        ))}
+        <section className="panel" aria-labelledby="settings-appearance">
+          <div className="panel-head">
+            <div>
+              <h2 className="panel-title" id="settings-appearance">Appearance</h2>
+              <p className="panel-sub">Saved on this device and applied before the page loads.</p>
+            </div>
+            <ThemeToggle />
+          </div>
         </section>
       </div>
     </div>

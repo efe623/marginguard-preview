@@ -1,7 +1,9 @@
-import { MessageSquareText, Send } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
+import { Status } from "@/components/ui/status";
 import {
   createProjectUpdate,
   importClientMessage
@@ -41,60 +43,140 @@ export default async function ProjectMessagesPage({
   if (!project) notFound();
   const messages = data.messages as MessageRow[];
   const updates = data.updates as UpdateRow[];
+  const crumbs = [
+    { label: "Projects", href: "/projects" },
+    { label: project.name, href: `/projects/${projectId}` }
+  ];
 
   return (
     <div className="page">
       <PageHeader
-        eyebrow={project.code}
+        crumbs={crumbs}
         title="Messages and updates"
         description="Paste WhatsApp, email, or meeting notes and keep a clean evidence trail."
       />
       <ProjectTabs projectId={projectId} active="messages" />
-      <div className="mt-8 grid gap-6 xl:grid-cols-2">
-        <section className="card p-6">
-          <h2 className="section-title flex items-center gap-2"><MessageSquareText size={20} /> Import client message</h2>
-          <form action={importClientMessage} className="mt-5 space-y-4">
-            <input type="hidden" name="projectId" value={projectId} />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label><span className="field-label">Source</span><select className="input" name="sourceType" defaultValue="whatsapp"><option value="whatsapp">WhatsApp paste</option><option value="email">Email paste</option><option value="meeting_note">Meeting note</option><option value="other">Other</option></select></label>
-              <label><span className="field-label">When</span><input className="input" name="occurredAt" type="datetime-local" /></label>
-              <label><span className="field-label">Sender</span><input className="input" name="senderName" placeholder="Client name" /></label>
-              <label><span className="field-label">Email or phone</span><input className="input" name="senderAddress" /></label>
+      <div className="split">
+        <div className="stack">
+          <section className="panel" aria-labelledby="thread-title">
+            <div className="panel-head">
+              <div>
+                <h2 className="panel-title" id="thread-title">Client messages</h2>
+                <p className="panel-sub">{messages.length} saved</p>
+              </div>
             </div>
-            <label><span className="field-label">Message</span><textarea className="input min-h-48" name="content" required placeholder="Paste the original message exactly as received…" /></label>
-            <button className="button button-primary" type="submit">Save message</button>
-          </form>
-          <div className="mt-6 space-y-4 border-t border-[var(--line)] pt-5">
-            {messages.map((message) => (
-              <article key={message.id} className="border border-[var(--line)] p-4">
-                <div className="flex justify-between gap-4 text-xs uppercase tracking-wide">
-                  <strong>{message.source_type.replace("_", " ")}</strong>
-                  <span className="quiet">{new Date(message.occurred_at ?? message.created_at).toLocaleString()}</span>
+            {messages.length ? (
+              <div className="rows">
+                {messages.map((message) => (
+                  <article key={message.id} className="row" style={{ display: "block" }}>
+                    <div className="cluster justify-between">
+                      <p className="row-title">
+                        {message.sender_name || "Unknown sender"}
+                        {message.sender_address ? <span className="quiet font-normal"> · {message.sender_address}</span> : null}
+                      </p>
+                      <p className="meta">
+                        <span className="capitalize">{message.source_type.replace("_", " ")}</span>
+                        {" · "}
+                        <time dateTime={message.occurred_at ?? message.created_at}>
+                          {new Date(message.occurred_at ?? message.created_at).toLocaleString()}
+                        </time>
+                      </p>
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap text-[0.9375rem] leading-6">{message.content}</p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="empty">
+                <p className="empty-title">No messages saved</p>
+                <p className="empty-text">Paste the original client message below to keep it as evidence.</p>
+              </div>
+            )}
+          </section>
+
+          <form action={importClientMessage} className="panel">
+            <div className="panel-head"><h2 className="panel-title">Save a client message</h2></div>
+            <div className="panel-body stack">
+              <input type="hidden" name="projectId" value={projectId} />
+              <div className="form-grid">
+                <div className="field">
+                  <label className="field-label" htmlFor="msg-source">Source</label>
+                  <select id="msg-source" className="select" name="sourceType" defaultValue="whatsapp">
+                    <option value="whatsapp">WhatsApp paste</option><option value="email">Email paste</option>
+                    <option value="meeting_note">Meeting note</option><option value="other">Other</option>
+                  </select>
                 </div>
-                <p className="quiet mt-2 text-sm">{message.sender_name || "Unknown sender"}{message.sender_address ? ` · ${message.sender_address}` : ""}</p>
-                <p className="mt-3 whitespace-pre-wrap text-sm leading-6">{message.content}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-        <section className="card p-6">
-          <h2 className="section-title flex items-center gap-2"><Send size={20} /> Project update</h2>
-          <form action={createProjectUpdate} className="mt-5 space-y-4">
-            <input type="hidden" name="projectId" value={projectId} />
-            <label><span className="field-label">Title</span><input className="input" name="title" required /></label>
-            <label><span className="field-label">Update</span><textarea className="input min-h-32" name="body" required /></label>
-            <label className="flex gap-2 text-sm"><input name="visibleToClient" type="checkbox" /> Show in the client portal</label>
-            <button className="button button-primary" type="submit">Publish update</button>
+                <div className="field">
+                  <label className="field-label" htmlFor="msg-when">When</label>
+                  <input id="msg-when" className="input" name="occurredAt" type="datetime-local" />
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="msg-sender">Sender</label>
+                  <input id="msg-sender" className="input" name="senderName" placeholder="Client name" />
+                </div>
+                <div className="field">
+                  <label className="field-label" htmlFor="msg-address">Email or phone</label>
+                  <input id="msg-address" className="input" name="senderAddress" />
+                </div>
+              </div>
+              <div className="field">
+                <label className="field-label" htmlFor="msg-content">Message</label>
+                <textarea id="msg-content" className="textarea min-h-40" name="content" required placeholder="Paste the original message exactly as received…" />
+              </div>
+              <div className="form-actions"><Button type="submit">Save message</Button></div>
+            </div>
           </form>
-          <div className="mt-6 space-y-4 border-t border-[var(--line)] pt-5">
-            {updates.map((update) => (
-              <article key={update.id} className="border border-[var(--line)] p-4">
-                <div className="flex justify-between gap-4"><h3 className="font-semibold">{update.title}</h3><span className="quiet text-xs">{update.visible_to_client ? "Client visible" : "Internal"}</span></div>
-                <p className="mt-3 whitespace-pre-wrap text-sm leading-6">{update.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+        </div>
+
+        <div className="stack">
+          <section className="panel" aria-labelledby="updates-title">
+            <div className="panel-head">
+              <div>
+                <h2 className="panel-title" id="updates-title">Project updates</h2>
+                <p className="panel-sub">{updates.length} posted</p>
+              </div>
+            </div>
+            {updates.length ? (
+              <div className="rows">
+                {updates.map((update) => (
+                  <article key={update.id} className="row" style={{ display: "block" }}>
+                    <div className="cluster justify-between">
+                      <p className="row-title">{update.title}</p>
+                      <Status tone={update.visible_to_client ? "success" : "neutral"}>
+                        {update.visible_to_client ? <Eye size={12} aria-hidden="true" /> : <EyeOff size={12} aria-hidden="true" />}
+                        {update.visible_to_client ? "Client visible" : "Internal"}
+                      </Status>
+                    </div>
+                    <p className="meta mt-1"><time dateTime={update.created_at}>{new Date(update.created_at).toLocaleString()}</time></p>
+                    <p className="mt-2 whitespace-pre-wrap text-[0.9375rem] leading-6">{update.body}</p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="empty">
+                <p className="empty-title">No updates yet</p>
+                <p className="empty-text">Publish an update below to keep the team, and optionally the client, informed.</p>
+              </div>
+            )}
+          </section>
+
+          <form action={createProjectUpdate} className="panel">
+            <div className="panel-head"><h2 className="panel-title">Post an update</h2></div>
+            <div className="panel-body stack">
+              <input type="hidden" name="projectId" value={projectId} />
+              <div className="field">
+                <label className="field-label" htmlFor="upd-title">Title</label>
+                <input id="upd-title" className="input" name="title" required />
+              </div>
+              <div className="field">
+                <label className="field-label" htmlFor="upd-body">Update</label>
+                <textarea id="upd-body" className="textarea" name="body" required />
+              </div>
+              <label className="check"><input name="visibleToClient" type="checkbox" /> Show in the client portal</label>
+              <div className="form-actions"><Button type="submit">Publish update</Button></div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
