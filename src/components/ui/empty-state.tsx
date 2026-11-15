@@ -9,6 +9,12 @@ type Art = "projects" | "clients" | "money" | "files" | "messages" | "tasks" | "
  * there is one obvious button. Use `focus` when the form is further down the
  * same page, and `action` when the next step is another page.
  */
+/** Every action lands on a form, so ask the destination to focus it on arrival. */
+function toForm(href: string) {
+  if (href.includes("focus=")) return href;
+  return `${href}${href.includes("?") ? "&" : "?"}focus=first`;
+}
+
 export function EmptyState({
   art,
   title,
@@ -32,9 +38,9 @@ export function EmptyState({
       <p className="empty-text">{text}</p>
       {action || focus || secondary ? (
         <div className="empty-actions">
-          {action ? <ButtonLink href={action.href}>{action.label}</ButtonLink> : null}
+          {action ? <ButtonLink href={toForm(action.href)}>{action.label}</ButtonLink> : null}
           {focus ? <FocusFormButton label={focus} /> : null}
-          {secondary ? <ButtonLink href={secondary.href} variant="outline">{secondary.label}</ButtonLink> : null}
+          {secondary ? <ButtonLink href={toForm(secondary.href)} variant="outline">{secondary.label}</ButtonLink> : null}
         </div>
       ) : null}
     </div>

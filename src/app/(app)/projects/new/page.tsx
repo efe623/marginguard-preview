@@ -9,9 +9,9 @@ import { createClient } from "@/lib/supabase/server";
 export default async function NewProjectPage({
   searchParams
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; clientId?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, clientId: presetClient } = await searchParams;
   let availableClients = fixtureClients.map((client) => ({ id: client.id, name: client.name }));
   if (isSupabaseConfigured) {
     const supabase = await createClient();
@@ -52,7 +52,7 @@ export default async function NewProjectPage({
               </div>
               <div className="field">
                 <label className="field-label" htmlFor="clientId">Client</label>
-                <select id="clientId" className="select" name="clientId" required defaultValue="">
+                <select id="clientId" className="select" name="clientId" required defaultValue={availableClients.some((client) => client.id === presetClient) ? presetClient : ""}>
                   <option value="" disabled>Select a client</option>
                   {availableClients.map((client) => (
                     <option key={client.id} value={client.id}>{client.name}</option>

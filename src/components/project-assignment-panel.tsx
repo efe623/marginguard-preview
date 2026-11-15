@@ -84,7 +84,7 @@ export async function ProjectAssignmentPanel({ projectId }: { projectId: string 
           ))}
         </div>
       ) : (
-        <EmptyState art="clients" title="Invite your first team member" text="Add someone to your team, then assign them to this project." action={{ href: "/settings/members", label: "Invite staff" }} />
+        <EmptyState art="clients" title="Invite your first team member" text="Add someone to your team, then assign them to this project." action={{ href: "/settings/members?focus=invite-email", label: "Invite staff" }} />
       )}
     </section>
   );

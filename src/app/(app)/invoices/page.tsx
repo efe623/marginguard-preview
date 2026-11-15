@@ -3,11 +3,15 @@ import { AlertTriangle, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
+import { listProjectViews } from "@/features/core/queries";
 import { getInvoicesPageData } from "@/features/operations/queries";
 import { formatMoney } from "@/lib/money";
 
 export default async function InvoicesPage() {
-  const { invoices, projects } = await getInvoicesPageData();
+  const [{ invoices, projects }, projectViews] = await Promise.all([getInvoicesPageData(), listProjectViews().catch(() => [])]);
+  // An invoice is raised from a project's Money tab, so point the empty state
+  // straight at that form for the project most likely to be billed.
+  const target = projectViews.find((project) => project.status !== "completed") ?? projectViews[0];
   const projectNames = new Map(projects.map((project) => [project.id, project.name]));
   const today = new Date().toISOString().slice(0, 10);
   const rows = invoices;
@@ -41,7 +45,17 @@ export default async function InvoicesPage() {
             </table>
           </div>
         ) : (
-          <EmptyState art="money" title="Send your first invoice" text="Invoices are raised from a project's Money tab. Open a project and bill the work that is ready." action={{ href: "/projects", label: "Choose a project" }} />
+          target ? (
+            <EmptyState
+              art="money"
+              title="Send your first invoice"
+              text={`Bill the work that is ready on ${target.name}. The form opens with the cursor on the amount.`}
+              action={{ href: `/projects/${target.id}/money?focus=inv-amount`, label: "Create your first invoice" }}
+              secondary={projectViews.length > 1 ? { href: "/projects", label: "Use another project" } : undefined}
+            />
+          ) : (
+            <EmptyState art="money" title="Send your first invoice" text="Invoices belong to a project. Create one first, then bill it." action={{ href: "/projects/new", label: "Create a project" }} />
+          )
         )}
       </section>
     </div>

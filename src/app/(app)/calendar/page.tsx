@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CalendarFeedPanel } from "@/components/calendar-feed-panel";
 import { PageHeader } from "@/components/ui/page-header";
 import { getAuthenticatedBusinessContext } from "@/features/auth/context";
+import { listProjectViews } from "@/features/core/queries";
 import { getCalendarEvents } from "@/features/operations/queries";
 import { getMonthDays, monthKey, parseMonth, type CalendarEventKind } from "@/lib/calendar";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -20,7 +21,8 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   const { month } = await searchParams;
   const { year, monthIndex } = parseMonth(month);
   const days = getMonthDays(year, monthIndex);
-  const events = await getCalendarEvents();
+  const [events, projectViews] = await Promise.all([getCalendarEvents(), listProjectViews().catch(() => [])]);
+  const target = projectViews.find((project) => project.status !== "completed") ?? projectViews[0];
   const eventsByDate = new Map<string, typeof events>();
   for (const event of events) eventsByDate.set(event.date, [...(eventsByDate.get(event.date) ?? []), event]);
   const previous = new Date(year, monthIndex - 1, 1);
@@ -84,7 +86,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
                 ); })}
               </div>
             ) : (
-              <EmptyState art="calendar" title="Nothing due yet" text="Give a task or an invoice a due date and it lands here, so deadlines never surprise you." action={{ href: "/projects", label: "Open a project" }} />
+              <EmptyState art="calendar" title="Nothing due yet" text="Give a task or an invoice a due date and it lands here, so deadlines never surprise you." action={target ? { href: `/projects/${target.id}/work?focus=task-title`, label: "Add a task with a due date" } : { href: "/projects/new", label: "Create a project" }} />
             )}
           </section>
           <CalendarFeedPanel enabled={feedEnabled} available={isSupabaseConfigured} />

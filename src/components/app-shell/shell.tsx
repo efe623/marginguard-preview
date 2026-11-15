@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ActivityCenter } from "@/components/activity-center";
+import { ArrivalFocus } from "@/components/arrival-focus";
 import { CommandPalette, type PaletteEntity } from "@/components/app-shell/command-palette";
 import { SignOutButton } from "@/components/app-shell/sign-out-button";
 import {
@@ -313,6 +314,7 @@ export function Shell({
           </div>
         </header>
         {banner}
+        <Suspense fallback={null}><ArrivalFocus /></Suspense>
         <main className="content-shell">{children}</main>
       </div>
 

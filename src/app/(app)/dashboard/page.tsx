@@ -189,7 +189,7 @@ export default async function DashboardPage() {
                   <h2 id="next-title" className="next-title">Nothing is waiting on you today</h2>
                   <p className="next-detail">Spend two minutes making next week easier.</p>
                   <div className="next-actions">
-                    <ButtonLink href={projectViews[0] ? `/projects/${projectViews[0].id}/work` : "/projects/new"}>Plan next week</ButtonLink>
+                    <ButtonLink href={projectViews[0] ? `/projects/${projectViews[0].id}/work?focus=task-title` : "/projects/new?focus=first"}>Plan next week</ButtonLink>
                     <ButtonLink href="/settings/quotes" variant="outline">Save a quote template</ButtonLink>
                   </div>
                 </>
@@ -271,7 +271,7 @@ export default async function DashboardPage() {
                     })}
                   </div>
                 ) : (
-                  <EmptyState art="clear" title="You are clear" text="No overdue invoices, open deposits or tasks due soon. A good moment to plan next week." action={{ href: "/projects", label: "Plan next week" }} />
+                  <EmptyState art="clear" title="You are clear" text="No overdue invoices, open deposits or tasks due soon. A good moment to plan next week." action={projectViews[0] ? { href: `/projects/${projectViews[0].id}/work?focus=task-title`, label: "Plan next week" } : { href: "/projects/new", label: "Create a project" }} />
                 )}
               </section>
 

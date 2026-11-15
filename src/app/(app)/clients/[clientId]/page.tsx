@@ -83,7 +83,7 @@ export default async function ClientPage({
                 ))}
               </div>
             ) : (
-              <EmptyState art="clients" title="Start this client's first project" text="Send a quote and get the scope agreed before any work begins." action={{ href: "/projects/new", label: "Create a project" }} />
+              <EmptyState art="clients" title="Start this client's first project" text="Send a quote and get the scope agreed before any work begins." action={{ href: `/projects/new?clientId=${client.id}&focus=name`, label: "Create a project" }} />
             )}
           </section>
 
