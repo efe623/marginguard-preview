@@ -1,3 +1,5 @@
+import { ConfirmDelete } from "@/components/confirm-delete";
+import { deleteClient } from "@/features/core/actions";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FileText, FolderKanban, Mail, MapPin, Phone, Receipt } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -164,6 +166,32 @@ export default async function ClientPage({
           )}
         </section>
       </div>
+
+      <section className="panel danger-zone" aria-labelledby="delete-client">
+        <div className="panel-head">
+          <div>
+            <h2 className="panel-title" id="delete-client">Delete this client</h2>
+            <p className="panel-sub">
+              Removes {client.name}
+              {clientProjects.length ? ` and its ${clientProjects.length} ${clientProjects.length === 1 ? "project" : "projects"}` : ""} from your workspace.
+            </p>
+          </div>
+          <ConfirmDelete
+            action={deleteClient}
+            fields={{ clientId: client.id }}
+            trigger="Delete client"
+            title={`Delete ${client.name}?`}
+            confirm="Yes, delete client"
+          >
+            <p>
+              {clientProjects.length
+                ? `This also deletes ${clientProjects.length === 1 ? "their project" : `all ${clientProjects.length} of their projects`}, with scope, invoices, messages and files.`
+                : "This client has no projects, so only their contact details are removed."}
+            </p>
+            <p>Links you shared with them stop working. This cannot be undone from the app.</p>
+          </ConfirmDelete>
+        </div>
+      </section>
     </div>
   );
 }

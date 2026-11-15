@@ -5,7 +5,8 @@ import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { listClientViews, listProjectViews } from "@/features/core/queries";
 
-export default async function ClientsPage() {
+export default async function ClientsPage({ searchParams }: { searchParams?: Promise<{ deleted?: string }> }) {
+  const query = (await searchParams) ?? {};
   const [clients, projects] = await Promise.all([listClientViews(), listProjectViews()]);
   return (
     <div className="page">
@@ -14,6 +15,7 @@ export default async function ClientsPage() {
         description="Contact, project, approval, and payment history without hidden risk scores."
         actions={<ButtonLink href="/clients/new"><Plus size={16} aria-hidden /> New client</ButtonLink>}
       />
+      {query.deleted === "client" ? <p className="notice notice-success" role="status">Client deleted.</p> : null}
       <section className="panel">
         <div className="panel-head">
           <h2 className="panel-title">All clients</h2>

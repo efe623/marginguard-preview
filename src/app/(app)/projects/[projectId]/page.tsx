@@ -1,3 +1,5 @@
+import { ConfirmDelete } from "@/components/confirm-delete";
+import { deleteProject } from "@/features/core/actions";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ArrowRight, CircleAlert, CircleCheck, FileClock, ShieldCheck, WalletCards } from "lucide-react";
 import Link from "next/link";
@@ -174,6 +176,25 @@ export default async function ProjectPage({ params }: { params: Promise<{ projec
           </section>
         </aside>
       </div>
+
+      <section className="panel danger-zone" aria-labelledby="delete-project">
+        <div className="panel-head">
+          <div>
+            <h2 className="panel-title" id="delete-project">Delete this project</h2>
+            <p className="panel-sub">Removes {project.name} and everything attached to it from your workspace.</p>
+          </div>
+          <ConfirmDelete
+            action={deleteProject}
+            fields={{ projectId: project.id }}
+            trigger="Delete project"
+            title={`Delete ${project.name}?`}
+            confirm="Yes, delete project"
+          >
+            <p>This removes the project and its scope, tasks, invoices, messages and files from your workspace.</p>
+            <p>Client links to its approvals and invoices stop working. This cannot be undone from the app.</p>
+          </ConfirmDelete>
+        </div>
+      </section>
     </div>
   );
 }

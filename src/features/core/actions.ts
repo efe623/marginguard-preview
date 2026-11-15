@@ -9,6 +9,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { toMinorUnits } from "@/lib/money";
 import { createOpaqueToken, digestOpaqueToken } from "@/lib/security-tokens";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { addPreviewDeleted } from "@/lib/preview-deleted";
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 
 type Actor = {
@@ -437,4 +438,84 @@ export async function sendChangeOrder(formData: FormData) {
   }
   revalidatePath(`/projects/${parsed.data.projectId}/change-orders`);
   redirect(`/projects/${parsed.data.projectId}/change-orders/${result.version_id}`);
+}
+
+/*
+ * Deleting hides the record: it is stamped with deleted_at, which every list
+ * and page already filters on. The row-level policies stop the signed-in user
+ * from stamping a row they can then no longer read, so the write goes through
+ * the admin client, after checking that the caller is the owner of the business
+ * that owns the row.
+ */
+const idSchema = z.string().trim().min(1).max(120);
+
+export async function deleteProject(formData: FormData) {
+  const parsed = idSchema.safeParse(formData.get("projectId"));
+  if (!parsed.success) redirect("/projects");
+  const id = parsed.data;
+
+  if (!isSupabaseConfigured) {
+    await addPreviewDeleted("project", id);
+    revalidatePath("/", "layout");
+    redirect("/projects?deleted=project");
+  }
+
+  if (!z.uuid().safeParse(id).success) fail("/projects", "That project could not be found.");
+  const { actor } = await requireActor();
+  if (actor.role !== "owner") fail(`/projects/${id}`, "Only the owner can delete a project.");
+
+  const { data, error } = await createAdminClient()
+    .from("projects")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("business_id", actor.businessId)
+    .is("deleted_at", null)
+    .select("id")
+    .maybeSingle();
+  if (error) fail(`/projects/${id}`, "The project could not be deleted. Try again.");
+  if (!data) fail("/projects", "That project could not be found.");
+
+  revalidatePath("/", "layout");
+  redirect("/projects?deleted=project");
+}
+
+export async function deleteClient(formData: FormData) {
+  const parsed = idSchema.safeParse(formData.get("clientId"));
+  if (!parsed.success) redirect("/clients");
+  const id = parsed.data;
+
+  if (!isSupabaseConfigured) {
+    await addPreviewDeleted("client", id);
+    revalidatePath("/", "layout");
+    redirect("/clients?deleted=client");
+  }
+
+  if (!z.uuid().safeParse(id).success) fail("/clients", "That client could not be found.");
+  const { actor } = await requireActor();
+  if (actor.role !== "owner") fail(`/clients/${id}`, "Only the owner can delete a client.");
+
+  const admin = createAdminClient();
+  const stamp = new Date().toISOString();
+  // A client's projects have no one to belong to once the client is gone.
+  const { error: projectError } = await admin
+    .from("projects")
+    .update({ deleted_at: stamp })
+    .eq("client_id", id)
+    .eq("business_id", actor.businessId)
+    .is("deleted_at", null);
+  if (projectError) fail(`/clients/${id}`, "The client could not be deleted. Try again.");
+
+  const { data, error } = await admin
+    .from("clients")
+    .update({ deleted_at: stamp })
+    .eq("id", id)
+    .eq("business_id", actor.businessId)
+    .is("deleted_at", null)
+    .select("id")
+    .maybeSingle();
+  if (error) fail(`/clients/${id}`, "The client could not be deleted. Try again.");
+  if (!data) fail("/clients", "That client could not be found.");
+
+  revalidatePath("/", "layout");
+  redirect("/clients?deleted=client");
 }

@@ -42,7 +42,7 @@ const filterMatch: Record<FilterKey, (status: ProjectStatus) => boolean> = {
 export default async function ProjectsPage({
   searchParams
 }: {
-  searchParams?: Promise<{ filter?: string; sort?: string }>;
+  searchParams?: Promise<{ filter?: string; sort?: string; deleted?: string }>;
 }) {
   const query = (await searchParams) ?? {};
   const filter = (filters.find((item) => item.key === query.filter)?.key ?? "all") as FilterKey;
@@ -94,6 +94,8 @@ export default async function ProjectsPage({
           ))}
         </nav>
       </div>
+
+      {query.deleted === "project" ? <p className="notice notice-success" role="status">Project deleted.</p> : null}
 
       <section className="panel" aria-label="Project list">
         {shown.length === 0 ? (

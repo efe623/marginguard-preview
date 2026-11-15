@@ -774,3 +774,17 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 .empty .empty-title { font-size: 1.3125rem; }
 .form-nudge { animation: form-nudge 1400ms ease-out 1; }
 @keyframes form-nudge { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 70%, transparent); } 35% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 45%, transparent); } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+
+/* ---------- Delete confirmation ---------- */
+.danger-zone { border-color: color-mix(in srgb, var(--danger) 30%, var(--line)); margin-top: 24px; }
+.button-danger-solid { background: var(--danger); border-color: var(--danger); color: var(--paper); }
+.button-danger-solid:hover { filter: brightness(1.08); }
+.button-danger-solid:disabled { opacity: 0.6; }
+.confirm { margin: auto; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 22px; box-shadow: var(--shadow-card); color: var(--ink); max-width: min(460px, calc(100vw - 32px)); padding: 26px 28px 22px; width: 100%; }
+.confirm::backdrop { background: rgba(0, 0, 0, 0.55); }
+.confirm[open] { animation: pop-in 180ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.confirm-title { font-size: 1.25rem; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 10px; }
+.confirm-text { color: var(--ink-soft); display: grid; font-size: 0.9375rem; gap: 8px; line-height: 1.5; }
+.confirm-text p { margin: 0; }
+.confirm-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 22px; }

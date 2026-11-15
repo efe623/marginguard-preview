@@ -1,5 +1,6 @@
 import { clients, projects, changeOrders, scopeItems } from "@/data/fixtures";
 import { isSupabaseConfigured } from "@/lib/env";
+import { getPreviewDeleted } from "@/lib/preview-deleted";
 import { createClient } from "@/lib/supabase/server";
 import type { Client, Project, ScopeItem } from "@/types/domain";
 
@@ -13,7 +14,8 @@ const visibleStatuses = new Set<Project["status"]>([
 
 export async function getProjectView(projectId: string): Promise<Project | null> {
   if (!isSupabaseConfigured) {
-    return projects.find((project) => project.id === projectId) ?? null;
+    const hidden = await getPreviewDeleted();
+    return hidden.projects.has(projectId) ? null : projects.find((project) => project.id === projectId) ?? null;
   }
   const supabase = await createClient();
   const { data: project } = await supabase
@@ -58,7 +60,10 @@ export async function getProjectView(projectId: string): Promise<Project | null>
 }
 
 export async function listProjectViews(): Promise<Project[]> {
-  if (!isSupabaseConfigured) return projects;
+  if (!isSupabaseConfigured) {
+    const hidden = await getPreviewDeleted();
+    return projects.filter((project) => !hidden.projects.has(project.id));
+  }
   const supabase = await createClient();
   const [projectRows, clientRows, revisionRows, approvedRows] =
     await Promise.all([
@@ -122,7 +127,8 @@ export async function listProjectViews(): Promise<Project[]> {
 
 export async function getClientView(clientId: string): Promise<Client | null> {
   if (!isSupabaseConfigured) {
-    return clients.find((client) => client.id === clientId) ?? null;
+    const hidden = await getPreviewDeleted();
+    return hidden.clients.has(clientId) ? null : clients.find((client) => client.id === clientId) ?? null;
   }
   const supabase = await createClient();
   const { data } = await supabase
@@ -144,7 +150,10 @@ export async function getClientView(clientId: string): Promise<Client | null> {
 }
 
 export async function listClientViews(): Promise<Client[]> {
-  if (!isSupabaseConfigured) return clients;
+  if (!isSupabaseConfigured) {
+    const hidden = await getPreviewDeleted();
+    return clients.filter((client) => !hidden.clients.has(client.id));
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from("clients")

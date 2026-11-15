@@ -3,6 +3,7 @@ import { getAuthenticatedBusinessContext } from "@/features/auth/context";
 import { createClient } from "@/lib/supabase/server";
 import type { CalendarEvent } from "@/lib/calendar";
 import { buildPreviewData } from "@/data/preview-data";
+import { getPreviewDeleted } from "@/lib/preview-deleted";
 
 export type OperationsProjectData = {
   tasks: Array<Record<string, unknown>>;
@@ -101,15 +102,17 @@ export async function getOperationsProjectData(
 export async function getBusinessOperationsData() {
   if (!isSupabaseConfigured) {
     const preview = buildPreviewData();
+    const gone = await getPreviewDeleted();
+    const live = <T extends { project_id: string }>(rows: T[]) => rows.filter((row) => !gone.projects.has(row.project_id));
     return {
       business: { currency: "AED" } as Record<string, unknown> | null,
-      projects: preview.projects as Array<Record<string, unknown>>,
-      clients: preview.clients as Array<Record<string, unknown>>,
-      tasks: preview.tasks as Array<Record<string, unknown>>,
-      timeEntries: preview.timeEntries as Array<Record<string, unknown>>,
-      expenses: preview.expenses as Array<Record<string, unknown>>,
-      invoices: preview.invoices as Array<Record<string, unknown>>,
-      changeOrders: preview.changeOrders as Array<Record<string, unknown>>,
+      projects: preview.projects.filter((project) => !gone.projects.has(project.id)) as Array<Record<string, unknown>>,
+      clients: preview.clients.filter((client) => !gone.clients.has(client.id)) as Array<Record<string, unknown>>,
+      tasks: live(preview.tasks) as Array<Record<string, unknown>>,
+      timeEntries: live(preview.timeEntries) as Array<Record<string, unknown>>,
+      expenses: live(preview.expenses) as Array<Record<string, unknown>>,
+      invoices: live(preview.invoices) as Array<Record<string, unknown>>,
+      changeOrders: live(preview.changeOrders) as Array<Record<string, unknown>>,
       notifications: [] as Array<Record<string, unknown>>
     };
   }
@@ -287,8 +290,9 @@ export async function getInvoicesPageData() {
       .is("deleted_at", null)
   ]);
 
+  const liveIds = new Set((projects.data ?? []).map((project) => project.id));
   return {
-    invoices: invoices.data ?? [],
+    invoices: (invoices.data ?? []).filter((invoice) => liveIds.has(invoice.project_id)),
     projects: projects.data ?? []
   };
 }
@@ -352,18 +356,20 @@ export async function getCalendarEvents(): Promise<CalendarEvent[]> {
 export async function getDashboardData() {
   if (!isSupabaseConfigured) {
     const preview = buildPreviewData();
+    const hidden = (await getPreviewDeleted()).projects;
+    const live = <T extends { project_id: string }>(rows: T[]) => rows.filter((row) => !hidden.has(row.project_id));
     return {
       business: { currency: "AED" },
-      projects: preview.projects.map((project) => ({
+      projects: preview.projects.filter((project) => !hidden.has(project.id)).map((project) => ({
         id: project.id,
         name: project.name,
         quote_amount_minor: project.quote_amount_minor,
         status: project.status
       })),
-      tasks: preview.tasks,
-      expenses: preview.expenses,
-      invoices: preview.invoices,
-      changeOrders: preview.changeOrders
+      tasks: live(preview.tasks),
+      expenses: live(preview.expenses),
+      invoices: live(preview.invoices),
+      changeOrders: live(preview.changeOrders)
     };
   }
   const context = await getAuthenticatedBusinessContext();
@@ -411,12 +417,13 @@ export async function getDashboardData() {
         .is("superseded_at", null)
     ]);
 
+  const liveIds = new Set((projects.data ?? []).map((project) => project.id));
   return {
     business: business.data,
     projects: projects.data ?? [],
-    tasks: tasks.data ?? [],
+    tasks: (tasks.data ?? []).filter((task) => liveIds.has(task.project_id)),
     expenses: expenses.data ?? [],
-    invoices: invoices.data ?? [],
+    invoices: (invoices.data ?? []).filter((invoice) => liveIds.has(invoice.project_id)),
     changeOrders: changeOrders.data ?? []
   };
 }
