@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
@@ -96,13 +97,11 @@ export default async function ProjectsPage({
 
       <section className="panel" aria-label="Project list">
         {shown.length === 0 ? (
-          <div className="empty" data-art="projects">
-            <p className="empty-title">{all.length === 0 ? "No projects yet" : "No projects match this filter"}</p>
-            <p className="empty-text">
-              {all.length === 0 ? "Create a project to record its scope, price and approvals." : "Try a different filter to see the rest of your work."}
-            </p>
-            {all.length === 0 ? <ButtonLink href="/projects/new"><Plus size={16} aria-hidden /> New project</ButtonLink> : <ButtonLink href="/projects" variant="outline">Show all projects</ButtonLink>}
-          </div>
+          all.length === 0 ? (
+            <EmptyState art="projects" title="Create your first project" text="Set the scope, the price and who approves changes. It takes about a minute, and it is how you stop doing free work." action={{ href: "/projects/new", label: "Create your first project" }} />
+          ) : (
+            <EmptyState art="projects" title="No projects match this filter" text="Try a different filter to see the rest of your work." action={{ href: "/projects", label: "Show all projects" }} />
+          )
         ) : (
           <div className="rows">
             <div

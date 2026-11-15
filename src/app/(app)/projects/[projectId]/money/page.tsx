@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
 import { QuoteDraftForm } from "@/components/quote-draft-form";
@@ -130,10 +131,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
               </table>
             </div>
           ) : (
-            <div className="empty" data-art="money">
-              <p className="empty-title">No invoices yet</p>
-              <p className="empty-text">Create the first invoice below when work is ready to bill.</p>
-            </div>
+            <EmptyState art="money" title="Raise the first invoice" text="Bill the work that is ready, and its payment status is tracked for you." focus="Create an invoice" />
           )}
         </section>
 
@@ -186,10 +184,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
               </table>
             </div>
           ) : (
-            <div className="empty" data-art="money">
-              <p className="empty-title">No expenses recorded</p>
-              <p className="empty-text">Record materials, subcontractors and travel so profit stays accurate.</p>
-            </div>
+            <EmptyState art="money" title="Record the first expense" text="Add materials, subcontractors and travel so the profit figure is the real one." focus="Add an expense" />
           )}
         </section>
 
@@ -250,10 +245,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
               ))}
             </div>
           ) : (
-            <div className="empty" data-art="money">
-              <p className="empty-title">No quotes yet</p>
-              <p className="empty-text">Draft a quote below to start the agreed price.</p>
-            </div>
+            <EmptyState art="money" title="Draft the quote" text="A written quote fixes the agreed price, and everything after is measured against it." focus="Draft a quote" />
           )}
           <div className="panel-body" style={{ borderTop: "1px solid var(--line)" }}>
             <QuoteDraftForm projectId={projectId} currency={project.currency} templates={templates} />

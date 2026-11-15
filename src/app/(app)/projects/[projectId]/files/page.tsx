@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { FileText, Image, ShieldCheck } from "lucide-react";
 import { notFound } from "next/navigation";
 import { FileUploadButton } from "@/components/file-upload-button";
@@ -80,10 +81,7 @@ export default async function ProjectFilesPage({
               })}
             </div>
           ) : (
-            <div className="empty" data-art="files">
-              <p className="empty-title">No project files yet</p>
-              <p className="empty-text">Choose a file purpose and use Upload file to add the contract, quote or receipts.</p>
-            </div>
+            <EmptyState art="files" title="Add the contract and the quote" text="Keep what was agreed with the project, so you can prove it later. Choose a purpose, then upload." focus="Upload a file" />
           )}
         </section>
         <p className="notice notice-info">

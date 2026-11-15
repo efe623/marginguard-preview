@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { SettingsNav } from "@/components/settings-nav";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -31,10 +32,7 @@ export default async function QuoteTemplatesPage() {
               ))}
             </div>
           ) : (
-            <div className="empty">
-              <p className="empty-title">No reusable templates yet</p>
-              <p className="empty-text">Save your first template using the form and it will appear here.</p>
-            </div>
+            <EmptyState title="Save your first template" text="Reuse your best quote wording and prices on every new project. Fill in the form and save it." focus="Create a template" />
           )}
         </section>
         <form action={createQuoteTemplate} className="panel">

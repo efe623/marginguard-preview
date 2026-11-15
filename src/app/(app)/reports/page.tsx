@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { Download } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -85,10 +86,7 @@ export default async function ReportsPage() {
               </table>
             </div>
           ) : (
-            <div className="empty" data-art="money">
-              <p className="empty-title">No projects to report on</p>
-              <p className="empty-text">Profitability appears here once a project has a quote and some tracked work.</p>
-            </div>
+            <EmptyState art="money" title="Reports start with a project" text="Once a project has a quote and some tracked work, you see what it really earns here." action={{ href: "/projects/new", label: "Create a project" }} />
           )}
         </section>
 
@@ -112,10 +110,7 @@ export default async function ReportsPage() {
               </table>
             </div>
           ) : (
-            <div className="empty" data-art="money">
-              <p className="empty-title">No clients yet</p>
-              <p className="empty-text">Add a client and a project to see which relationships pay best.</p>
-            </div>
+            <EmptyState art="money" title="See which clients pay best" text="Add a client and a project, and this ranks your relationships by profit." action={{ href: "/clients/new", label: "Add a client" }} />
           )}
         </section>
       </div>

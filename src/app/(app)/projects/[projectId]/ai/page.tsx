@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AiDraftPanel } from "@/components/ai-draft-panel";
@@ -83,10 +84,7 @@ export default async function ProjectAiPage({
               ))}
             </div>
           ) : (
-            <div className="empty">
-              <p className="empty-title">No AI drafts yet</p>
-              <p className="empty-text">Pick a workflow above, paste the client text and create your first draft.</p>
-            </div>
+            <EmptyState title="Draft your first reply" text="Pick a workflow above and paste the client's message. You get a draft to edit and send in seconds." focus="Start a draft" />
           )}
         </section>
       </div>

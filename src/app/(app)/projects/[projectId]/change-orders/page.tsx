@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { ChevronRight, FilePlus2, Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -72,11 +73,7 @@ export default async function ChangeOrdersPage({
             ))}
           </div>
         ) : (
-          <div className="empty" data-art="tasks">
-            <p className="empty-title">No change orders yet</p>
-            <p className="empty-text">When the client asks for work outside the scope, price it here and send it for approval.</p>
-            <ButtonLink href={`/projects/${project.id}/change-orders/new`}>New order</ButtonLink>
-          </div>
+          <EmptyState art="tasks" title="Price the first extra request" text="When the client asks for something outside the scope, price it here and get it approved before you start." action={{ href: `/projects/${project.id}/change-orders/new`, label: "Create a change order" }} />
         )}
       </section>
     </div>

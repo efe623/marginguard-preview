@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { FileText, FolderKanban, Mail, MapPin, Phone, Receipt } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
@@ -80,11 +81,7 @@ export default async function ClientPage({
                 ))}
               </div>
             ) : (
-              <div className="empty" data-art="clients">
-                <p className="empty-title">No projects yet</p>
-                <p className="empty-text">Start a project to send this client a quote.</p>
-                <ButtonLink href="/projects/new">New project</ButtonLink>
-              </div>
+              <EmptyState art="clients" title="Start this client's first project" text="Send a quote and get the scope agreed before any work begins." action={{ href: "/projects/new", label: "Create a project" }} />
             )}
           </section>
 
@@ -133,10 +130,7 @@ export default async function ClientPage({
               ))}
             </div>
           ) : (
-            <div className="empty" data-art="clients">
-              <p className="empty-title">No change orders yet</p>
-              <p className="empty-text">Approved scope changes will appear here with their payment status.</p>
-            </div>
+            <EmptyState art="clients" title="No extra work yet" text="When this client asks for something outside the scope, you price it, get approval and track payment here." />
           )}
         </section>
 
@@ -166,10 +160,7 @@ export default async function ClientPage({
               ))}
             </div>
           ) : (
-            <div className="empty" data-art="clients">
-              <p className="empty-title">No invoices yet</p>
-              <p className="empty-text">Invoices raised for this client will be listed here.</p>
-            </div>
+            <EmptyState art="clients" title="Nothing invoiced yet" text="Invoices you raise for this client's projects are tracked here." />
           )}
         </section>
       </div>

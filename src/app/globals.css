@@ -766,3 +766,11 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 .nav-badge { background: var(--signal); border-radius: 999px; color: var(--on-signal); font-size: 0.75rem; font-weight: 700; line-height: 1; margin-left: auto; min-width: 22px; padding: 5px 7px; text-align: center; }
 .shell[data-collapsed="true"] .nav-badge { font-size: 0; height: 9px; min-width: 0; padding: 0; position: absolute; right: 9px; top: 9px; width: 9px; }
 @media (max-width: 1000px) { .brief { grid-template-columns: minmax(0, 1fr); } }
+
+
+/* ---------- Empty states that invite ---------- */
+.empty-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 14px; }
+.empty-actions .button { margin-top: 0; }
+.empty .empty-title { font-size: 1.3125rem; }
+.form-nudge { animation: form-nudge 1400ms ease-out 1; }
+@keyframes form-nudge { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 70%, transparent); } 35% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 45%, transparent); } 100% { box-shadow: 0 0 0 0 transparent; } }

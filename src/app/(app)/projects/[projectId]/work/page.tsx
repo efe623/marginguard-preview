@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { CircleCheck, CircleDashed, Clock3, OctagonAlert } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
@@ -102,10 +103,7 @@ export default async function ProjectWorkPage({
                 })}
               </div>
             ) : (
-              <div className="empty" data-art="tasks">
-                <p className="empty-title">No tasks yet</p>
-                <p className="empty-text">Add the first deliverable below so deadlines stay visible.</p>
-              </div>
+              <EmptyState art="tasks" title="Add the first task" text="Break the job into tasks with due dates, and deadlines show up on Today." focus="Add a task" />
             )}
           </section>
 
@@ -172,10 +170,7 @@ export default async function ProjectWorkPage({
                 </table>
               </div>
             ) : (
-              <div className="empty" data-art="tasks">
-                <p className="empty-title">No time logged</p>
-                <p className="empty-text">Log minutes below to see effort against this job.</p>
-              </div>
+              <EmptyState art="tasks" title="Log your first hour" text="Track minutes against this job to see what it really costs you." focus="Log time" />
             )}
           </section>
 

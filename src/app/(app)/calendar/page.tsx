@@ -1,4 +1,5 @@
-import { CalendarDays, CheckSquare, ChevronLeft, ChevronRight, FolderKanban, Receipt } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { CheckSquare, ChevronLeft, ChevronRight, FolderKanban, Receipt } from "lucide-react";
 import Link from "next/link";
 import { CalendarFeedPanel } from "@/components/calendar-feed-panel";
 import { PageHeader } from "@/components/ui/page-header";
@@ -83,11 +84,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
                 ); })}
               </div>
             ) : (
-              <div className="empty" data-art="calendar">
-                <CalendarDays size={22} aria-hidden className="text-[var(--ink-3)]" />
-                <p className="empty-title">No upcoming dates</p>
-                <p className="empty-text">Due dates for invoices, tasks and projects will show up here.</p>
-              </div>
+              <EmptyState art="calendar" title="Nothing due yet" text="Give a task or an invoice a due date and it lands here, so deadlines never surprise you." action={{ href: "/projects", label: "Open a project" }} />
             )}
           </section>
           <CalendarFeedPanel enabled={feedEnabled} available={isSupabaseConfigured} />

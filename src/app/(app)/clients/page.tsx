@@ -1,4 +1,5 @@
-import { ChevronRight, Mail, MapPin, Phone, Plus, Users } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ChevronRight, Mail, MapPin, Phone, Plus } from "lucide-react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
@@ -41,12 +42,7 @@ export default async function ClientsPage() {
             })}
           </div>
         ) : (
-          <div className="empty" data-art="clients">
-            <Users size={22} aria-hidden className="text-[var(--ink-3)]" />
-            <p className="empty-title">No clients yet</p>
-            <p className="empty-text">Add the first client so you can attach projects, quotes and invoices to them.</p>
-            <ButtonLink href="/clients/new"><Plus size={16} aria-hidden /> New client</ButtonLink>
-          </div>
+          <EmptyState art="clients" title="Add your first client" text="Every project, quote and invoice hangs off a client. Add one, then start their first project." action={{ href: "/clients/new", label: "Add your first client" }} />
         )}
       </section>
     </div>

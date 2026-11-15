@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { ArrowRight, CircleAlert, CircleCheck, FileClock, ShieldCheck, WalletCards } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -78,11 +79,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ projec
             </section>
           ) : (
             <section className="panel">
-              <div className="empty" data-art="clear">
-                <CircleCheck size={22} className="signal" aria-hidden />
-                <p className="empty-title">Nothing is waiting on you</p>
-                <p className="empty-text">No approved change is waiting on a deposit. Create a change order when the client asks for something outside the scope.</p>
-              </div>
+              <EmptyState art="clear" title="This project is clear" text="No approved change is waiting on a deposit. If the client asks for more, price it as a change order first." action={{ href: `/projects/${project.id}/change-orders/new`, label: "Create a change order" }} />
             </section>
           )}
 
@@ -116,11 +113,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ projec
                 })}
               </div>
             ) : (
-              <div className="empty" data-art="tasks">
-                <p className="empty-title">No change orders yet</p>
-                <p className="empty-text">When the client asks for extra work, price it here so it is approved and paid before it starts.</p>
-                <ButtonLink href={`/projects/${project.id}/change-orders/new`}>New change order</ButtonLink>
-              </div>
+              <EmptyState art="tasks" title="Protect your first extra request" text="When the client asks for extra work, price it here so it is approved and paid before it starts." action={{ href: `/projects/${project.id}/change-orders/new`, label: "Create a change order" }} />
             )}
           </section>
 

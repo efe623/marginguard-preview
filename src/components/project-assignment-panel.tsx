@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Status } from "@/components/ui/status";
@@ -83,10 +84,7 @@ export async function ProjectAssignmentPanel({ projectId }: { projectId: string 
           ))}
         </div>
       ) : (
-        <div className="empty" data-art="clients">
-          <p className="empty-title">No staff to assign</p>
-          <p className="empty-text">Invite staff before assigning this project.</p>
-        </div>
+        <EmptyState art="clients" title="Invite your first team member" text="Add someone to your team, then assign them to this project." action={{ href: "/settings/members", label: "Invite staff" }} />
       )}
     </section>
   );

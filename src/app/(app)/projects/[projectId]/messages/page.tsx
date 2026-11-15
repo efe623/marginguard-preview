@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { Eye, EyeOff } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
@@ -87,10 +88,7 @@ export default async function ProjectMessagesPage({
                 ))}
               </div>
             ) : (
-              <div className="empty" data-art="messages">
-                <p className="empty-title">No messages saved</p>
-                <p className="empty-text">Paste the original client message below to keep it as evidence.</p>
-              </div>
+              <EmptyState art="messages" title="Save the client's original message" text="Paste the message that asked for the work. If a dispute starts, you already have the evidence." focus="Paste a message" />
             )}
           </section>
 
@@ -153,10 +151,7 @@ export default async function ProjectMessagesPage({
                 ))}
               </div>
             ) : (
-              <div className="empty" data-art="messages">
-                <p className="empty-title">No updates yet</p>
-                <p className="empty-text">Publish an update below to keep the team, and optionally the client, informed.</p>
-              </div>
+              <EmptyState art="messages" title="Post the first update" text="Keep the team, and optionally the client, in the loop. One short note is enough." focus="Write an update" />
             )}
           </section>
 

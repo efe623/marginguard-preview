@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { ChevronRight, MessageSquareText, Plus, TriangleAlert } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
@@ -82,11 +83,7 @@ export default async function ChangeRequestsPage({
             })}
           </div>
         ) : (
-          <div className="empty" data-art="tasks">
-            <p className="empty-title">No change requests yet</p>
-            <p className="empty-text">Log the first thing the client asks for outside the agreed scope.</p>
-            <ButtonLink href={`/projects/${project.id}/requests/new`}>New request</ButtonLink>
-          </div>
+          <EmptyState art="tasks" title="Log the first extra request" text="Write down anything the client asks for outside the agreed scope. It becomes the start of a change order." action={{ href: `/projects/${project.id}/requests/new`, label: "Log a request" }} />
         )}
       </section>
     </div>

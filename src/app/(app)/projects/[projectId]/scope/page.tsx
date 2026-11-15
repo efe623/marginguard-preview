@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { Check, FileText, Plus, X } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
@@ -63,11 +64,7 @@ export default async function ProjectScopePage({
                 ))}
               </ol>
             ) : (
-              <div className="empty" data-art="tasks">
-                <p className="empty-title">No deliverables yet</p>
-                <p className="empty-text">List what the client is paying for so extra work can be spotted.</p>
-                <ButtonLink href={`/projects/${project.id}/scope/edit`}>Edit scope</ButtonLink>
-              </div>
+              <EmptyState art="tasks" title="List what the client is paying for" text="Name each deliverable once. Anything not on the list becomes visibly extra." action={{ href: `/projects/${project.id}/scope/edit`, label: "Add deliverables" }} />
             )}
           </section>
 
@@ -102,11 +99,7 @@ export default async function ProjectScopePage({
                 ))}
               </ol>
             ) : (
-              <div className="empty" data-art="tasks">
-                <p className="empty-title">No exclusions recorded</p>
-                <p className="empty-text">Naming what is out of scope up front prevents disputes later.</p>
-                <ButtonLink href={`/projects/${project.id}/scope/edit`} variant="outline">Add exclusions</ButtonLink>
-              </div>
+              <EmptyState art="tasks" title="Say what is not included" text="Naming exclusions up front prevents most arguments later." action={{ href: `/projects/${project.id}/scope/edit`, label: "Add exclusions" }} />
             )}
           </section>
         </div>

@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { notFound } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { ExternalShell } from "@/components/external-shell";
@@ -52,7 +53,7 @@ export default async function ClientPortalPage({ params }: { params: Promise<{ t
               ))}
             </div>
           ) : (
-            <div className="empty"><p className="empty-title">No projects yet</p><p className="empty-text">Projects shared with you will appear here.</p></div>
+            <EmptyState small title="Nothing shared yet" text="Projects your contractor shares with you will appear here." />
           )}
         </section>
 
@@ -80,7 +81,7 @@ export default async function ClientPortalPage({ params }: { params: Promise<{ t
               ))}
             </div>
           ) : (
-            <div className="empty"><p className="empty-title">No invoices yet</p><p className="empty-text">Invoices sent to you will appear here.</p></div>
+            <EmptyState small title="No invoices yet" text="Invoices your contractor sends you will appear here, with a way to pay." />
           )}
         </section>
 
@@ -99,7 +100,7 @@ export default async function ClientPortalPage({ params }: { params: Promise<{ t
               ))}
             </div>
           ) : (
-            <div className="empty"><p className="empty-title">No updates yet</p><p className="empty-text">Updates your contractor shares will appear here.</p></div>
+            <EmptyState small title="No updates yet" text="Progress notes from your contractor will appear here." />
           )}
         </section>
       </div>

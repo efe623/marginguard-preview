@@ -1,4 +1,5 @@
-import { AlertTriangle, ArrowUpRight, Receipt } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { AlertTriangle, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
@@ -40,11 +41,7 @@ export default async function InvoicesPage() {
             </table>
           </div>
         ) : (
-          <div className="empty" data-art="money">
-            <Receipt size={22} aria-hidden className="text-[var(--ink-3)]" />
-            <p className="empty-title">No invoices yet</p>
-            <p className="empty-text">Raise an invoice from a project&apos;s Money tab and it will be tracked here.</p>
-          </div>
+          <EmptyState art="money" title="Send your first invoice" text="Invoices are raised from a project's Money tab. Open a project and bill the work that is ready." action={{ href: "/projects", label: "Choose a project" }} />
         )}
       </section>
     </div>

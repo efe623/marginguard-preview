@@ -1,4 +1,5 @@
-import { ArrowRight, CircleCheck, FileWarning, Hourglass, Receipt, ShieldCheck } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ArrowRight, FileWarning, Hourglass, Receipt, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { IconClients, IconPlus } from "@/components/icons";
 import { ButtonLink } from "@/components/ui/button";
@@ -166,11 +167,7 @@ export default async function DashboardPage() {
 
       {projectViews.length === 0 && projects.length === 0 ? (
         <section className="panel">
-          <div className="empty" data-art="projects">
-            <p className="empty-title">No projects yet</p>
-            <p className="empty-text">Create a project to record its scope, price and approvals. Anything that needs a decision will show up here.</p>
-            <ButtonLink href="/projects/new"><IconPlus size={18} /> New project</ButtonLink>
-          </div>
+          <EmptyState art="projects" title="Create your first project" text="Record the scope, the price and the approvals once. From then on, anything that needs your decision shows up here." action={{ href: "/projects/new", label: "Create your first project" }} secondary={{ href: "/clients/new", label: "Add a client first" }} />
         </section>
       ) : (
         <>
@@ -274,11 +271,7 @@ export default async function DashboardPage() {
                     })}
                   </div>
                 ) : (
-                  <div className="empty" data-art="clear">
-                    <CircleCheck size={22} className="signal" aria-hidden />
-                    <p className="empty-title">Nothing is waiting on you</p>
-                    <p className="empty-text">No overdue invoices, unconfirmed deposits or tasks due in the next three days.</p>
-                  </div>
+                  <EmptyState art="clear" title="You are clear" text="No overdue invoices, open deposits or tasks due soon. A good moment to plan next week." action={{ href: "/projects", label: "Plan next week" }} />
                 )}
               </section>
 
@@ -394,10 +387,7 @@ export default async function DashboardPage() {
                       })}
                   </div>
                 ) : (
-                  <div className="empty empty-sm">
-                    <p className="empty-title">Everything is paid</p>
-                    <p className="empty-text">No unpaid invoices right now.</p>
-                  </div>
+                  <EmptyState small title="Everything is paid" text="Nothing to chase. New invoices appear here the moment you send them." />
                 )}
               </section>
 
