@@ -290,9 +290,8 @@ export function IconAppearance(props: IconProps) {
 export function BrandMark({ size = 30 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-      <rect x="6" y="22" width="12" height="36" rx="6" fill="var(--signal, #8fb4d6)" />
-      <rect x="26" y="6" width="12" height="52" rx="6" fill="var(--signal, #8fb4d6)" />
-      <rect x="46" y="34" width="12" height="24" rx="6" fill="var(--signal, #8fb4d6)" />
+      <path d="M14 12V34A18 18 0 0 0 50 34V12" fill="none" stroke="var(--signal, #8fb4d6)" strokeWidth="10" strokeLinecap="round" />
+      <circle cx="32" cy="35" r="8" fill="var(--signal, #8fb4d6)" opacity="0.7" />
     </svg>
   );
 }
