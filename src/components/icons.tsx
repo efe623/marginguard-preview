@@ -286,13 +286,13 @@ export function IconAppearance(props: IconProps) {
   );
 }
 
-/** Brand mark: three ledger bars, each shorter than the last. */
+/** Brand mark: three solid rising columns. */
 export function BrandMark({ size = 30 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-      <rect x="4" y="8" width="56" height="12" rx="6" fill="var(--signal, #8fb4d6)" />
-      <rect x="4" y="26" width="40" height="12" rx="6" fill="var(--signal, #8fb4d6)" fillOpacity="0.75" />
-      <rect x="4" y="44" width="24" height="12" rx="6" fill="var(--signal, #8fb4d6)" fillOpacity="0.5" />
+      <rect x="6" y="36" width="12" height="22" rx="6" fill="var(--signal, #8fb4d6)" />
+      <rect x="26" y="22" width="12" height="36" rx="6" fill="var(--signal, #8fb4d6)" />
+      <rect x="46" y="6" width="12" height="52" rx="6" fill="var(--signal, #8fb4d6)" />
     </svg>
   );
 }
