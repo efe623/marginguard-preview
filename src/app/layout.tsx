@@ -18,6 +18,13 @@ const themeScript = `
       : "dark";
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
+    const pick = (key, allowed, fallback) => {
+      const v = localStorage.getItem("unitpulse-" + key);
+      return allowed.includes(v) ? v : fallback;
+    };
+    document.documentElement.dataset.density = pick("density", ["comfortable", "compact"], "comfortable");
+    document.documentElement.dataset.text = pick("text", ["default", "large"], "default");
+    document.documentElement.dataset.motion = pick("motion", ["full", "reduced"], "full");
   } catch {}
 `;
 

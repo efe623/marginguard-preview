@@ -21,7 +21,6 @@ import {
   IconSettings,
   IconToday
 } from "@/components/icons";
-import { ThemeToggle } from "@/components/theme-toggle";
 import type { ActivityItem } from "@/features/operations/queries";
 
 type NavItem = { href: string; label: string; icon: typeof IconToday };
@@ -185,7 +184,6 @@ export function Shell({
               <p className="account-name">{user.displayName}</p>
               <p className="account-role">{user.role}</p>
             </div>
-            <ThemeToggle compact />
             <SignOutButton />
           </div>
         </div>

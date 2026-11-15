@@ -268,6 +268,16 @@ export function IconArchive(props: IconProps) {
   );
 }
 
+export function IconAppearance(props: IconProps) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" fillOpacity={0.3} stroke="none" />
+      <path d="M12 3.5v17" />
+    </Base>
+  );
+}
+
 /** Brand mark: a rounded tile with a pulse line. */
 export function BrandMark({ size = 30 }: { size?: number }) {
   return (

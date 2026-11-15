@@ -640,3 +640,35 @@ svg.lucide { stroke-width: 1.75; }
 .chip { min-height: 38px; }
 .subtab { min-height: 34px; }
 .status { padding-bottom: 1px; }
+
+
+/* ---------- Appearance settings ---------- */
+.options { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.option { align-content: start; background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 16px; color: var(--ink); cursor: pointer; display: grid; gap: 4px; padding: 16px; text-align: left; transition: border-color 140ms ease, background-color 140ms ease; }
+.option:hover { border-color: var(--ink-soft); }
+.option[aria-checked="true"] { background: var(--accent-soft); border-color: var(--signal); box-shadow: 0 0 0 1px var(--signal); }
+.option-label { font-size: 1rem; font-weight: 650; }
+.option-hint { color: var(--ink-soft); font-size: 0.875rem; }
+.option-swatch { border: 1px solid var(--line-strong); border-radius: 12px; display: grid; gap: 6px; grid-template-columns: 1fr 1fr; height: 84px; margin-bottom: 10px; padding: 10px; position: relative; }
+.option-swatch i { border-radius: 6px; display: block; }
+.option-swatch i:first-child { grid-column: 1 / -1; }
+.option-swatch svg { bottom: 8px; position: absolute; right: 10px; }
+.option-swatch-dark { background: #1b1b1b; color: #8fb4d6; }
+.option-swatch-dark i { background: #2d2d2d; }
+.option-swatch-dark i:nth-child(2) { background: #8fb4d6; }
+.option-swatch-light { background: #f8f7f3; color: #3d6a8f; }
+.option-swatch-light i { background: #e8e6df; }
+.option-swatch-light i:nth-child(2) { background: #3d6a8f; }
+
+/* User display preferences */
+html[data-density="compact"] .row { min-height: 48px; padding-block: 8px; }
+html[data-density="compact"] .table td { padding-block: 9px; }
+html[data-density="compact"] .table th { padding-block: 9px; }
+html[data-density="compact"] .panel-head { padding-block: 11px; }
+html[data-density="compact"] .panel-body { padding: 16px 22px; }
+html[data-density="compact"] .nav-item { height: 40px; }
+html[data-density="compact"] .page { padding-top: 24px; }
+html[data-density="compact"] .page-head { margin-bottom: 20px; }
+html[data-density="compact"] .stack { gap: 16px; }
+html[data-text="large"] { font-size: 112.5%; }
+html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }

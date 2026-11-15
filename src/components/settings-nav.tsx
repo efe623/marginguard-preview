@@ -6,6 +6,7 @@ import { SettingsTransitionLink } from "@/components/settings-transition-link";
 
 const items = [
   ["business", "Business", "/settings/business"],
+  ["appearance", "Appearance", "/settings/appearance"],
   ["quotes", "Quote templates", "/settings/quotes"],
   ["ai", "AI", "/settings/ai"],
   ["members", "Members", "/settings/members"],

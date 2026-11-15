@@ -1,7 +1,6 @@
 import { ChevronRight } from "lucide-react";
-import { IconArchive, IconBusiness, IconClients, IconDocument, IconLink, IconPen, IconShield, IconSupport } from "@/components/icons";
+import { IconAppearance, IconArchive, IconBusiness, IconClients, IconDocument, IconLink, IconPen, IconShield, IconSupport } from "@/components/icons";
 import { SettingsTransitionLink } from "@/components/settings-transition-link";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 import { getBusinessSettingsData } from "@/features/operations/queries";
@@ -29,6 +28,12 @@ export default async function SettingsPage() {
           icon: IconBusiness,
           href: "/settings/business",
           state: business ? <span className="meta">{business.currency} · {business.timezone}</span> : undefined
+        },
+        {
+          title: "Appearance",
+          description: "Theme, density, text size, motion, and the sidebar.",
+          icon: IconAppearance,
+          href: "/settings/appearance"
         },
         {
           title: "Quote templates",
@@ -121,15 +126,6 @@ export default async function SettingsPage() {
             </div>
           </section>
         ))}
-        <section className="panel" aria-labelledby="settings-appearance">
-          <div className="panel-head">
-            <div>
-              <h2 className="panel-title" id="settings-appearance">Appearance</h2>
-              <p className="panel-sub">Saved on this device and applied before the page loads.</p>
-            </div>
-            <ThemeToggle />
-          </div>
-        </section>
       </div>
     </div>
   );
