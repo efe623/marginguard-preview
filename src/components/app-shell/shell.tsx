@@ -167,7 +167,7 @@ export function Shell({
   }, [drawerOpen]);
 
   return (
-    <div className="shell" data-collapsed={collapsed ? "true" : "false"} data-drawer={drawerOpen ? "open" : "closed"}>
+    <div className="shell" data-collapsed={collapsed ? "true" : "false"} data-drawer={drawerOpen ? "open" : "closed"} data-new={pathname === "/dashboard" ? "hide" : "show"}>
       <aside className="sidebar" aria-label="Sidebar">
         <div className="sidebar-top">
           <Link href="/dashboard" className="brand" aria-label="UnitPulse, go to Today">
