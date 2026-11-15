@@ -2,6 +2,7 @@ import { ArrowRight, CircleCheck, FileWarning, Hourglass, Receipt, ShieldCheck }
 import Link from "next/link";
 import { IconClients, IconPlus } from "@/components/icons";
 import { ButtonLink } from "@/components/ui/button";
+import { TodayBrief } from "@/components/today-brief";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 import { listProjectViews } from "@/features/core/queries";
@@ -141,6 +142,11 @@ export default async function DashboardPage() {
   const icons = { invoice: Receipt, task: FileWarning, block: Hourglass } as const;
   const dateLabel = new Intl.DateTimeFormat("en", { weekday: "long", day: "numeric", month: "long" }).format(now);
 
+  const approvedExtras = orders.filter((order) => ["approved", "awaiting_deposit", "authorized", "balance_due", "paid"].includes(order.status));
+  const first = actions[0];
+  const cta = { invoice: "Chase payment", block: "Resolve it", task: "Open task" } as const;
+  const afterThis = actions.length - 1;
+
   const brief = actions.length
     ? `${actions.length} ${actions.length === 1 ? "thing needs" : "things need"} a decision${overdue.length ? `, and ${formatMoney(overdueTotal, currency)} is overdue` : ""}.`
     : "Nothing is blocking money or work right now.";
@@ -168,6 +174,45 @@ export default async function DashboardPage() {
         </section>
       ) : (
         <>
+          <div className="brief">
+            <section className={`next-step${first ? "" : " is-clear"}`} aria-labelledby="next-title">
+              {first ? (
+                <>
+                  <p className="next-label">Start here</p>
+                  <h2 id="next-title" className="next-title">{first.title}</h2>
+                  <p className="next-detail">{first.detail}{first.meta ? `. ${first.meta}` : ""}</p>
+                  <div className="next-actions">
+                    <ButtonLink href={first.href}>{cta[first.icon]} <ArrowRight size={16} aria-hidden /></ButtonLink>
+                    <span className="meta">{afterThis > 0 ? `${afterThis} more after this` : "Then you are clear"}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="next-label">You are clear</p>
+                  <h2 id="next-title" className="next-title">Nothing is waiting on you today</h2>
+                  <p className="next-detail">Spend two minutes making next week easier.</p>
+                  <div className="next-actions">
+                    <ButtonLink href={projectViews[0] ? `/projects/${projectViews[0].id}/work` : "/projects/new"}>Plan next week</ButtonLink>
+                    <ButtonLink href="/settings/quotes" variant="outline">Save a quote template</ButtonLink>
+                  </div>
+                </>
+              )}
+              {approvedExtras.length ? (
+                <p className="next-proof">
+                  <ShieldCheck size={16} className="signal" aria-hidden />
+                  <span>
+                    <strong>{formatMoney(extras, currency)}</strong> of extra work agreed in writing before it started, across {approvedExtras.length} {approvedExtras.length === 1 ? "change" : "changes"}.
+                  </span>
+                </p>
+              ) : null}
+            </section>
+            <TodayBrief
+              needs={actions.length}
+              items={activity.map((item) => ({ id: item.id, title: item.title, body: item.body, href: item.href ?? "/notifications", createdAt: item.createdAt }))}
+              projects={projectViews.map((project) => ({ id: project.id, name: project.name }))}
+            />
+          </div>
+
           <section className="panel" aria-labelledby="week-title">
             <div className="panel-head">
               <div>
@@ -355,25 +400,6 @@ export default async function DashboardPage() {
                   </div>
                 )}
               </section>
-
-              {activity.length ? (
-                <section className="panel">
-                  <div className="panel-head">
-                    <h2 className="panel-title">Recent activity</h2>
-                    <ButtonLink href="/notifications" variant="outline" className="button-sm">View all</ButtonLink>
-                  </div>
-                  <div className="rows">
-                    {activity.slice(0, 4).map((item) => (
-                      <Link key={item.id} href={item.href ?? "/notifications"} className="row">
-                        <div className="row-main">
-                          <p className="row-title">{item.title}</p>
-                          <p className="row-sub">{new Date(item.createdAt).toLocaleDateString("en", { day: "numeric", month: "short" })} · {item.body}</p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              ) : null}
 
               <section className="rule">
                 <ShieldCheck size={20} className="signal" aria-hidden />

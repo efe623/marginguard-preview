@@ -747,3 +747,22 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 @keyframes swap-in { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
 .shell[data-settings="true"] .content-shell { animation: settings-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 @keyframes settings-enter { from { opacity: 0; transform: translateX(28px) scale(0.985); } to { opacity: 1; transform: none; } }
+
+
+/* ---------- Today brief: start here, since you were last here ---------- */
+.brief { align-items: stretch; display: grid; gap: 18px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+.next-step { background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--signal) 35%, var(--line)); border-radius: var(--radius-lg, 22px); display: grid; align-content: start; gap: 10px; padding: 26px 28px; }
+.next-label { color: var(--signal); font-size: 0.875rem; font-weight: 650; margin: 0; }
+.next-title { color: var(--ink); font-size: 1.5rem; font-weight: 650; letter-spacing: -0.01em; line-height: 1.2; margin: 0; }
+.next-detail { color: var(--ink-soft); line-height: 1.5; margin: 0; max-width: 52ch; }
+.next-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+.next-proof { align-items: flex-start; border-top: 1px solid color-mix(in srgb, var(--signal) 25%, var(--line)); color: var(--ink-soft); display: flex; font-size: 0.9375rem; gap: 10px; line-height: 1.45; margin: 14px 0 0; padding-top: 14px; }
+.next-proof svg { flex: none; margin-top: 2px; }
+.next-proof strong { color: var(--ink); }
+.brief-since { align-content: start; display: grid; min-height: 100%; }
+.resume { align-items: center; border-top: 1px solid var(--line); color: var(--ink-soft); display: flex; font-size: 0.9375rem; gap: 8px; padding: 14px 22px; transition: background-color 140ms ease; }
+.resume:hover { background: var(--surface-2); }
+.resume strong { color: var(--ink); flex: 1; font-weight: 650; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-badge { background: var(--signal); border-radius: 999px; color: var(--on-signal); font-size: 0.75rem; font-weight: 700; line-height: 1; margin-left: auto; min-width: 22px; padding: 5px 7px; text-align: center; }
+.shell[data-collapsed="true"] .nav-badge { font-size: 0; height: 9px; min-width: 0; padding: 0; position: absolute; right: 9px; top: 9px; width: 9px; }
+@media (max-width: 1000px) { .brief { grid-template-columns: minmax(0, 1fr); } }

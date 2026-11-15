@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ActivityCenter } from "@/components/activity-center";
 import { CommandPalette, type PaletteEntity } from "@/components/app-shell/command-palette";
@@ -33,6 +33,10 @@ import {
 import type { ActivityItem } from "@/features/operations/queries";
 
 type NavItem = { href: string; label: string; icon: typeof IconToday };
+
+/* "G then a letter" jumps, shown in each link's tooltip. */
+const jumpKeys: Record<string, string> = { d: "/dashboard", p: "/projects", c: "/clients", i: "/invoices", r: "/reports", l: "/calendar", s: "/settings/business" };
+const jumpFor = (href: string) => Object.entries(jumpKeys).find(([, target]) => target === href)?.[0];
 
 const groups: Array<{ label: string; items: NavItem[] }> = [
   {
@@ -125,9 +129,11 @@ export function Shell({
   projects,
   clients,
   banner,
+  attention,
   children
 }: {
   user: { displayName: string; role: string };
+  attention: { needs: number; overdue: number };
   activity: ActivityItem[];
   projects: PaletteEntity[];
   clients: PaletteEntity[];
@@ -135,6 +141,7 @@ export function Shell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const collapsed = useSyncExternalStore(subscribeCollapse, readCollapsed, () => false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   // Drawer and menu are open only on the page where they were opened, so navigating closes them.
@@ -144,6 +151,7 @@ export function Shell({
   const newOpen = newPath === pathname;
   const newRef = useDismiss(newOpen, () => setNewPath(null));
   const inSettings = pathname === "/settings" || pathname.startsWith("/settings/");
+  const badgeFor = (href: string) => (href === "/dashboard" ? attention.needs : href === "/invoices" ? attention.overdue : 0);
   const initial = user.displayName.trim().charAt(0).toUpperCase() || "U";
 
   useEffect(() => {
@@ -156,6 +164,49 @@ export function Shell({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // The tab title carries the count, so a background tab shows when something needs the owner.
+  const needs = attention.needs;
+  useEffect(() => {
+    const apply = () => {
+      const base = document.title.replace(/^\(\d+\)\s*/, "");
+      const next = needs ? `(${needs}) ${base}` : base;
+      if (document.title !== next) document.title = next;
+    };
+    apply();
+    const observer = new MutationObserver(apply);
+    observer.observe(document.head, { childList: true, subtree: true, characterData: true });
+    return () => observer.disconnect();
+  }, [needs]);
+
+  // Remember the last project opened so Today can offer to pick up from it.
+  useEffect(() => {
+    const match = pathname.match(/^\/projects\/([^/]+)/);
+    if (!match || match[1] === "new") return;
+    try {
+      localStorage.setItem("unitpulse-lastproject", match[1]);
+    } catch {}
+  }, [pathname]);
+
+  // "G then D/P/C/I/R/L/S" jumps between areas without the mouse.
+  useEffect(() => {
+    let armed = 0;
+    function onKey(event: KeyboardEvent) {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const el = event.target as HTMLElement | null;
+      if (el && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))) return;
+      const key = event.key.toLowerCase();
+      if (armed && Date.now() - armed < 1200 && jumpKeys[key]) {
+        event.preventDefault();
+        armed = 0;
+        router.push(jumpKeys[key]);
+        return;
+      }
+      armed = key === "g" ? Date.now() : 0;
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [router]);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -209,9 +260,10 @@ export function Shell({
               {groups.map((group) => (
                 <div className="nav-group" key={group.label}>
                   {group.items.map(({ href, label, icon: Icon }) => (
-                    <Link key={href} href={href} className="nav-item" title={label} aria-current={isActive(pathname, href) ? "page" : undefined}>
+                    <Link key={href} href={href} className="nav-item" title={jumpFor(href) ? `${label} (G then ${jumpFor(href)!.toUpperCase()})` : label} aria-current={isActive(pathname, href) ? "page" : undefined}>
                       <Icon size={20} />
                       <span className="nav-text">{label}</span>
+                      {badgeFor(href) ? <span className="nav-badge" aria-label={`${badgeFor(href)} need attention`}>{badgeFor(href)}</span> : null}
                     </Link>
                   ))}
                 </div>
