@@ -1,5 +1,7 @@
 "use client";
 
+import { BrandMark } from "@/components/icons";
+
 import { AlertCircle } from "lucide-react";
 
 export default function GlobalError({
@@ -14,7 +16,7 @@ export default function GlobalError({
         <main className="grid min-h-screen place-items-center px-4 py-10">
           <div className="w-full max-w-[420px]">
             <span className="brand mb-6 !mr-0">
-              <span className="brand-mark" aria-hidden="true" />
+              <BrandMark />
               UnitPulse
             </span>
             <section className="panel">

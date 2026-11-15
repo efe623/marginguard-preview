@@ -286,12 +286,13 @@ export function IconAppearance(props: IconProps) {
   );
 }
 
-/** Brand mark: a rounded tile with a pulse line. */
+/** Brand mark: three ledger bars, each shorter than the last. */
 export function BrandMark({ size = 30 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <rect width="32" height="32" rx="9" fill="var(--signal)" />
-      <path d="M6.5 17h4.6l2.6-6.4 4.2 11 2.6-4.6h5" fill="none" stroke="var(--on-signal)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <rect x="4" y="8" width="56" height="12" rx="6" fill="var(--signal, #8fb4d6)" />
+      <rect x="4" y="26" width="40" height="12" rx="6" fill="var(--signal, #8fb4d6)" fillOpacity="0.75" />
+      <rect x="4" y="44" width="24" height="12" rx="6" fill="var(--signal, #8fb4d6)" fillOpacity="0.5" />
     </svg>
   );
 }

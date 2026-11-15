@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/icons";
 import Link from "next/link";
 import { AlertCircle, CheckCircle2, Info } from "lucide-react";
 import type { ReactNode } from "react";
@@ -19,7 +20,7 @@ export function AuthShell({
     <main className="flex min-h-screen flex-col items-center px-4 pb-12 pt-10 sm:justify-center sm:pt-12">
       <div className="w-full max-w-[420px]">
         <Link href="/sign-in" className="brand mb-6 !mr-0" aria-label="UnitPulse">
-          <span className="brand-mark" aria-hidden="true" />
+          <BrandMark />
           UnitPulse
         </Link>
         <section className="panel">

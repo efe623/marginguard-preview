@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/icons";
 import type { ReactNode } from "react";
 
 export function ExternalShell({
@@ -15,7 +16,7 @@ export function ExternalShell({
       <header className="border-b border-[var(--line)] bg-[var(--bar)]">
         <div className={`mx-auto flex h-14 items-center justify-between gap-4 px-4 ${width === "lg" ? "max-w-4xl" : "max-w-2xl"}`}>
           <span className="brand !mr-0">
-            <span className="brand-mark" aria-hidden="true" />
+            <BrandMark />
             UnitPulse
           </span>
           {businessName ? <span className="meta truncate">{businessName}</span> : null}
