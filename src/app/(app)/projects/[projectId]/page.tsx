@@ -41,7 +41,7 @@ export default async function ProjectPage({
         }
       />
 
-      <div className="mt-7 flex gap-10">
+      <div className="mt-6 flex flex-wrap gap-x-10 gap-y-5">
         <div>
           <p className="eyebrow">Original quote</p>
           <p className="mt-2 text-xl font-semibold">
@@ -70,7 +70,7 @@ export default async function ProjectPage({
 
       <ProjectTabs projectId={project.id} active="overview" />
 
-      <div className="mt-7 grid grid-cols-[1.45fr_0.75fr] gap-6">
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.45fr_0.75fr]">
         <section className="card border-l-[4px] border-l-[var(--signal)] p-7">
           <div className="flex items-start justify-between">
             <div className="flex gap-4">
@@ -127,7 +127,7 @@ export default async function ProjectPage({
         {orders.map((order) => (
           <div
             key={order.id}
-            className="grid grid-cols-[40px_1fr_150px_160px] items-center gap-4 border-b border-[var(--line)] px-7 py-5 last:border-0"
+            className="grid grid-cols-[40px_1fr] items-center gap-x-4 gap-y-2 md:grid-cols-[40px_1fr_150px_160px] border-b border-[var(--line)] px-7 py-5 last:border-0"
           >
             {order.status === "paid" ? (
               <CircleCheck size={20} className="text-[var(--success)]" />

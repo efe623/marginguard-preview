@@ -10,7 +10,7 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <header className="flex items-end justify-between gap-8 border-b border-[var(--line)] pb-8">
+    <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5 border-b border-[var(--line)] pb-6">
       <div className="max-w-4xl">
         {eyebrow ? <p className="eyebrow mb-4">{eyebrow}</p> : null}
         <h1 className="page-title">{title}</h1>
@@ -20,7 +20,7 @@ export function PageHeader({
           </p>
         ) : null}
       </div>
-      {actions ? <div className="flex shrink-0 gap-3">{actions}</div> : null}
+      {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
     </header>
   );
 }

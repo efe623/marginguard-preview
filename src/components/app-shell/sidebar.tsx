@@ -38,7 +38,7 @@ export function Sidebar({
 
       <Link
         href="/projects/new"
-        className="app-new-project mx-5 mb-8 flex min-h-11 items-center justify-between rounded-xl bg-[var(--signal)] px-4 py-3 text-[0.72rem] font-bold uppercase tracking-[0.11em] text-white shadow-[0_10px_24px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5 hover:bg-[var(--signal-deep)] hover:shadow-[0_14px_28px_rgba(0,0,0,0.22)]"
+        className="app-new-project mx-5 mb-8 flex min-h-11 items-center justify-between rounded-xl bg-[var(--signal)] px-4 py-3 text-[0.72rem] font-bold uppercase tracking-[0.11em] text-[var(--on-signal)] shadow-[0_10px_24px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5 hover:bg-[var(--signal-deep)] hover:shadow-[0_14px_28px_rgba(0,0,0,0.22)]"
       >
         New project <ArrowUpRight size={16} />
       </Link>

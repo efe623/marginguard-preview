@@ -15,7 +15,7 @@ const themeScript = `
     const saved = localStorage.getItem("unitpulse-theme");
     const theme = saved === "light" || saved === "dark"
       ? saved
-      : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      : "dark";
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
   } catch {}

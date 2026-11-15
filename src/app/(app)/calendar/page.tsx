@@ -53,7 +53,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
               <div className="grid grid-cols-7">
                 {days.map((day) => (
                   <div key={day.date} className={`min-h-36 border-b border-r border-[var(--line)] p-2 ${day.inMonth ? "" : "bg-[var(--paper-deep)] opacity-55"}`}>
-                    <time className={`grid size-7 place-items-center text-xs font-bold ${day.date === today ? "rounded-full bg-[var(--signal)] text-white" : ""}`}>{day.dayNumber}</time>
+                    <time className={`grid size-7 place-items-center text-xs font-bold ${day.date === today ? "rounded-full bg-[var(--signal)] text-[var(--on-signal)]" : ""}`}>{day.dayNumber}</time>
                     <div className="mt-2 space-y-1.5">{(eventsByDate.get(day.date) ?? []).slice(0, 3).map((event) => <Link href={event.href} key={`${event.kind}-${event.id}`} className={`block border-l-[3px] p-2 text-xs leading-4 ${kindClass[event.kind]}`}><span className="block font-bold">{event.title}</span><span className="quiet mt-0.5 block truncate">{event.detail}</span></Link>)}</div>
                   </div>
                 ))}

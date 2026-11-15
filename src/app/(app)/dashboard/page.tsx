@@ -44,17 +44,17 @@ export default async function DashboardPage() {
     <div className="page">
       <PageHeader
         eyebrow={new Intl.DateTimeFormat("en", { weekday: "long", day: "numeric", month: "long" }).format(now)}
-        title="Protect what you earn."
-        description="Projects, profit, deadlines, requests, and payment checkpoints in one place."
+        title="Dashboard"
+        description="Profit, overdue money, and the decisions that need you today."
         actions={<ButtonLink href="/projects/new">New project <ArrowRight size={15} /></ButtonLink>}
       />
-      <section aria-label="Key figures" className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Key figures" className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="card metric"><p className="eyebrow">Active project value</p><p className="metric-value">{formatMoney(quoteValue + extras, currency)}</p><p className="quiet mt-3 text-xs">Quotes + approved extras</p></div>
         <div className="card metric"><p className="eyebrow">Recorded costs</p><p className="metric-value">{formatMoney(costs, currency)}</p><p className="quiet mt-3 text-xs">Materials, subcontractors, and expenses</p></div>
-        <div className="card metric"><p className="eyebrow">Expected profit</p><p className="metric-value signal">{formatMoney(quoteValue + extras - costs, currency)}</p><p className="quiet mt-3 text-xs">Before unrecorded labour costs</p></div>
+        <div className="card metric"><p className="eyebrow">Expected profit</p><p className="metric-value">{formatMoney(quoteValue + extras - costs, currency)}</p><p className="quiet mt-3 text-xs">Before unrecorded labour costs</p></div>
         <div className="card metric"><p className="eyebrow">Open invoices</p><p className="metric-value">{formatMoney(receivables, currency)}</p><p className="quiet mt-3 text-xs">{overdue.length} overdue</p></div>
       </section>
-      <div className="mt-8 grid gap-6 xl:grid-cols-[1.55fr_0.8fr]">
+      <div className="mt-6 grid items-start gap-6 xl:grid-cols-[1.55fr_0.8fr]">
         <section className="card">
           <div className="flex items-end justify-between border-b border-[var(--line)] p-7">
             <div><p className="eyebrow mb-3">Money leaks</p><h2 className="section-title">Work needing a decision</h2></div>

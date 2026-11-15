@@ -33,7 +33,7 @@ export default async function ChangeOrderPage({
         actions={<Status tone="warning">Approved · unpaid</Status>}
       />
 
-      <div className="mt-8 grid grid-cols-[1.25fr_0.75fr] gap-6">
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.25fr_0.75fr]">
         <section className="card">
           <div className="border-b border-[var(--line)] p-7">
             <p className="eyebrow mb-3">Proof trail</p>
