@@ -15,6 +15,7 @@ import {
 import { updateClientNotes } from "@/features/core/actions";
 import { getBusinessOperationsData } from "@/features/operations/queries";
 import { formatMoney } from "@/lib/money";
+import { formatDay } from "@/lib/dates";
 
 export default async function ClientPage({
   params
@@ -150,7 +151,7 @@ export default async function ClientPage({
                   <span className="row-lead"><Receipt size={18} aria-hidden /></span>
                   <div className="row-main">
                     <p className="row-title">{invoice.invoice_number}</p>
-                    <p className="row-sub">Due {invoice.due_date}</p>
+                    <p className="row-sub">Due {formatDay(invoice.due_date)}</p>
                   </div>
                   <div className="row-end">
                     <span className="num font-semibold">{formatMoney(Number(invoice.amount_minor), invoice.currency)}</span>

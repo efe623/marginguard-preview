@@ -87,7 +87,9 @@ export function TodayBrief({
 
   let previous: { ts: number; needs: number } | null = null;
   try {
-    previous = raw ? (JSON.parse(raw) as { ts: number; needs: number }) : null;
+    const parsed = raw ? (JSON.parse(raw) as Partial<{ ts: number; needs: number }>) : null;
+    // Older builds stored a bare timestamp; anything without a real time is ignored.
+    previous = parsed && Number.isFinite(parsed.ts) ? { ts: Number(parsed.ts), needs: Number(parsed.needs) || 0 } : null;
   } catch {
     previous = null;
   }
@@ -126,10 +128,7 @@ export function TodayBrief({
           ))}
         </div>
       ) : (
-        <div className="empty empty-sm">
-          <p className="empty-title">{previous ? "Nothing new" : "No activity yet"}</p>
-          <p className="empty-text">{previous ? "No new payments, approvals or messages since your last visit." : "Payments, approvals and client messages will show up here."}</p>
-        </div>
+        <p className="brief-quiet">{previous ? "No new payments, approvals or messages since then." : "Payments, approvals and client messages will show up here."}</p>
       )}
       {resume ? (
         <Link href={`/projects/${resume.id}`} className="resume">

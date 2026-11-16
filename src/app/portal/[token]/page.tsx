@@ -6,6 +6,7 @@ import { Status } from "@/components/ui/status";
 import { digestOpaqueToken } from "@/lib/security-tokens";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMoney } from "@/lib/money";
+import { formatDay } from "@/lib/dates";
 
 export default async function ClientPortalPage({ params }: { params: Promise<{ token: string }> }) {
   const now = new Date();
@@ -46,7 +47,7 @@ export default async function ClientPortalPage({ params }: { params: Promise<{ t
                   <span aria-hidden="true" />
                   <div className="row-main">
                     <p className="row-title">{project.name}</p>
-                    {project.due_date ? <p className="row-sub">Target: {project.due_date}</p> : null}
+                    {project.due_date ? <p className="row-sub">Target: {formatDay(project.due_date)}</p> : null}
                   </div>
                   <div className="row-end"><Status tone={project.status === "completed" ? "success" : "neutral"}>{project.status.replace("_", " ")}</Status></div>
                 </div>
@@ -66,7 +67,7 @@ export default async function ClientPortalPage({ params }: { params: Promise<{ t
                   <span aria-hidden="true" />
                   <div className="row-main">
                     <p className="row-title">{invoice.invoice_number}</p>
-                    <p className="row-sub">Due {invoice.due_date}</p>
+                    <p className="row-sub">Due {formatDay(invoice.due_date)}</p>
                     {invoice.external_payment_url ? (
                       <a className="button button-primary button-sm mt-2 w-fit" href={invoice.external_payment_url} rel="noreferrer" target="_blank">
                         Open external payment page <ExternalLink size={14} aria-hidden="true" />
@@ -93,7 +94,7 @@ export default async function ClientPortalPage({ params }: { params: Promise<{ t
                 <article key={update.id} className="row" style={{ display: "block" }}>
                   <div className="flex justify-between gap-4">
                     <h3 className="row-title">{update.title}</h3>
-                    <time className="meta shrink-0" dateTime={update.created_at}>{new Date(update.created_at).toLocaleDateString()}</time>
+                    <time className="meta shrink-0" dateTime={update.created_at}>{formatDay(update.created_at)}</time>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{update.body}</p>
                 </article>

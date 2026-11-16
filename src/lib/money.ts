@@ -28,12 +28,14 @@ export function toMinorUnits(amount: string, currency: string) {
 
 export function formatMoney(amountMinor: number | bigint, currency: string) {
   const exponent = currencyExponent(currency);
+  const value = Number(amountMinor) / 10 ** exponent;
+  const digits = Number.isInteger(value) ? 0 : exponent;
   return new Intl.NumberFormat("en", {
     style: "currency",
     currency,
-    minimumFractionDigits: exponent,
+    minimumFractionDigits: digits,
     maximumFractionDigits: exponent
-  }).format(Number(amountMinor) / 10 ** exponent);
+  }).format(value);
 }
 
 export function calculateDeposit(totalMinor: bigint, depositBasisPoints: number) {

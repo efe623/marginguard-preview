@@ -9,6 +9,7 @@ import {
   createProjectUpdate,
   importClientMessage
 } from "@/features/operations/actions";
+import { formatDay } from "@/lib/dates";
 import {
   getOperationsProjectData,
   getProjectContext
@@ -145,7 +146,7 @@ export default async function ProjectMessagesPage({
                         {update.visible_to_client ? "Client visible" : "Internal"}
                       </Status>
                     </div>
-                    <p className="meta mt-1"><time dateTime={update.created_at}>{new Date(update.created_at).toLocaleString()}</time></p>
+                    <p className="meta mt-1"><time dateTime={update.created_at}>{formatDay(update.created_at)}</time></p>
                     <p className="mt-2 whitespace-pre-wrap text-[0.9375rem] leading-6">{update.body}</p>
                   </article>
                 ))}

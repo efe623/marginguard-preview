@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ActivityCenter } from "@/components/activity-center";
 import { ArrivalFocus } from "@/components/arrival-focus";
+import { LogRequestDialog } from "@/components/log-request";
 import { CommandPalette, type PaletteEntity } from "@/components/app-shell/command-palette";
 import { SignOutButton } from "@/components/app-shell/sign-out-button";
 import {
@@ -145,6 +146,7 @@ export function Shell({
   const router = useRouter();
   const collapsed = useSyncExternalStore(subscribeCollapse, readCollapsed, () => false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
   // Drawer and menu are open only on the page where they were opened, so navigating closes them.
   const [drawerPath, setDrawerPath] = useState<string | null>(null);
   const [newPath, setNewPath] = useState<string | null>(null);
@@ -307,6 +309,7 @@ export function Shell({
             </button>
             {newOpen ? (
               <div className="menu" role="menu">
+                <button type="button" className="menu-item" role="menuitem" onClick={() => { setNewPath(null); setRequestOpen(true); }}><IconDocument size={18} /> Log a request</button>
                 <Link href="/projects/new" className="menu-item" role="menuitem"><IconProjects size={18} /> New project</Link>
                 <Link href="/clients/new" className="menu-item" role="menuitem"><IconClients size={18} /> New client</Link>
               </div>
@@ -331,6 +334,7 @@ export function Shell({
         </button>
       </nav>
 
+      <LogRequestDialog open={requestOpen} onClose={() => setRequestOpen(false)} projects={projects} />
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} projects={projects} clients={clients} />
     </div>
   );

@@ -7,5 +7,6 @@ export function Status({
   children: React.ReactNode;
   tone?: "success" | "warning" | "danger" | "neutral";
 }) {
-  return <span className={cn("status", `status-${tone}`)}>{children}</span>;
+  const label = typeof children === "string" ? children.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase()) : children;
+  return <span className={cn("status", `status-${tone}`)}>{label}</span>;
 }

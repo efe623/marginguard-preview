@@ -16,6 +16,7 @@ import {
   getQuoteTemplates
 } from "@/features/operations/queries";
 import { formatMoney } from "@/lib/money";
+import { formatDay } from "@/lib/dates";
 
 type ExpenseRow = { id: string; category: string; description: string; vendor: string | null; amount_minor: number; currency: string; incurred_on: string };
 type InvoiceRow = { id: string; invoice_number: string; description: string; amount_minor: number; paid_amount_minor: number; currency: string; status: string; due_date: string };
@@ -109,7 +110,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
                         <p className="font-semibold">{invoice.invoice_number}</p>
                         {invoice.description ? <p className="meta">{invoice.description}</p> : null}
                       </td>
-                      <td className="whitespace-nowrap">{invoice.due_date}</td>
+                      <td className="whitespace-nowrap">{formatDay(invoice.due_date)}</td>
                       <td className="num">{formatMoney(Number(invoice.amount_minor), invoice.currency)}</td>
                       <td className="num">{formatMoney(Number(invoice.paid_amount_minor ?? 0), invoice.currency)}</td>
                       <td><Status tone={invoiceTone(invoice.status)}>{invoice.status.replace("_", " ")}</Status></td>
@@ -174,7 +175,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
                 <tbody>
                   {expenses.slice(0, 8).map((expense) => (
                     <tr key={expense.id}>
-                      <td className="whitespace-nowrap">{expense.incurred_on}</td>
+                      <td className="whitespace-nowrap">{formatDay(expense.incurred_on)}</td>
                       <td>{expense.description}</td>
                       <td className="quiet capitalize">{expense.vendor || expense.category}</td>
                       <td className="num">{formatMoney(Number(expense.amount_minor), expense.currency)}</td>
@@ -235,7 +236,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
                 <div key={quote.id} className="row">
                   <div className="row-main">
                     <p className="row-title">{quote.quote_number}</p>
-                    <p className="row-sub">{quote.title}{quote.valid_until ? ` · valid until ${quote.valid_until}` : ""}</p>
+                    <p className="row-sub">{quote.title}{quote.valid_until ? ` · valid until ${formatDay(quote.valid_until)}` : ""}</p>
                   </div>
                   <div className="row-end">
                     <span className="num font-semibold">{formatMoney(Number(quote.amount_minor), quote.currency)}</span>

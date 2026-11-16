@@ -1,13 +1,15 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { ArrowRight, FileWarning, Hourglass, Receipt, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { IconClients, IconPlus } from "@/components/icons";
+import { IconPlus } from "@/components/icons";
 import { ButtonLink } from "@/components/ui/button";
+import { LogRequestButton } from "@/components/log-request";
 import { TodayBrief } from "@/components/today-brief";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 import { listProjectViews } from "@/features/core/queries";
 import { getActivityCenterData, getDashboardData } from "@/features/operations/queries";
+import { formatDay } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import type { ProjectStatus } from "@/types/domain";
 
@@ -33,13 +35,6 @@ type Action = {
 type WeekItem = { key: string; label: string; sub: string; href: string; tone: "danger" | "warning" | "neutral"; kind: "task" | "invoice" };
 
 const DAY = 86400000;
-
-function greeting(hour: number) {
-  if (hour < 5) return "Working late";
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
-}
 
 export default async function DashboardPage() {
   const now = new Date();
@@ -89,7 +84,7 @@ export default async function DashboardPage() {
       key: `inv-${invoice.id}`,
       title: `Invoice ${invoice.invoice_number} is overdue`,
       detail: projectNames.get(invoice.project_id) ?? "Project",
-      meta: `${formatMoney(Number(invoice.amount_minor), currency)} was due ${invoice.due_date}`,
+      meta: `${formatMoney(Number(invoice.amount_minor), currency)} was due ${formatDay(invoice.due_date)}`,
       href: `/projects/${invoice.project_id}/money`,
       tone: "danger",
       badge: "Overdue",
@@ -101,7 +96,7 @@ export default async function DashboardPage() {
         key: `task-${task.id}`,
         title: task.title,
         detail: projectNames.get(task.project_id) ?? "Project",
-        meta: task.due_at ? `Due ${new Date(task.due_at).toLocaleDateString("en", { weekday: "short", day: "numeric", month: "short" })}` : "",
+        meta: task.due_at ? `Due ${formatDay(task.due_at)}` : "",
         href: `/projects/${task.project_id}/work`,
         tone: late ? "danger" : "warning",
         badge: late ? "Past due" : "Due soon",
@@ -125,7 +120,7 @@ export default async function DashboardPage() {
     return {
       key,
       weekday: index === 0 ? "Today" : new Intl.DateTimeFormat("en", { weekday: "short" }).format(day),
-      date: new Intl.DateTimeFormat("en", { day: "numeric", month: "short" }).format(day),
+      date: new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(day),
       items
     };
   });
@@ -141,12 +136,13 @@ export default async function DashboardPage() {
 
   const pct = (part: number, whole: number) => (whole > 0 ? Math.max(0, Math.min(100, (part / whole) * 100)) : 0);
   const icons = { invoice: Receipt, task: FileWarning, block: Hourglass } as const;
-  const dateLabel = new Intl.DateTimeFormat("en", { weekday: "long", day: "numeric", month: "long" }).format(now);
+  const dateLabel = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long" }).format(now);
 
   const approvedExtras = orders.filter((order) => ["approved", "awaiting_deposit", "authorized", "balance_due", "paid"].includes(order.status));
   const first = actions[0];
   const cta = { invoice: "Chase payment", block: "Resolve it", task: "Open task" } as const;
   const afterThis = actions.length - 1;
+  const rest = actions.slice(1);
 
   const brief = actions.length
     ? `${actions.length} ${actions.length === 1 ? "thing needs" : "things need"} a decision${overdue.length ? `, and ${formatMoney(overdueTotal, currency)} is overdue` : ""}.`
@@ -155,12 +151,12 @@ export default async function DashboardPage() {
   return (
     <div className="page board">
       <PageHeader
-        title={greeting(now.getHours())}
+        title="Today"
         description={`${dateLabel}. ${brief}`}
         actions={
           <>
-            <ButtonLink href="/clients/new" variant="outline"><IconClients size={18} /> New client</ButtonLink>
-            <ButtonLink href="/projects/new"><IconPlus size={18} /> New project</ButtonLink>
+            <ButtonLink href="/projects/new" variant="outline"><IconPlus size={18} /> New project</ButtonLink>
+            <LogRequestButton projects={projectViews.map((project) => ({ id: project.id, name: project.name, detail: project.clientName }))} />
           </>
         }
       />
@@ -203,11 +199,47 @@ export default async function DashboardPage() {
                 </p>
               ) : null}
             </section>
+            <div className="stack brief-side">
             <TodayBrief
               needs={actions.length}
               items={activity.map((item) => ({ id: item.id, title: item.title, body: item.body, href: item.href ?? "/notifications", createdAt: item.createdAt }))}
               projects={projectViews.map((project) => ({ id: project.id, name: project.name }))}
             />
+            <section className="panel">
+              <div className="panel-head">
+                <div>
+                  <h2 className="panel-title">Where the money stands</h2>
+                  <p className="panel-sub">Before unrecorded labour costs</p>
+                </div>
+              </div>
+              <div className="panel-body stack-sm">
+                <div>
+                  <p className="bar-title">Contract value <strong>{formatMoney(contract, currency)}</strong></p>
+                  <div className="bar" role="img" aria-label={`Costs ${formatMoney(costs, currency)}, expected profit ${formatMoney(profit, currency)}`}>
+                    <i className="seg-cost" style={{ width: `${pct(costs, contract)}%` }} />
+                    <i className="seg-profit" style={{ width: `${pct(profit, contract)}%` }} />
+                  </div>
+                  <ul className="legend">
+                    <li><span className="swatch seg-cost" />Recorded costs<b>{formatMoney(costs, currency)}</b></li>
+                    <li><span className="swatch seg-profit" />Expected profit<b>{formatMoney(profit, currency)}</b></li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="bar-title">Invoiced <strong>{formatMoney(invoicedTotal, currency)}</strong></p>
+                  <div className="bar" role="img" aria-label={`Paid ${formatMoney(paidTotal, currency)}, open ${formatMoney(openTotal, currency)}, overdue ${formatMoney(overdueTotal, currency)}`}>
+                    <i className="seg-paid" style={{ width: `${pct(paidTotal, invoicedTotal)}%` }} />
+                    <i className="seg-open" style={{ width: `${pct(openTotal, invoicedTotal)}%` }} />
+                    <i className="seg-late" style={{ width: `${pct(overdueTotal, invoicedTotal)}%` }} />
+                  </div>
+                  <ul className="legend">
+                    <li><span className="swatch seg-paid" />Paid<b>{formatMoney(paidTotal, currency)}</b></li>
+                    <li><span className="swatch seg-open" />Open<b>{formatMoney(openTotal, currency)}</b></li>
+                    <li><span className="swatch seg-late" />Overdue<b>{formatMoney(overdueTotal, currency)}</b></li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+            </div>
           </div>
 
           <section className="panel" aria-labelledby="week-title">
@@ -246,14 +278,14 @@ export default async function DashboardPage() {
               <section className="panel" aria-labelledby="needs-you">
                 <div className="panel-head">
                   <div>
-                    <h2 id="needs-you" className="panel-title">Needs you</h2>
-                    <p className="panel-sub">Ordered by what is blocking money or work.</p>
+                    <h2 id="needs-you" className="panel-title">{actions.length ? "After that" : "Needs you"}</h2>
+                    <p className="panel-sub">{rest.length ? "Ordered by what is blocking money or work." : actions.length ? "Nothing else is waiting on you." : "Nothing is waiting on you."}</p>
                   </div>
-                  <Status tone={actions.length ? "warning" : "success"}>{actions.length ? `${actions.length} to decide` : "All clear"}</Status>
+                  {rest.length ? <Status tone="warning">{`${rest.length} more`}</Status> : null}
                 </div>
-                {actions.length ? (
+                {rest.length ? (
                   <div className="rows">
-                    {actions.map((action) => {
+                    {rest.map((action) => {
                       const Icon = icons[action.icon];
                       return (
                         <Link href={action.href} key={action.key} className="row">
@@ -270,7 +302,7 @@ export default async function DashboardPage() {
                       );
                     })}
                   </div>
-                ) : (
+                ) : actions.length ? null : (
                   <EmptyState art="clear" title="You are clear" text="No overdue invoices, open deposits or tasks due soon. A good moment to plan next week." action={projectViews[0] ? { href: `/projects/${projectViews[0].id}/work?focus=task-title`, label: "Plan next week" } : { href: "/projects/new", label: "Create a project" }} />
                 )}
               </section>
@@ -292,11 +324,11 @@ export default async function DashboardPage() {
                     return (
                       <Link href={`/projects/${project.id}`} key={project.id} className="tile">
                         <div className="tile-top">
-                          <span className="nav-dot" aria-hidden>{project.name.trim().charAt(0).toUpperCase()}</span>
+                          <span className="meta">{project.code}</span>
                           <Status tone={status.tone}>{status.label}</Status>
                         </div>
                         <p className="tile-title">{project.name}</p>
-                        <p className="row-sub">{project.clientName} · {project.code}</p>
+                        <p className="row-sub">{project.clientName}</p>
                         <div className="tile-bar" role="img" aria-label={billed ? `${formatMoney(billed.paid, project.currency)} paid of ${formatMoney(billed.total, project.currency)} invoiced` : "Nothing invoiced yet"}>
                           <i style={{ width: `${pct(billed?.paid ?? 0, total)}%` }} />
                           <b style={{ width: `${pct((billed?.total ?? 0) - (billed?.paid ?? 0), total)}%` }} />
@@ -318,41 +350,6 @@ export default async function DashboardPage() {
             </div>
 
             <aside className="stack" aria-label="Money">
-              <section className="panel">
-                <div className="panel-head">
-                  <div>
-                    <h2 className="panel-title">Where the money stands</h2>
-                    <p className="panel-sub">Before unrecorded labour costs</p>
-                  </div>
-                </div>
-                <div className="panel-body stack-sm">
-                  <div>
-                    <p className="bar-title">Contract value <strong>{formatMoney(contract, currency)}</strong></p>
-                    <div className="bar" role="img" aria-label={`Costs ${formatMoney(costs, currency)}, expected profit ${formatMoney(profit, currency)}`}>
-                      <i className="seg-cost" style={{ width: `${pct(costs, contract)}%` }} />
-                      <i className="seg-profit" style={{ width: `${pct(profit, contract)}%` }} />
-                    </div>
-                    <ul className="legend">
-                      <li><span className="swatch seg-cost" />Recorded costs<b>{formatMoney(costs, currency)}</b></li>
-                      <li><span className="swatch seg-profit" />Expected profit<b>{formatMoney(profit, currency)}</b></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="bar-title">Invoiced <strong>{formatMoney(invoicedTotal, currency)}</strong></p>
-                    <div className="bar" role="img" aria-label={`Paid ${formatMoney(paidTotal, currency)}, open ${formatMoney(openTotal, currency)}, overdue ${formatMoney(overdueTotal, currency)}`}>
-                      <i className="seg-paid" style={{ width: `${pct(paidTotal, invoicedTotal)}%` }} />
-                      <i className="seg-open" style={{ width: `${pct(openTotal, invoicedTotal)}%` }} />
-                      <i className="seg-late" style={{ width: `${pct(overdueTotal, invoicedTotal)}%` }} />
-                    </div>
-                    <ul className="legend">
-                      <li><span className="swatch seg-paid" />Paid<b>{formatMoney(paidTotal, currency)}</b></li>
-                      <li><span className="swatch seg-open" />Open<b>{formatMoney(openTotal, currency)}</b></li>
-                      <li><span className="swatch seg-late" />Overdue<b>{formatMoney(overdueTotal, currency)}</b></li>
-                    </ul>
-                  </div>
-                </div>
-              </section>
-
               <section className="panel">
                 <div className="panel-head">
                   <div>
@@ -389,14 +386,6 @@ export default async function DashboardPage() {
                 ) : (
                   <EmptyState small title="Everything is paid" text="Nothing to chase. New invoices appear here the moment you send them." />
                 )}
-              </section>
-
-              <section className="rule">
-                <ShieldCheck size={20} className="signal" aria-hidden />
-                <div>
-                  <h2 className="panel-title">No extra work starts without proof</h2>
-                  <p className="meta">Scope saved, change approved, payment confirmed. In that order, every time.</p>
-                </div>
               </section>
             </aside>
           </div>

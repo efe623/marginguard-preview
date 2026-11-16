@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
 import { createTask, logTime, updateTaskStatus } from "@/features/operations/actions";
+import { formatDay } from "@/lib/dates";
 import {
   getOperationsProjectData,
   getProjectContext
@@ -158,7 +159,7 @@ export default async function ProjectWorkPage({
                   <tbody>
                     {entries.slice(0, 8).map((entry) => (
                       <tr key={entry.id}>
-                        <td className="whitespace-nowrap">{entry.work_date}</td>
+                        <td className="whitespace-nowrap">{formatDay(entry.work_date)}</td>
                         <td>
                           {entry.description || "Project work"}
                           {entry.billable ? null : <span className="quiet"> (non-billable)</span>}

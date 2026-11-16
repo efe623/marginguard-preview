@@ -6,6 +6,7 @@ import { Status } from "@/components/ui/status";
 import { listProjectViews } from "@/features/core/queries";
 import { getInvoicesPageData } from "@/features/operations/queries";
 import { formatMoney } from "@/lib/money";
+import { formatDay } from "@/lib/dates";
 
 export default async function InvoicesPage() {
   const [{ invoices, projects }, projectViews] = await Promise.all([getInvoicesPageData(), listProjectViews().catch(() => [])]);
@@ -34,7 +35,7 @@ export default async function InvoicesPage() {
                     <tr key={invoice.id}>
                       <td><strong>{invoice.invoice_number}</strong><p className="meta mt-0.5">{invoice.description}</p></td>
                       <td>{projectNames.get(invoice.project_id) ?? "Project"}</td>
-                      <td className={overdue ? "text-[var(--danger)]" : ""}>{overdue ? <AlertTriangle className="mr-2 inline" size={15} aria-hidden /> : null}{invoice.due_date}</td>
+                      <td className={overdue ? "text-[var(--danger)]" : ""}>{overdue ? <AlertTriangle className="mr-2 inline" size={15} aria-hidden /> : null}{formatDay(invoice.due_date)}</td>
                       <td className="num font-semibold">{formatMoney(Number(invoice.amount_minor), invoice.currency)}</td>
                       <td><Status tone={invoice.status === "paid" ? "success" : overdue ? "danger" : "warning"}>{overdue ? "overdue" : invoice.status.replace("_", " ")}</Status></td>
                       <td><Link className="button button-ghost button-sm button-icon" aria-label={`Open ${invoice.invoice_number} in project money`} href={`/projects/${invoice.project_id}/money`}><ArrowUpRight size={16} aria-hidden /></Link></td>

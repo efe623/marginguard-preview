@@ -788,3 +788,16 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 .confirm-text { color: var(--ink-soft); display: grid; font-size: 0.9375rem; gap: 8px; line-height: 1.5; }
 .confirm-text p { margin: 0; }
 .confirm-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+
+/* ---------- Polish pass ---------- */
+/* Primary buttons sit flat: colour carries the emphasis, not a glow. */
+.button-primary { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22); }
+/* Today: the start card and the since-last-visit panel no longer stretch to match each other. */
+.brief { align-items: start; }
+.brief-since { min-height: 0; }
+.brief-quiet { color: var(--ink-soft); font-size: 0.9375rem; line-height: 1.5; margin: 0; padding: 4px 22px 20px; }
+.tile-top .meta { font-variant-numeric: tabular-nums; }
+/* The assistant launcher stays inside the sheet's corner instead of sitting on its edge. */
+.pulse-launcher { border-radius: 14px; height: 48px; width: 48px; }
+@media (min-width: 1024px) { .pulse-assistant { bottom: 30px; right: 36px; } }
+.brief-side { gap: 18px; }
