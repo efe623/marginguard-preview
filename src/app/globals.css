@@ -905,10 +905,18 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 :root[data-theme="dark"] .next-step { background: #1a1a1c; border: 1px solid rgba(255, 255, 255, 0.08); }
 
 /* Pulse opens from the top bar, under it, not from a floating robot. */
-.ask-trigger { align-items: center; background: transparent; border: 1px solid var(--line-strong); border-radius: 12px; color: var(--ink); cursor: pointer; display: inline-flex; flex: none; font-size: 0.9375rem; font-weight: 600; height: 44px; margin-left: 10px; padding: 0 14px; transition: border-color 140ms ease, background-color 140ms ease; }
-.ask-trigger:hover { background: var(--surface-2); border-color: var(--signal); }
+.ask-trigger { align-items: center; background: transparent; border: 0; border-radius: 50%; color: var(--ink); cursor: pointer; display: inline-flex; flex: none; height: 44px; justify-content: center; margin-left: 10px; padding: 0; width: 44px; }
+.ask-trigger:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.pulse-face { display: block; overflow: visible; }
+.pulse-face-eyes, .pulse-face-brow { transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+/* On hover Pulse looks up at you and raises its brows. */
+.ask-trigger:hover .pulse-face-eyes { transform: translate(1.5px, -1.5px); }
+.ask-trigger:hover .pulse-face-brow { transform: translateY(-1.5px); }
+.ask-trigger:active .pulse-face { transform: scale(0.95); }
+@media (prefers-reduced-motion: reduce) { .pulse-face-eyes, .pulse-face-brow { transition: none; } }
+.pulse-avatar-face { background: none !important; color: var(--ink); height: 30px; width: 30px; }
 .pulse-assistant { bottom: auto !important; right: 28px !important; top: 84px; }
 .pulse-panel { bottom: auto; top: 0; }
-@media (max-width: 760px) { .ask-trigger { display: none; } .pulse-assistant { right: 12px !important; top: 72px; } }
+@media (max-width: 760px) { .ask-trigger { margin-left: 6px; } .cmdk-trigger { min-width: 0; } .cmdk-trigger span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pulse-assistant { right: 12px !important; top: 72px; } }
 .figures > div { align-content: start; }
 .pulse-starters { flex-wrap: wrap; overflow: visible; }

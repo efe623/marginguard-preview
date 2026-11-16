@@ -286,6 +286,27 @@ export function IconAppearance(props: IconProps) {
   );
 }
 
+/**
+ * Pulse, the assistant: a hand-drawn face in a circle, one brow raised,
+ * a nose that kicks out to the side. Drawn in currentColor so it follows the theme.
+ */
+export function PulseFace({ size = 40, filled = true }: { size?: number; filled?: boolean }) {
+  return (
+    <svg className="pulse-face" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <circle cx="32" cy="32" r="30" fill={filled ? "var(--surface, #fff)" : "none"} stroke="currentColor" strokeWidth="2.2" />
+      <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+        <path className="pulse-face-brow" d="M19 26C21.5 21.8 26 20.8 29.5 22.4" strokeWidth="2.2" />
+        <path className="pulse-face-brow" d="M35.5 21.6C39.5 18 44.5 18.8 46.6 23.2" strokeWidth="2.2" />
+        <path d="M30 26.8L20.6 41.6L28.4 44.6" strokeWidth="2.6" />
+      </g>
+      <g className="pulse-face-eyes" fill="currentColor">
+        <ellipse cx="27.8" cy="25.8" rx="1.9" ry="2.2" />
+        <ellipse cx="41.2" cy="26.6" rx="1.9" ry="2.5" />
+      </g>
+    </svg>
+  );
+}
+
 /** Brand mark: three solid rising columns. */
 export function BrandMark({ size = 30 }: { size?: number }) {
   return (
