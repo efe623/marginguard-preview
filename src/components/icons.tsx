@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import { useId, type SVGProps } from "react";
 
 /**
  * UnitPulse icon set. Every icon sits on a 24px grid, uses a 1.75px round
@@ -286,11 +286,30 @@ export function IconAppearance(props: IconProps) {
   );
 }
 
+const LOGO_BEAT = "M3 33H22L27 21L33 45L38 33H61";
+
 /**
- * Brand mark, also Pulse's icon: the U of UnitPulse holding a project's heartbeat.
- * The beat keeps a small gap from the walls so it reads as alive, not trapped.
+ * Logo: the U of UnitPulse with a heartbeat breaking right across it.
+ * A mask cuts the U where the beat crosses, so it works on any background.
  */
 export function BrandMark({ size = 30 }: { size?: number }) {
+  const id = `logo-cut-${useId().replace(/:/g, "")}`;
+  return (
+    <svg className="brand-logo" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+        <rect width="64" height="64" fill="#fff" />
+        <path d={LOGO_BEAT} fill="none" stroke="#000" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+      </mask>
+      <path d="M11 9V33A21 21 0 0 0 53 33V9" fill="none" stroke="var(--brand-ink, #161616)" strokeWidth="7" strokeLinecap="round" mask={`url(#${id})`} />
+      <path d={LOGO_BEAT} fill="none" stroke="var(--brand-accent, #8a5a00)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/**
+ * Pulse's icon: the same U holding a heartbeat, with a small gap from the walls.
+ */
+export function PulseMark({ size = 26 }: { size?: number }) {
   return (
     <svg className="brand-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
       <path d="M11 9V33A21 21 0 0 0 53 33V9" fill="none" stroke="var(--brand-ink, #161616)" strokeWidth="7" strokeLinecap="round" />
