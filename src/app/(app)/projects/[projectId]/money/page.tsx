@@ -1,10 +1,12 @@
 import { EmptyState } from "@/components/ui/empty-state";
+import { Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
 import { QuoteDraftForm } from "@/components/quote-draft-form";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
+import { StatusSelect } from "@/components/ui/status-select";
 import {
   addExpense,
   createInvoice,
@@ -22,12 +24,14 @@ type ExpenseRow = { id: string; category: string; description: string; vendor: s
 type InvoiceRow = { id: string; invoice_number: string; description: string; amount_minor: number; paid_amount_minor: number; currency: string; status: string; due_date: string };
 type QuoteRow = { id: string; quote_number: string; title: string; amount_minor: number; currency: string; status: string; valid_until: string | null };
 
-function invoiceTone(status: string) {
-  if (status === "paid") return "success" as const;
-  if (status === "overdue") return "danger" as const;
-  if (status === "sent" || status === "partially_paid") return "warning" as const;
-  return "neutral" as const;
-}
+const invoiceStatusOptions = [
+  { value: "draft", label: "Draft", tone: "neutral" as const },
+  { value: "sent", label: "Sent", tone: "warning" as const },
+  { value: "partially_paid", label: "Partially paid", tone: "warning" as const },
+  { value: "paid", label: "Paid", tone: "success" as const },
+  { value: "overdue", label: "Overdue", tone: "danger" as const },
+  { value: "void", label: "Void", tone: "neutral" as const }
+];
 
 export default async function ProjectMoneyPage({ params }: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await params;
@@ -50,6 +54,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
   const invoicedTotal = live.reduce((sum, row) => sum + Number(row.amount_minor), 0);
   const paidTotal = live.reduce((sum, row) => sum + Number(row.paid_amount_minor ?? 0), 0);
   const outstanding = invoicedTotal - paidTotal;
+  const lateCount = live.filter((row) => row.status !== "paid" && (row.status === "overdue" || row.due_date < new Date().toISOString().slice(0, 10))).length;
   const money = (value: number) => formatMoney(value, project.currency);
   const todayDate = new Date();
   const today = todayDate.toISOString().slice(0, 10);
@@ -66,10 +71,23 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
       <PageHeader crumbs={crumbs} title="Money" description="Quotes, costs, invoices, and remaining profit in one place." />
       <ProjectTabs projectId={projectId} active="money" />
       <div className="stack">
+        <dl className="money-lead" aria-label="Where this project stands">
+          <div className={lateCount ? "is-late" : ""}>
+            <dt>Outstanding payment</dt>
+            <dd>{money(outstanding)}</dd>
+            <p>{outstanding === 0 ? "Every invoice is paid." : lateCount ? `${lateCount} ${lateCount === 1 ? "invoice is" : "invoices are"} past due. Chase before starting new work.` : `Invoiced and not yet paid, of ${money(invoicedTotal)} billed.`}</p>
+          </div>
+          <div className={remaining < 0 ? "is-late" : ""}>
+            <dt>Expected profit</dt>
+            <dd>{money(remaining)}</dd>
+            <p>{budget > 0 ? `${Math.round((remaining / budget) * 100)}% of ${money(budget)}, after ${money(expenseTotal + laborCost)} in costs and time.` : "Add a quote to see the margin."}</p>
+          </div>
+        </dl>
+
         <section className="panel" aria-labelledby="statement-title">
           <div className="panel-head">
             <div>
-              <h2 className="panel-title" id="statement-title">Statement</h2>
+              <h2 className="panel-title" id="statement-title">How it adds up</h2>
               <p className="panel-sub">All amounts in {project.currency}</p>
             </div>
           </div>
@@ -101,7 +119,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
             <div className="table-wrap">
               <table className="table">
                 <thead>
-                  <tr><th>Invoice</th><th>Due</th><th className="num">Amount</th><th className="num">Paid</th><th>Status</th><th>Change status</th></tr>
+                  <tr><th>Invoice</th><th>Due</th><th className="num">Amount</th><th className="num">Paid</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                   {invoices.map((invoice) => (
@@ -113,18 +131,14 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
                       <td className="whitespace-nowrap">{formatDay(invoice.due_date)}</td>
                       <td className="num">{formatMoney(Number(invoice.amount_minor), invoice.currency)}</td>
                       <td className="num">{formatMoney(Number(invoice.paid_amount_minor ?? 0), invoice.currency)}</td>
-                      <td><Status tone={invoiceTone(invoice.status)}>{invoice.status.replace("_", " ")}</Status></td>
                       <td>
-                        <form action={updateInvoiceStatus} className="cluster">
-                          <input type="hidden" name="projectId" value={projectId} />
-                          <input type="hidden" name="invoiceId" value={invoice.id} />
-                          <label className="sr-only" htmlFor={`inv-${invoice.id}`}>Status for {invoice.invoice_number}</label>
-                          <select id={`inv-${invoice.id}`} className="select" name="status" defaultValue={invoice.status}>
-                            <option value="draft">Draft</option><option value="sent">Sent</option><option value="partially_paid">Partially paid</option>
-                            <option value="paid">Paid</option><option value="overdue">Overdue</option><option value="void">Void</option>
-                          </select>
-                          <Button variant="outline" className="button-sm" type="submit">Save</Button>
-                        </form>
+                        <StatusSelect
+                          action={updateInvoiceStatus}
+                          fields={{ projectId, invoiceId: invoice.id }}
+                          value={invoice.status}
+                          label={`Status for ${invoice.invoice_number}`}
+                          options={invoiceStatusOptions}
+                        />
                       </td>
                     </tr>
                   ))}
@@ -136,9 +150,10 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
           )}
         </section>
 
-        <form action={createInvoice} className="panel">
-          <div className="panel-head"><h2 className="panel-title">Create an invoice</h2></div>
-          <div className="panel-body stack">
+        <details className="disclosure">
+          <summary className="disclosure-summary"><Plus size={16} aria-hidden="true" /> Create an invoice</summary>
+        <form action={createInvoice} className="disclosure-body">
+          <div className="stack">
             <input type="hidden" name="projectId" value={projectId} />
             <input type="hidden" name="currency" value={project.currency} />
             <div className="form-grid">
@@ -158,6 +173,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
             <div className="form-actions"><Button type="submit">Create invoice</Button></div>
           </div>
         </form>
+        </details>
 
         <section className="panel" aria-labelledby="expenses-title">
           <div className="panel-head">
@@ -189,9 +205,10 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
           )}
         </section>
 
-        <form action={addExpense} className="panel">
-          <div className="panel-head"><h2 className="panel-title">Record an expense</h2></div>
-          <div className="panel-body stack">
+        <details className="disclosure">
+          <summary className="disclosure-summary"><Plus size={16} aria-hidden="true" /> Record an expense</summary>
+        <form action={addExpense} className="disclosure-body">
+          <div className="stack">
             <input type="hidden" name="projectId" value={projectId} />
             <input type="hidden" name="currency" value={project.currency} />
             <div className="form-grid">
@@ -222,6 +239,7 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
             <div className="form-actions"><Button type="submit">Record expense</Button></div>
           </div>
         </form>
+        </details>
 
         <section className="panel" aria-labelledby="quotes-title">
           <div className="panel-head">
@@ -248,10 +266,13 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
           ) : (
             <EmptyState art="money" title="Draft the quote" text="A written quote fixes the agreed price, and everything after is measured against it." focus="Draft a quote" />
           )}
-          <div className="panel-body" style={{ borderTop: "1px solid var(--line)" }}>
+        </section>
+        <details className="disclosure">
+          <summary className="disclosure-summary"><Plus size={16} aria-hidden="true" /> Draft a new quote</summary>
+          <div className="disclosure-body">
             <QuoteDraftForm projectId={projectId} currency={project.currency} templates={templates} />
           </div>
-        </section>
+        </details>
       </div>
     </div>
   );

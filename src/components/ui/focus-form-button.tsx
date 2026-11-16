@@ -13,9 +13,10 @@ export function FocusFormButton({ label, variant = "primary" }: { label: string;
   function go() {
     const button = ref.current;
     if (!button) return;
-    const forms = Array.from(document.querySelectorAll<HTMLFormElement>("main form"));
+    const forms = Array.from(document.querySelectorAll<HTMLFormElement>("main form:not(.status-select)"));
     const target = forms.find((form) => button.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING) ?? forms[forms.length - 1];
     if (!target) return;
+    target.closest("details")?.setAttribute("open", "");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "reduced";
     target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
     target.classList.remove("form-nudge");

@@ -2,6 +2,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AiDraftPanel } from "@/components/ai-draft-panel";
+import { AiResult } from "@/components/ai-result";
 import { ProjectTabs } from "@/components/project-tabs";
 import { PageHeader } from "@/components/ui/page-header";
 import { Status } from "@/components/ui/status";
@@ -10,6 +11,16 @@ import {
   getOperationsProjectData,
   getProjectContext
 } from "@/features/operations/queries";
+
+const draftTitle: Record<string, string> = {
+  scope_check: "Scope check",
+  scope_creep: "Scope check",
+  scope_extraction: "Scope from a quote",
+  request_detection: "Requests in the conversation",
+  extra_work_estimate: "Extra work estimate",
+  change_order: "Change order draft",
+  payment_follow_up: "Payment reminder"
+};
 
 type AiRow = {
   id: string;
@@ -62,24 +73,23 @@ export default async function ProjectAiPage({
                 <article key={draft.id} className="row" style={{ display: "block" }}>
                   <div className="cluster justify-between">
                     <div>
-                      <p className="row-title capitalize">{draft.generation_type.replaceAll("_", " ")}</p>
-                      <p className="row-sub">{draft.model} · {new Date(draft.created_at).toLocaleString()}</p>
+                      <p className="row-title">{draftTitle[draft.generation_type] ?? draft.generation_type.replaceAll("_", " ")}</p>
+                      <p className="row-sub faint">{new Date(draft.created_at).toLocaleDateString("en", { weekday: "short", day: "numeric", month: "short" })}, from the latest client messages</p>
                     </div>
                     <Status tone={draft.status === "accepted" ? "success" : draft.status === "dismissed" ? "danger" : "warning"}>{draft.status}</Status>
                   </div>
-                  <pre className="mt-3 max-h-96 overflow-auto whitespace-pre-wrap rounded-[var(--radius-sm)] border border-[var(--line)] bg-[var(--surface-2)] p-4 text-xs leading-6">{JSON.stringify(draft.output, null, 2)}</pre>
-                  {draft.status === "draft" ? (
-                    <div className="cluster mt-3">
-                      {(["accepted", "dismissed"] as const).map((status) => (
-                        <form action={reviewAiDraft} key={status}>
-                          <input type="hidden" name="projectId" value={projectId} />
-                          <input type="hidden" name="generationId" value={draft.id} />
-                          <input type="hidden" name="status" value={status} />
-                          <button className={`button ${status === "accepted" ? "button-primary" : "button-outline"}`} type="submit">{status === "accepted" ? "Accept as reviewed draft" : "Dismiss"}</button>
-                        </form>
-                      ))}
-                    </div>
-                  ) : null}
+                  <AiResult type={draft.generation_type} output={draft.output} projectId={projectId} currency={project.currency ?? "AED"}>
+                    {draft.status === "draft"
+                      ? (["accepted", "dismissed"] as const).map((status) => (
+                          <form action={reviewAiDraft} key={status}>
+                            <input type="hidden" name="projectId" value={projectId} />
+                            <input type="hidden" name="generationId" value={draft.id} />
+                            <input type="hidden" name="status" value={status} />
+                            <button className={`button ${status === "accepted" ? "button-outline" : "button-ghost"}`} type="submit">{status === "accepted" ? "Mark as reviewed" : "Dismiss"}</button>
+                          </form>
+                        ))
+                      : null}
+                  </AiResult>
                 </article>
               ))}
             </div>

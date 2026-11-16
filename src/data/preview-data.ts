@@ -74,7 +74,7 @@ export function buildPreviewData() {
   ];
 
   const aiDrafts = [
-    { id: "ai1", project_id: "ecommerce-redesign", generation_type: "scope_check", output: { summary: "Arabic localisation is outside the agreed scope.", suggestion: "Price it as a change order and add 2 weeks to the timeline." }, model: "preview-model", status: "draft", created_at: iso(-3) }
+    { id: "ai1", project_id: "ecommerce-redesign", generation_type: "scope_check", output: { summary: "Arabic localisation is not in the agreed scope. The quote covers an English storefront only.", confidence: 0.86, findings: [{ type: "request", title: "Arabic storefront", evidence: "Could we also add Arabic support to the storefront?", recommendation: "Price it as a separate change order before any Arabic work starts." }], timeline: "Adds about 2 weeks", priceEstimate: { amount: 2500, currency: "AED", rationale: "Right-to-left layouts for 6 templates plus copy handover.", assumptions: ["Client supplies translated copy"] }, changeOrder: { title: "Arabic localisation", reason: "Price it as a separate change order before any Arabic work starts.", description: "Right-to-left versions of the storefront templates.", timelineImpact: "Adds about 2 weeks", depositPercentage: 50 } }, model: "preview-model", status: "draft", created_at: iso(-3) }
   ];
 
   const quotes = [

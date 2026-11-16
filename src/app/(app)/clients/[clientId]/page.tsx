@@ -88,25 +88,29 @@ export default async function ClientPage({
             )}
           </section>
 
-          <form action={updateClientNotes} className="panel">
-            <div className="panel-head"><h2 className="panel-title">Internal notes</h2></div>
+          <section className="panel notes-card" aria-labelledby="notes-title">
+            <div className="panel-head"><h2 className="panel-title" id="notes-title">Internal notes</h2></div>
             <div className="panel-body stack-sm">
-              <input type="hidden" name="clientId" value={clientId} />
-              <div className="field">
-                <label className="field-label" htmlFor="client-notes">Notes</label>
-                <textarea
-                  id="client-notes"
-                  className="textarea min-h-44"
-                  name="notes"
-                  defaultValue={client.notes}
-                  placeholder="Private context, preferences, or follow-up notes"
-                />
-              </div>
-              <div className="form-actions">
-                <button className="button button-dark" type="submit">Save notes</button>
-              </div>
+              {client.notes ? <p className="notes-preview">{client.notes}</p> : <p className="notes-preview faint">No notes yet. Add preferences, contacts or anything worth remembering.</p>}
+              <details className="notes-edit">
+                <summary className="button button-outline button-sm">{client.notes ? "Edit notes" : "Add notes"}</summary>
+                <form action={updateClientNotes} className="stack-sm">
+                  <input type="hidden" name="clientId" value={clientId} />
+                  <label className="sr-only" htmlFor="client-notes">Notes</label>
+                  <textarea
+                    id="client-notes"
+                    className="textarea"
+                    name="notes"
+                    defaultValue={client.notes}
+                    placeholder="Private context, preferences, or follow-up notes"
+                  />
+                  <div className="form-actions">
+                    <button className="button button-outline button-sm" type="submit">Save notes</button>
+                  </div>
+                </form>
+              </details>
             </div>
-          </form>
+          </section>
         </div>
 
         <section className="panel">

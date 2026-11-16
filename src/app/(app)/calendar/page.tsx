@@ -28,6 +28,9 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   const previous = new Date(year, monthIndex - 1, 1);
   const next = new Date(year, monthIndex + 1, 1);
   const today = new Date().toISOString().slice(0, 10);
+  const agenda = days
+    .filter((day) => day.inMonth && (eventsByDate.has(day.date) || day.date === today))
+    .map((day) => ({ date: day.date, dayNumber: day.dayNumber, events: eventsByDate.get(day.date) ?? [] }));
   const upcoming = events.filter((event) => event.date >= today).slice(0, 8);
   let feedEnabled = false;
   if (isSupabaseConfigured) {
@@ -56,7 +59,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
               <Link className="button button-outline button-icon" aria-label="Next month" href={`/calendar?month=${monthKey(next.getFullYear(), next.getMonth())}`}><ChevronRight size={17} aria-hidden /></Link>
             </div>
           </div>
-          <div className="table-wrap">
+          <div className="table-wrap cal-grid">
             <div className="min-w-[720px]">
               <div className="grid grid-cols-7 border-b border-[var(--line)]">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((day) => <div className="px-3 py-2.5 text-[0.8125rem] font-semibold text-[var(--ink-soft)]" key={day}>{day}</div>)}</div>
               <div className="grid grid-cols-7">
@@ -69,9 +72,40 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
               </div>
             </div>
           </div>
+          {agenda.length ? (
+            <ol className="cal-agenda" aria-label={`${monthLabel} agenda`}>
+              {agenda.map((day) => (
+                <li key={day.date} className={`cal-day${day.date === today ? " is-today" : ""}${day.date < today ? " is-past" : ""}`}>
+                  <time dateTime={day.date} className="cal-date">
+                    <span>{new Date(`${day.date}T12:00:00`).toLocaleDateString("en", { weekday: "short" })}</span>
+                    <strong>{day.dayNumber}</strong>
+                  </time>
+                  {day.events.length === 0 ? <p className="cal-none">Nothing due today.</p> : null}
+                  <ul className="cal-events">
+                    {day.events.map((event) => {
+                      const Icon = kindIcon[event.kind];
+                      return (
+                        <li key={`${event.kind}-${event.id}`}>
+                          <Link href={event.href} className="cal-event">
+                            <Icon size={15} aria-hidden />
+                            <span className="min-w-0">
+                              <span className="cal-event-title"><span className="sr-only">{kindLabel[event.kind]}: </span>{event.title}</span>
+                              <span className="cal-event-sub">{event.detail}</span>
+                            </span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="cal-agenda cal-agenda-empty">Nothing is dated in {monthLabel}.</p>
+          )}
         </section>
         <div className="stack">
-          <section className="panel">
+          <section className="panel cal-next">
             <div className="panel-head"><h2 className="panel-title">Next up</h2></div>
             {upcoming.length ? (
               <div className="rows">

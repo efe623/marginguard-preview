@@ -1,10 +1,10 @@
 import { EmptyState } from "@/components/ui/empty-state";
-import { CircleCheck, CircleDashed, Clock3, OctagonAlert } from "lucide-react";
+import { CircleCheck, CircleDashed, Clock3, OctagonAlert, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ProjectTabs } from "@/components/project-tabs";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
-import { Status } from "@/components/ui/status";
+import { StatusSelect } from "@/components/ui/status-select";
 import { createTask, logTime, updateTaskStatus } from "@/features/operations/actions";
 import { formatDay } from "@/lib/dates";
 import {
@@ -20,6 +20,13 @@ type TaskRow = {
   priority: string;
   due_at: string | null;
 };
+const taskStatusOptions = [
+  { value: "todo", label: "To do", tone: "neutral" as const },
+  { value: "in_progress", label: "In progress", tone: "warning" as const },
+  { value: "blocked", label: "Blocked", tone: "danger" as const },
+  { value: "done", label: "Done", tone: "success" as const }
+];
+
 type TimeRow = {
   id: string;
   minutes: number;
@@ -58,9 +65,9 @@ export default async function ProjectWorkPage({
       />
       <ProjectTabs projectId={projectId} active="work" />
 
-      <div className="split">
+      <div className="split split-work">
         <div className="stack">
-          <section className="panel" aria-labelledby="tasks-title">
+          <section className="panel panel-lead" aria-labelledby="tasks-title">
             <div className="panel-head">
               <div>
                 <h2 className="panel-title" id="tasks-title">Tasks</h2>
@@ -85,19 +92,13 @@ export default async function ProjectWorkPage({
                         </p>
                       </div>
                       <div className="row-end">
-                        <Status tone={task.status === "done" ? "success" : task.status === "blocked" ? "danger" : task.status === "in_progress" ? "warning" : "neutral"}>
-                          {task.status.replace("_", " ")}
-                        </Status>
-                        <form action={updateTaskStatus} className="cluster">
-                          <input type="hidden" name="projectId" value={projectId} />
-                          <input type="hidden" name="taskId" value={task.id} />
-                          <label className="sr-only" htmlFor={`status-${task.id}`}>Status for {task.title}</label>
-                          <select id={`status-${task.id}`} className="select" name="status" defaultValue={task.status}>
-                            <option value="todo">To do</option><option value="in_progress">In progress</option>
-                            <option value="blocked">Blocked</option><option value="done">Done</option>
-                          </select>
-                          <Button variant="outline" className="button-sm" type="submit">Save</Button>
-                        </form>
+                        <StatusSelect
+                          action={updateTaskStatus}
+                          fields={{ projectId, taskId: task.id }}
+                          value={task.status}
+                          label={`Status for ${task.title}`}
+                          options={taskStatusOptions}
+                        />
                       </div>
                     </div>
                   );
@@ -108,9 +109,10 @@ export default async function ProjectWorkPage({
             )}
           </section>
 
-          <form action={createTask} className="panel">
-            <div className="panel-head"><h2 className="panel-title">Add a task</h2></div>
-            <div className="panel-body stack">
+          <details className="disclosure">
+            <summary className="disclosure-summary"><Plus size={16} aria-hidden="true" /> Add a task</summary>
+          <form action={createTask} className="disclosure-body">
+            <div className="stack">
               <input type="hidden" name="projectId" value={projectId} />
               <div className="form-grid">
                 <div className="field">
@@ -136,6 +138,7 @@ export default async function ProjectWorkPage({
               <div className="form-actions"><Button type="submit">Add task</Button></div>
             </div>
           </form>
+          </details>
         </div>
 
         <div className="stack">
@@ -175,9 +178,10 @@ export default async function ProjectWorkPage({
             )}
           </section>
 
-          <form action={logTime} className="panel">
-            <div className="panel-head"><h2 className="panel-title">Log time</h2></div>
-            <div className="panel-body stack">
+          <details className="disclosure">
+            <summary className="disclosure-summary"><Plus size={16} aria-hidden="true" /> Log time</summary>
+          <form action={logTime} className="disclosure-body">
+            <div className="stack">
               <input type="hidden" name="projectId" value={projectId} />
               <div className="form-grid">
                 <div className="field">
@@ -197,6 +201,7 @@ export default async function ProjectWorkPage({
               <div className="form-actions"><Button type="submit">Log time</Button></div>
             </div>
           </form>
+          </details>
         </div>
       </div>
     </div>

@@ -172,15 +172,33 @@ export function Shell({
   // The tab title carries the count, so a background tab shows when something needs the owner.
   const needs = attention.needs;
   useEffect(() => {
+    // Next rewrites <title> on navigation; we re-add the count after it. Our own
+    // write is ignored, updates are batched to one per frame, and if the title
+    // keeps changing (a ping-pong with another writer) we stop watching rather
+    // than lock the page.
+    let frame = 0;
+    let writes = 0;
+    let since = performance.now();
     const apply = () => {
       const base = document.title.replace(/^\(\d+\)\s*/, "");
       const next = needs ? `(${needs}) ${base}` : base;
-      if (document.title !== next) document.title = next;
+      if (document.title === next) return;
+      const now = performance.now();
+      if (now - since > 1000) { since = now; writes = 0; }
+      if (++writes > 10) { observer.disconnect(); return; }
+      observer.disconnect();
+      document.title = next;
+      observer.observe(document.head, options);
     };
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(apply);
+    };
+    const options = { childList: true, subtree: true, characterData: true };
+    const observer = new MutationObserver(schedule);
     apply();
-    const observer = new MutationObserver(apply);
-    observer.observe(document.head, { childList: true, subtree: true, characterData: true });
-    return () => observer.disconnect();
+    observer.observe(document.head, options);
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); };
   }, [needs]);
 
   // Remember the last project opened so Today can offer to pick up from it.
@@ -302,8 +320,9 @@ export function Shell({
             <span>Search projects, clients, pages</span>
             <kbd>Ctrl K</kbd>
           </button>
-          <button type="button" className="ask-trigger" aria-label="Ask Pulse" title="Ask Pulse" onClick={() => window.dispatchEvent(new Event("unitpulse:ask"))}>
-            <PulseFace size={40} />
+          <button type="button" className="ask-trigger" onClick={() => window.dispatchEvent(new Event("unitpulse:ask"))}>
+            <PulseFace size={34} />
+            <span className="ask-label">Ask Pulse</span>
           </button>
           <span className="mainbar-spacer" />
           <ActivityCenter items={activity} />

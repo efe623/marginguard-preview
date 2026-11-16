@@ -172,6 +172,27 @@ export default async function DashboardPage() {
         </section>
       ) : (
         <>
+          <section className={`next-step next-hero${first ? "" : " is-clear"}`} aria-labelledby="next-title">
+            {first ? (
+              <>
+                <p className="next-label">Start here</p>
+                <h2 id="next-title" className="next-title">{first.title}</h2>
+                <p className="next-detail">{first.detail}{first.meta ? `. ${first.meta}` : ""}</p>
+                <div className="next-actions">
+                  <ButtonLink href={first.href}>{cta[first.icon]} <ArrowRight size={16} aria-hidden /></ButtonLink>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="next-label">Nothing waiting</p>
+                <h2 id="next-title" className="next-title">No decisions due today</h2>
+                <div className="next-actions">
+                  <ButtonLink href={projectViews[0] ? `/projects/${projectViews[0].id}/work?focus=task-title` : "/projects/new?focus=first"}>Plan next week</ButtonLink>
+                </div>
+              </>
+            )}
+          </section>
+
           <dl className="figures" aria-label="Money">
             <div>
               <dt>Contract value</dt>
@@ -199,27 +220,6 @@ export default async function DashboardPage() {
 
           <div className="split">
             <div className="stack">
-              <section className={`next-step${first ? "" : " is-clear"}`} aria-labelledby="next-title">
-                {first ? (
-                  <>
-                    <p className="next-label">Start here</p>
-                    <h2 id="next-title" className="next-title">{first.title}</h2>
-                    <p className="next-detail">{first.detail}{first.meta ? `. ${first.meta}` : ""}</p>
-                    <div className="next-actions">
-                      <ButtonLink href={first.href}>{cta[first.icon]} <ArrowRight size={16} aria-hidden /></ButtonLink>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="next-label">Nothing waiting</p>
-                    <h2 id="next-title" className="next-title">No decisions due today</h2>
-                    <div className="next-actions">
-                      <ButtonLink href={projectViews[0] ? `/projects/${projectViews[0].id}/work?focus=task-title` : "/projects/new?focus=first"}>Plan next week</ButtonLink>
-                    </div>
-                  </>
-                )}
-              </section>
-
               {rest.length ? (
                 <section className="flat" aria-labelledby="needs-you">
                   <h2 id="needs-you" className="flat-title">Also waiting <span>{rest.length}</span></h2>

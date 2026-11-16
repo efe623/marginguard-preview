@@ -3,6 +3,7 @@ import { ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
+import { SortSelect } from "@/components/ui/sort-select";
 import { Status } from "@/components/ui/status";
 import { listProjectViews } from "@/features/core/queries";
 import { formatMoney } from "@/lib/money";
@@ -77,8 +78,8 @@ export default async function ProjectsPage({
         }
       />
 
-      <div className="cluster" style={{ justifyContent: "space-between", marginBottom: 14 }}>
-        <nav className="chips" aria-label="Filter projects">
+      <div className="list-controls">
+        <nav className="chips chips-scroll" aria-label="Filter projects">
           {filters.map((item) => (
             <Link key={item.key} href={href({ filter: item.key })} className="chip" aria-pressed={filter === item.key} scroll={false}>
               {item.label}
@@ -86,18 +87,12 @@ export default async function ProjectsPage({
             </Link>
           ))}
         </nav>
-        <nav className="chips" aria-label="Sort projects">
-          {sorts.map((item) => (
-            <Link key={item.key} href={href({ sort: item.key })} className="chip" aria-pressed={sort === item.key} scroll={false}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <SortSelect value={sort} options={sorts.map((item) => ({ key: item.key, label: item.label, href: href({ sort: item.key }) }))} />
       </div>
 
       {query.deleted === "project" ? <p className="notice notice-success" role="status">Project deleted.</p> : null}
 
-      <section className="panel" aria-label="Project list">
+      <section className="panel project-list" aria-label="Project list">
         {shown.length === 0 ? (
           all.length === 0 ? (
             <EmptyState art="projects" title="Create your first project" text="Set the scope, the price and who approves changes. It takes about a minute, and it is how you stop doing free work." action={{ href: "/projects/new", label: "Create your first project" }} />
@@ -136,8 +131,8 @@ export default async function ProjectsPage({
                     ))}
                   </span>
                   <span><Status tone={status.tone}>{status.label}</Status></span>
-                  <span className="num font-semibold">{formatMoney(project.quoteMinor, project.currency)}</span>
-                  <span className="num">{project.approvedExtrasMinor ? formatMoney(project.approvedExtrasMinor, project.currency) : <span className="faint">None</span>}</span>
+                  <span className="num font-semibold" data-label="Quote">{formatMoney(project.quoteMinor, project.currency)}</span>
+                  <span className="num" data-label="Extras">{project.approvedExtrasMinor ? formatMoney(project.approvedExtrasMinor, project.currency) : <span className="faint">None</span>}</span>
                   <ChevronRight size={16} className="faint hidden md:block" aria-hidden />
                 </Link>
               );

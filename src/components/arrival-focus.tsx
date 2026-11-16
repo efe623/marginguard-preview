@@ -25,11 +25,12 @@ export function ArrivalFocus() {
 
     const run = () => {
       const byId = target === "first" ? null : document.getElementById(target);
-      const form = target === "first" ? document.querySelector<HTMLElement>("main form") : (byId?.closest("form") ?? byId);
+      const form = target === "first" ? document.querySelector<HTMLElement>("main form:not(.status-select)") : (byId?.closest("form") ?? byId);
       if (!form) {
         if (tries++ < 24) timer = window.setTimeout(run, 50);
         return;
       }
+      form.closest("details")?.setAttribute("open", "");
       form.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
       form.classList.remove("form-nudge");
       void form.offsetWidth;
