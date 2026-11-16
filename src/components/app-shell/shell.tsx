@@ -317,12 +317,13 @@ export function Shell({
           </button>
           <button type="button" className="cmdk-trigger" onClick={() => setPaletteOpen(true)} aria-label="Search and jump">
             <IconSearch size={18} />
-            <span>Search projects, clients, pages</span>
+            <span className="cmdk-full">Search projects, clients, pages</span>
+            <span className="cmdk-short" aria-hidden="true">Search</span>
             <kbd>Ctrl K</kbd>
           </button>
           <button type="button" className="ask-trigger" onClick={() => window.dispatchEvent(new Event("unitpulse:ask"))}>
             <PulseFace size={34} />
-            <span className="ask-label">Ask Pulse</span>
+            <span className="ask-label"><span className="ask-verb">Ask </span>Pulse</span>
           </button>
           <span className="mainbar-spacer" />
           <ActivityCenter items={activity} />

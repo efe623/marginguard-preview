@@ -24,8 +24,15 @@ export default async function ReportsPage() {
     const revenue = Number(project.quote_amount_minor) + extras;
     const profit = revenue - projectExpenses - labor;
     const overdueTasks = (data.tasks as Array<{ project_id: string; status: string; due_at: string | null }>).filter((task) => task.project_id === project.id && task.status !== "done" && task.due_at && task.due_at.slice(0, 10) < today).length;
-    const risk = Math.min(100, (profit < 0 ? 45 : profit < revenue * 0.15 ? 25 : 0) + (project.due_date && project.due_date < today && project.status !== "completed" ? 35 : 0) + overdueTasks * 10);
-    return { ...project, revenue, profit, minutes, risk };
+    const late = Boolean(project.due_date && project.due_date < today && project.status !== "completed");
+    const risk = Math.min(100, (profit < 0 ? 45 : profit < revenue * 0.15 ? 25 : 0) + (late ? 35 : 0) + overdueTasks * 10);
+    // Say why, in words, instead of showing a bare score.
+    const reasons = [
+      profit < 0 ? "Losing money" : profit < revenue * 0.15 ? "Thin margin" : null,
+      late ? "Past its deadline" : null,
+      overdueTasks ? `${overdueTasks} ${overdueTasks === 1 ? "task" : "tasks"} overdue` : null
+    ].filter(Boolean) as string[];
+    return { ...project, revenue, profit, minutes, risk, reasons };
   }).sort((a, b) => b.profit - a.profit);
   const clientRows = clients.map((client) => {
     const owned = projectRows.filter((project) => project.client_id === client.id);
@@ -33,13 +40,21 @@ export default async function ReportsPage() {
     const profit = owned.reduce((sum, project) => sum + project.profit, 0);
     const overdue = clientInvoices.filter((invoice) => !["paid", "void"].includes(invoice.status) && invoice.due_date < today).length;
     const risk = Math.min(100, overdue * 35 + Math.max(0, owned.length - 2) * 5);
-    return { ...client, projects: owned.length, profit, overdue, risk };
+    const reasons = [overdue ? `${overdue} ${overdue === 1 ? "invoice" : "invoices"} late` : null, profit < 0 ? "Losing money overall" : null].filter(Boolean) as string[];
+    return { ...client, projects: owned.length, profit, overdue, risk, reasons };
   }).sort((a, b) => b.profit - a.profit);
   const overdueValue = invoices.filter((invoice) => !["paid", "void"].includes(invoice.status) && invoice.due_date < today && invoice.currency === currency).reduce((sum, invoice) => sum + Number(invoice.amount_minor) - Number(invoice.paid_amount_minor), 0);
   const unbilledTimeValue = projectRows.reduce((sum, project) => sum + (project.hourly_rate_minor ? Math.round((project.minutes / 60) * Number(project.hourly_rate_minor)) : 0), 0);
 
   const unprofitable = projectRows.filter((row) => row.profit < 0).length;
   const riskTone = (risk: number) => (risk >= 60 ? "danger" : risk >= 30 ? "warning" : "success") as "danger" | "warning" | "success";
+  const riskLabel = (risk: number) => (risk >= 60 ? "High risk" : risk >= 30 ? "Watch" : risk > 0 ? "Low risk" : "On track");
+  const riskCell = (risk: number, reasons: string[]) => (
+    <>
+      <Status tone={riskTone(risk)}>{riskLabel(risk)}</Status>
+      <p className="meta mt-0.5">{reasons.length ? reasons.join(", ") : "Nothing to flag"}</p>
+    </>
+  );
 
   return (
     <div className="page">
@@ -64,8 +79,8 @@ export default async function ReportsPage() {
         <section className="panel">
           <div className="panel-head">
             <div>
-              <h2 className="panel-title">Project profitability and quote intelligence</h2>
-              <p className="panel-sub">The most profitable completed job types are the safest evidence for future pricing.</p>
+              <h2 className="panel-title">Profit by project</h2>
+              <p className="panel-sub">What each job earns after costs and time. Price new work like your most profitable ones.</p>
             </div>
           </div>
           {projectRows.length ? (
@@ -79,7 +94,7 @@ export default async function ReportsPage() {
                       <td className="num">{formatMoney(project.revenue, currency)}</td>
                       <td className={`num font-semibold ${project.profit < 0 ? "text-[var(--danger)]" : "text-[var(--success)]"}`}>{formatMoney(project.profit, currency)}</td>
                       <td className="num">{Math.round(project.minutes / 60)}h</td>
-                      <td><Status tone={riskTone(project.risk)}>{project.risk}/100</Status></td>
+                      <td>{riskCell(project.risk, project.reasons)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -91,7 +106,7 @@ export default async function ReportsPage() {
         </section>
 
         <section className="panel">
-          <div className="panel-head"><h2 className="panel-title">Best-client report</h2></div>
+          <div className="panel-head"><div><h2 className="panel-title">Clients by profit</h2><p className="panel-sub">Who pays well and on time. Late invoices raise the risk.</p></div></div>
           {clientRows.length ? (
             <div className="table-wrap">
               <table className="table min-w-[600px]">
@@ -103,7 +118,7 @@ export default async function ReportsPage() {
                       <td className="num">{client.projects}</td>
                       <td className="num">{formatMoney(client.profit, currency)}</td>
                       <td className="num">{client.overdue}</td>
-                      <td><Status tone={riskTone(client.risk)}>{client.risk}/100</Status></td>
+                      <td>{riskCell(client.risk, client.reasons)}</td>
                     </tr>
                   ))}
                 </tbody>

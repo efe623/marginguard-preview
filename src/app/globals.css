@@ -1170,3 +1170,20 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 @media (min-width: 1024px) {
   .shell[data-collapsed="true"] .sidebar-top { padding-top: 6px; }
 }
+
+/* Today: a tighter decision card so the rest of the pending work starts higher. */
+.next-hero { gap: 6px; padding: 20px 28px; }
+.next-hero .next-title { font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.75rem); }
+.next-hero .next-actions .button { min-height: 44px; }
+@media (max-width: 760px) { .next-hero { padding: 18px 18px; } }
+
+/* Phone header: a plain "Search" field and a labelled Pulse pill, nothing truncated. */
+.cmdk-short { display: none; }
+@media (max-width: 760px) {
+  .cmdk-full { display: none; }
+  .cmdk-short { display: inline; }
+  .ask-trigger { background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; flex: none; gap: 6px; padding: 0 12px 0 3px; width: auto; }
+  .ask-trigger svg { height: 30px; width: 30px; }
+  .ask-label { clip: auto; height: auto; overflow: visible; position: static; width: auto; }
+  .ask-verb { display: none; }
+}
