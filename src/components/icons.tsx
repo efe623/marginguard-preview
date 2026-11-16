@@ -75,12 +75,10 @@ export function IconInvoices(props: IconProps) {
 export function IconReports(props: IconProps) {
   return (
     <Base {...props}>
-      <rect x="4" y="12" width="4" height="8" rx="1.2" {...tone} />
-      <rect x="10" y="7" width="4" height="13" rx="1.2" {...tone} />
-      <rect x="4" y="12" width="4" height="8" rx="1.2" />
-      <rect x="10" y="7" width="4" height="13" rx="1.2" />
-      <path d="M17 20V4.5" />
-      <path d="M20 20v-8" />
+      <path d="M10.5 6.2A8 8 0 1 0 18 13.5H10.5Z" {...tone} />
+      <path d="M10.5 6.2A8 8 0 1 0 18 13.5H10.5Z" />
+      <path d="M14 3.5A7 7 0 0 1 20.5 10H14Z" {...tone} />
+      <path d="M14 3.5A7 7 0 0 1 20.5 10H14Z" />
     </Base>
   );
 }
