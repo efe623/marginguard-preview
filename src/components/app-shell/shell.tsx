@@ -264,7 +264,7 @@ export function Shell({
               {groups.map((group) => (
                 <div className="nav-group" key={group.label}>
                   {group.items.map(({ href, label, icon: Icon }) => (
-                    <Link key={href} href={href} className="nav-item" title={jumpFor(href) ? `${label} (G then ${jumpFor(href)!.toUpperCase()})` : label} aria-current={isActive(pathname, href) ? "page" : undefined}>
+                    <Link key={href} href={href} data-nav={href.slice(1)} className="nav-item" title={jumpFor(href) ? `${label} (G then ${jumpFor(href)!.toUpperCase()})` : label} aria-current={isActive(pathname, href) ? "page" : undefined}>
                       <Icon size={20} />
                       <span className="nav-text">{label}</span>
                       {badgeFor(href) ? <span className="nav-badge" aria-label={`${badgeFor(href)} need attention`}>{badgeFor(href)}</span> : null}
