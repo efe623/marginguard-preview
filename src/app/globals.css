@@ -847,9 +847,10 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
   --ink-3: #939393;
   --line: #2e2e2e;
   --line-strong: #454545;
-  --signal: #f2f2f2;
-  --signal-deep: #ffffff;
-  --on-signal: #000000;
+  --signal: #ededec;
+  --signal-deep: #f4f4f5;
+  --on-signal: #111111;
+  --face-fill: #ededec;
   --warning: #f0915a;
 }
 

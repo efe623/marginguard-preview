@@ -293,7 +293,7 @@ export function IconAppearance(props: IconProps) {
 export function PulseFace({ size = 40 }: { size?: number }) {
   return (
     <svg className="pulse-face" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-      <circle cx="32" cy="32" r="29" fill="#ffffff" stroke="#d6d6d6" strokeWidth="3" />
+      <circle cx="32" cy="32" r="29" fill="var(--face-fill, #ffffff)" stroke="#d6d6d6" strokeWidth="3" />
       <g fill="none" stroke="#161616" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6">
         <path className="pulse-face-brow" d="M17.5 24.5Q22.5 19 28.5 21.5" />
         <path className="pulse-face-brow pulse-face-brow-up" d="M35 19.5Q41.5 14 48 19.5" />
