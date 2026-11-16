@@ -287,21 +287,22 @@ export function IconAppearance(props: IconProps) {
 }
 
 /**
- * Pulse, the assistant: a hand-drawn face in a circle, one brow raised,
- * a nose that kicks out to the side. Drawn in currentColor so it follows the theme.
+ * Pulse, the assistant: a white face on a soft grey ring. One brow raised,
+ * a nose with a rounded foot, a small sideways smile. The same in both themes.
  */
-export function PulseFace({ size = 40, filled = true }: { size?: number; filled?: boolean }) {
+export function PulseFace({ size = 40 }: { size?: number }) {
   return (
     <svg className="pulse-face" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-      <circle cx="32" cy="32" r="30" fill={filled ? "var(--surface, #fff)" : "none"} stroke="currentColor" strokeWidth="2.2" />
-      <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-        <path className="pulse-face-brow" d="M19 26C21.5 21.8 26 20.8 29.5 22.4" strokeWidth="2.2" />
-        <path className="pulse-face-brow" d="M35.5 21.6C39.5 18 44.5 18.8 46.6 23.2" strokeWidth="2.2" />
-        <path d="M30 26.8L20.6 41.6L28.4 44.6" strokeWidth="2.6" />
+      <circle cx="32" cy="32" r="29" fill="#ffffff" stroke="#d6d6d6" strokeWidth="3" />
+      <g fill="none" stroke="#161616" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6">
+        <path className="pulse-face-brow" d="M17.5 24.5Q22.5 19 28.5 21.5" />
+        <path className="pulse-face-brow pulse-face-brow-up" d="M35 19.5Q41.5 14 48 19.5" />
+        <path d="M33.5 23L26.2 39.6Q25.2 42.2 28 42.3L31.8 42.3" />
+        <path className="pulse-face-mouth" d="M33.5 49Q37.5 50.6 41.5 47.6" />
       </g>
-      <g className="pulse-face-eyes" fill="currentColor">
-        <ellipse cx="27.8" cy="25.8" rx="1.9" ry="2.2" />
-        <ellipse cx="41.2" cy="26.6" rx="1.9" ry="2.5" />
+      <g className="pulse-face-eyes" fill="#161616">
+        <circle cx="24.6" cy="26.4" r="2.3" />
+        <circle cx="41.4" cy="25.4" r="2.6" />
       </g>
     </svg>
   );
