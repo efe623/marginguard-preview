@@ -167,146 +167,72 @@ export default async function DashboardPage() {
         </section>
       ) : (
         <>
-          <div className="brief">
-            <section className={`next-step${first ? "" : " is-clear"}`} aria-labelledby="next-title">
-              {first ? (
-                <>
-                  <p className="next-label">Start here</p>
-                  <h2 id="next-title" className="next-title">{first.title}</h2>
-                  <p className="next-detail">{first.detail}{first.meta ? `. ${first.meta}` : ""}</p>
-                  <div className="next-actions">
-                    <ButtonLink href={first.href}>{cta[first.icon]} <ArrowRight size={16} aria-hidden /></ButtonLink>
-                    <span className="meta">{afterThis > 0 ? `${afterThis} more after this` : "Then you are clear"}</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="next-label">You are clear</p>
-                  <h2 id="next-title" className="next-title">Nothing is waiting on you today</h2>
-                  <p className="next-detail">Spend two minutes making next week easier.</p>
-                  <div className="next-actions">
-                    <ButtonLink href={projectViews[0] ? `/projects/${projectViews[0].id}/work?focus=task-title` : "/projects/new?focus=first"}>Plan next week</ButtonLink>
-                    <ButtonLink href="/settings/quotes" variant="outline">Save a quote template</ButtonLink>
-                  </div>
-                </>
-              )}
-              {approvedExtras.length ? (
-                <p className="next-proof">
-                  <ShieldCheck size={16} className="signal" aria-hidden />
-                  <span>
-                    <strong>{formatMoney(extras, currency)}</strong> of extra work agreed in writing before it started, across {approvedExtras.length} {approvedExtras.length === 1 ? "change" : "changes"}.
-                  </span>
-                </p>
-              ) : null}
-            </section>
-            <div className="stack brief-side">
-            <TodayBrief
-              needs={actions.length}
-              items={activity.map((item) => ({ id: item.id, title: item.title, body: item.body, href: item.href ?? "/notifications", createdAt: item.createdAt }))}
-              projects={projectViews.map((project) => ({ id: project.id, name: project.name }))}
-            />
-            <section className="panel">
-              <div className="panel-head">
-                <div>
-                  <h2 className="panel-title">Where the money stands</h2>
-                  <p className="panel-sub">Before unrecorded labour costs</p>
-                </div>
-              </div>
-              <div className="panel-body stack-sm">
-                <div>
-                  <p className="bar-title">Contract value <strong>{formatMoney(contract, currency)}</strong></p>
-                  <div className="bar" role="img" aria-label={`Costs ${formatMoney(costs, currency)}, expected profit ${formatMoney(profit, currency)}`}>
-                    <i className="seg-cost" style={{ width: `${pct(costs, contract)}%` }} />
-                    <i className="seg-profit" style={{ width: `${pct(profit, contract)}%` }} />
-                  </div>
-                  <ul className="legend">
-                    <li><span className="swatch seg-cost" />Recorded costs<b>{formatMoney(costs, currency)}</b></li>
-                    <li><span className="swatch seg-profit" />Expected profit<b>{formatMoney(profit, currency)}</b></li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="bar-title">Invoiced <strong>{formatMoney(invoicedTotal, currency)}</strong></p>
-                  <div className="bar" role="img" aria-label={`Paid ${formatMoney(paidTotal, currency)}, open ${formatMoney(openTotal, currency)}, overdue ${formatMoney(overdueTotal, currency)}`}>
-                    <i className="seg-paid" style={{ width: `${pct(paidTotal, invoicedTotal)}%` }} />
-                    <i className="seg-open" style={{ width: `${pct(openTotal, invoicedTotal)}%` }} />
-                    <i className="seg-late" style={{ width: `${pct(overdueTotal, invoicedTotal)}%` }} />
-                  </div>
-                  <ul className="legend">
-                    <li><span className="swatch seg-paid" />Paid<b>{formatMoney(paidTotal, currency)}</b></li>
-                    <li><span className="swatch seg-open" />Open<b>{formatMoney(openTotal, currency)}</b></li>
-                    <li><span className="swatch seg-late" />Overdue<b>{formatMoney(overdueTotal, currency)}</b></li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-            </div>
-          </div>
-
-          <section className="panel" aria-labelledby="week-title">
-            <div className="panel-head">
-              <div>
-                <h2 id="week-title" className="panel-title">The next seven days</h2>
-                <p className="panel-sub">{weekCount ? `${weekCount} ${weekCount === 1 ? "item" : "items"} due: tasks and invoices.` : "Nothing is due this week."}</p>
-              </div>
-              <ButtonLink href="/calendar" variant="outline" className="button-sm">Open calendar</ButtonLink>
-            </div>
-            <div className="week">
-              {week.map((day, index) => (
-                <div key={day.key} className={`week-day${index === 0 ? " is-today" : ""}`}>
-                  <p className="week-head"><strong>{day.weekday}</strong><span>{day.date}</span></p>
-                  {day.items.length ? (
-                    <ul className="week-list">
-                      {day.items.map((item) => (
-                        <li key={item.key}>
-                          <Link href={item.href} className={`week-item week-${item.kind}`}>
-                            <span className="week-item-title">{item.label}</span>
-                            <span className="week-item-sub">{item.sub}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="week-none">Free</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
           <div className="split">
             <div className="stack">
-              <section className="panel" aria-labelledby="needs-you">
-                <div className="panel-head">
-                  <div>
-                    <h2 id="needs-you" className="panel-title">{actions.length ? "After that" : "Needs you"}</h2>
-                    <p className="panel-sub">{rest.length ? "Ordered by what is blocking money or work." : actions.length ? "Nothing else is waiting on you." : "Nothing is waiting on you."}</p>
-                  </div>
-                  {rest.length ? <Status tone="warning">{`${rest.length} more`}</Status> : null}
-                </div>
-                {rest.length ? (
-                  <div className="rows">
-                    {rest.map((action) => {
-                      const Icon = icons[action.icon];
-                      return (
-                        <Link href={action.href} key={action.key} className="row">
-                          <span className="row-lead"><Icon size={18} aria-hidden /></span>
-                          <div className="row-main">
-                            <p className="row-title">{action.title}</p>
-                            <p className="row-sub">{action.detail}{action.meta ? ` · ${action.meta}` : ""}</p>
-                          </div>
-                          <div className="row-end">
-                            <Status tone={action.tone}>{action.badge}</Status>
-                            <ArrowRight size={16} className="faint" aria-hidden />
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                ) : actions.length ? null : (
-                  <EmptyState art="clear" title="You are clear" text="No overdue invoices, open deposits or tasks due soon. A good moment to plan next week." action={projectViews[0] ? { href: `/projects/${projectViews[0].id}/work?focus=task-title`, label: "Plan next week" } : { href: "/projects/new", label: "Create a project" }} />
+              <section className={`next-step${first ? "" : " is-clear"}`} aria-labelledby="next-title">
+                {first ? (
+                  <>
+                    <p className="next-label">Start here</p>
+                    <h2 id="next-title" className="next-title">{first.title}</h2>
+                    <p className="next-detail">{first.detail}{first.meta ? `. ${first.meta}` : ""}</p>
+                    <div className="next-actions">
+                      <ButtonLink href={first.href}>{cta[first.icon]} <ArrowRight size={16} aria-hidden /></ButtonLink>
+                      <span className="meta">{afterThis > 0 ? `${afterThis} more after this` : "Then you are clear"}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="next-label">You are clear</p>
+                    <h2 id="next-title" className="next-title">Nothing is waiting on you today</h2>
+                    <p className="next-detail">Spend two minutes making next week easier.</p>
+                    <div className="next-actions">
+                      <ButtonLink href={projectViews[0] ? `/projects/${projectViews[0].id}/work?focus=task-title` : "/projects/new?focus=first"}>Plan next week</ButtonLink>
+                      <ButtonLink href="/settings/quotes" variant="outline">Save a quote template</ButtonLink>
+                    </div>
+                  </>
                 )}
+                {approvedExtras.length ? (
+                  <p className="next-proof">
+                    <ShieldCheck size={16} className="signal" aria-hidden />
+                    <span>
+                      <strong>{formatMoney(extras, currency)}</strong> of extra work agreed in writing before it started, across {approvedExtras.length} {approvedExtras.length === 1 ? "change" : "changes"}.
+                    </span>
+                  </p>
+                ) : null}
               </section>
-
+              {rest.length || !actions.length ? (
+                <section className="panel" aria-labelledby="needs-you">
+                  <div className="panel-head">
+                    <div>
+                      <h2 id="needs-you" className="panel-title">{actions.length ? "After that" : "Needs you"}</h2>
+                      <p className="panel-sub">{rest.length ? "Ordered by what is blocking money or work." : actions.length ? "Nothing else is waiting on you." : "Nothing is waiting on you."}</p>
+                    </div>
+                    {rest.length ? <Status tone="warning">{`${rest.length} more`}</Status> : null}
+                  </div>
+                  {rest.length ? (
+                    <div className="rows">
+                      {rest.map((action) => {
+                        const Icon = icons[action.icon];
+                        return (
+                          <Link href={action.href} key={action.key} className="row">
+                            <span className="row-lead"><Icon size={18} aria-hidden /></span>
+                            <div className="row-main">
+                              <p className="row-title">{action.title}</p>
+                              <p className="row-sub">{action.detail}{action.meta ? ` · ${action.meta}` : ""}</p>
+                            </div>
+                            <div className="row-end">
+                              <Status tone={action.tone}>{action.badge}</Status>
+                              <ArrowRight size={16} className="faint" aria-hidden />
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  ) : actions.length ? null : (
+                    <EmptyState art="clear" title="You are clear" text="No overdue invoices, open deposits or tasks due soon. A good moment to plan next week." action={projectViews[0] ? { href: `/projects/${projectViews[0].id}/work?focus=task-title`, label: "Plan next week" } : { href: "/projects/new", label: "Create a project" }} />
+                  )}
+                </section>
+              ) : null}
               <section aria-labelledby="active-projects">
                 <div className="section-head">
                   <div>
@@ -349,7 +275,46 @@ export default async function DashboardPage() {
               </section>
             </div>
 
-            <aside className="stack" aria-label="Money">
+            <aside className="stack" aria-label="Money and activity">
+              <TodayBrief
+                needs={actions.length}
+                items={activity.map((item) => ({ id: item.id, title: item.title, body: item.body, href: item.href ?? "/notifications", createdAt: item.createdAt }))}
+                projects={projectViews.map((project) => ({ id: project.id, name: project.name }))}
+              />
+              <section className="panel">
+                <div className="panel-head">
+                  <div>
+                    <h2 className="panel-title">Where the money stands</h2>
+                    <p className="panel-sub">Before unrecorded labour costs</p>
+                  </div>
+                </div>
+                <div className="panel-body stack-sm">
+                  <div>
+                    <p className="bar-title">Contract value <strong>{formatMoney(contract, currency)}</strong></p>
+                    <div className="bar" role="img" aria-label={`Costs ${formatMoney(costs, currency)}, expected profit ${formatMoney(profit, currency)}`}>
+                      <i className="seg-cost" style={{ width: `${pct(costs, contract)}%` }} />
+                      <i className="seg-profit" style={{ width: `${pct(profit, contract)}%` }} />
+                    </div>
+                    <ul className="legend">
+                      <li><span className="swatch seg-cost" />Recorded costs<b>{formatMoney(costs, currency)}</b></li>
+                      <li><span className="swatch seg-profit" />Expected profit<b>{formatMoney(profit, currency)}</b></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="bar-title">Invoiced <strong>{formatMoney(invoicedTotal, currency)}</strong></p>
+                    <div className="bar" role="img" aria-label={`Paid ${formatMoney(paidTotal, currency)}, open ${formatMoney(openTotal, currency)}, overdue ${formatMoney(overdueTotal, currency)}`}>
+                      <i className="seg-paid" style={{ width: `${pct(paidTotal, invoicedTotal)}%` }} />
+                      <i className="seg-open" style={{ width: `${pct(openTotal, invoicedTotal)}%` }} />
+                      <i className="seg-late" style={{ width: `${pct(overdueTotal, invoicedTotal)}%` }} />
+                    </div>
+                    <ul className="legend">
+                      <li><span className="swatch seg-paid" />Paid<b>{formatMoney(paidTotal, currency)}</b></li>
+                      <li><span className="swatch seg-open" />Open<b>{formatMoney(openTotal, currency)}</b></li>
+                      <li><span className="swatch seg-late" />Overdue<b>{formatMoney(overdueTotal, currency)}</b></li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
               <section className="panel">
                 <div className="panel-head">
                   <div>
@@ -389,6 +354,37 @@ export default async function DashboardPage() {
               </section>
             </aside>
           </div>
+
+          <section className="panel" aria-labelledby="week-title">
+            <div className="panel-head">
+              <div>
+                <h2 id="week-title" className="panel-title">The next seven days</h2>
+                <p className="panel-sub">{weekCount ? `${weekCount} ${weekCount === 1 ? "item" : "items"} due: tasks and invoices.` : "Nothing is due this week."}</p>
+              </div>
+              <ButtonLink href="/calendar" variant="outline" className="button-sm">Open calendar</ButtonLink>
+            </div>
+            <div className="week">
+              {week.map((day, index) => (
+                <div key={day.key} className={`week-day${index === 0 ? " is-today" : ""}`}>
+                  <p className="week-head"><strong>{day.weekday}</strong><span>{day.date}</span></p>
+                  {day.items.length ? (
+                    <ul className="week-list">
+                      {day.items.map((item) => (
+                        <li key={item.key}>
+                          <Link href={item.href} className={`week-item week-${item.kind}`}>
+                            <span className="week-item-title">{item.label}</span>
+                            <span className="week-item-sub">{item.sub}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="week-none">Free</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
         </>
       )}
     </div>
