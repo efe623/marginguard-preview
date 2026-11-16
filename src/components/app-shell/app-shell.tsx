@@ -2,6 +2,7 @@ import { DemoBanner } from "@/components/demo-banner";
 import { Shell } from "@/components/app-shell/shell";
 import { AiAssistant } from "@/components/ai-assistant";
 import { listClientViews, listProjectViews } from "@/features/core/queries";
+import { isSupabaseConfigured } from "@/lib/env";
 import { computeAttention } from "@/features/operations/attention";
 import { getActivityCenterData, getDashboardData } from "@/features/operations/queries";
 
@@ -31,7 +32,7 @@ export async function AppShell({
       banner={<DemoBanner />}
     >
       {children}
-      <AiAssistant />
+      <AiAssistant preview={!isSupabaseConfigured} />
     </Shell>
   );
 }

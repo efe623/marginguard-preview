@@ -30,7 +30,7 @@ export default async function InvoicesPage() {
               <thead><tr><th>Invoice</th><th>Project</th><th>Due</th><th className="num">Amount</th><th>Status</th><th><span className="sr-only">Open</span></th></tr></thead>
               <tbody>
                 {rows.map((invoice) => {
-                  const overdue = !["paid", "void"].includes(invoice.status) && invoice.due_date < today;
+                  const overdue = invoice.status === "overdue" || (["sent", "partially_paid"].includes(invoice.status) && invoice.due_date < today);
                   return (
                     <tr key={invoice.id}>
                       <td><strong>{invoice.invoice_number}</strong><p className="meta mt-0.5">{invoice.description}</p></td>

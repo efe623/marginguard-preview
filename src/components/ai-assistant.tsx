@@ -18,9 +18,14 @@ const welcome: Message = {
   content: "Hi, I’m Pulse. I can explain your invoices, upcoming due dates, projects, costs, and profit in simple language."
 };
 
-export function AiAssistant() {
+const previewWelcome: Message = {
+  role: "assistant",
+  content: "Hi, I’m Pulse. This is a demo on sample data, so I can answer three things: which invoices are due, a simple invoice report, and possible money leaks. Pick one below."
+};
+
+export function AiAssistant({ preview = false }: { preview?: boolean }) {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([welcome]);
+  const [messages, setMessages] = useState<Message[]>([preview ? previewWelcome : welcome]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
@@ -87,7 +92,7 @@ export function AiAssistant() {
         <section className="pulse-panel" aria-label="Pulse AI assistant">
           <header className="pulse-header">
             <div className="pulse-avatar pulse-avatar-small pulse-avatar-face" aria-hidden="true"><PulseFace size={30} /></div>
-            <div><strong>Pulse</strong><span>UnitPulse assistant</span></div>
+            <div><strong>Pulse</strong><span>{preview ? "Demo, sample data only" : "UnitPulse assistant"}</span></div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close assistant"><X size={18} /></button>
           </header>
           <div className="pulse-messages" aria-live="polite">
@@ -113,7 +118,7 @@ export function AiAssistant() {
             <input id="pulse-question" value={input} onChange={(event) => setInput(event.target.value)} maxLength={1500} placeholder="Ask about your business…" disabled={pending} />
             <button type="submit" disabled={pending || !input.trim()} aria-label="Send message"><ArrowUp size={18} /></button>
           </form>
-          <p className="pulse-note">Read-only answers based on your UnitPulse data.</p>
+          <p className="pulse-note">{preview ? "Demo answers from the preview's sample data." : "Read-only answers based on your UnitPulse data."}</p>
         </section>
       ) : null}
     </div>

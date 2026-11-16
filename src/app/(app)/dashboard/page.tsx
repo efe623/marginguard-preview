@@ -147,10 +147,10 @@ export default async function DashboardPage() {
     ? `${actions.length} ${actions.length === 1 ? "thing needs" : "things need"} a decision${overdue.length ? `, and ${formatMoney(overdueTotal, currency)} is overdue` : ""}.`
     : "Nothing is blocking money or work right now.";
 
-  // Items already on the page above are not repeated in the week strip.
-  const listed = new Set(actions.map((action) => action.key.replace(/^task-/, "t-").replace(/^inv-/, "i-")));
-  const weekRest = week.map((day) => ({ ...day, items: day.items.filter((item) => !listed.has(item.key)) }));
-  const weekRestCount = weekRest.reduce((sum, day) => sum + day.items.length, 0);
+  // The week strip shows everything due in the next seven days, even items that
+  // also appear in "Needs your decision", so it matches the calendar.
+  const weekRest = week;
+  const weekRestCount = weekCount;
   const chase = live.filter((invoice) => invoice.status !== "paid").sort((a, b) => a.due_date.localeCompare(b.due_date)).slice(0, 4);
 
   return (
@@ -358,7 +358,7 @@ export default async function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <p className="flat-empty">{weekCount ? "Everything due this week is listed above." : "Nothing is due in the next seven days."}</p>
+              <p className="flat-empty">Nothing is due in the next seven days.</p>
             )}
           </section>
         </>

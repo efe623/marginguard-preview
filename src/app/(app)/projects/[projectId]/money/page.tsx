@@ -125,13 +125,27 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
                   <tr><th>Invoice</th><th>Due</th><th className="num">Amount</th><th className="num">Paid</th><th>Status</th></tr>
                 </thead>
                 <tbody>
-                  {invoices.map((invoice) => (
+                  {invoices.map((invoice) => {
+                    // Same rule as the Invoices page: unpaid and past its due date reads as Overdue.
+                    const daysLate = Math.round((Date.parse(today) - Date.parse(invoice.due_date)) / 86400000);
+                    const late = ["sent", "partially_paid"].includes(invoice.status) && daysLate > 0;
+                    const options = late
+                      ? invoiceStatusOptions.map((option) =>
+                          option.value === invoice.status
+                            ? { ...option, label: option.value === "sent" ? "Overdue" : "Overdue, part paid", tone: "danger" as const }
+                            : option
+                        )
+                      : invoiceStatusOptions;
+                    return (
                     <tr key={invoice.id}>
                       <td>
                         <p className="font-semibold">{invoice.invoice_number}</p>
                         {invoice.description ? <p className="meta">{invoice.description}</p> : null}
                       </td>
-                      <td className="whitespace-nowrap">{formatDay(invoice.due_date)}</td>
+                      <td className="whitespace-nowrap">
+                        {formatDay(invoice.due_date)}
+                        {late ? <p className="meta text-[var(--danger)]">{daysLate} {daysLate === 1 ? "day" : "days"} late</p> : null}
+                      </td>
                       <td className="num">{formatMoney(Number(invoice.amount_minor), invoice.currency)}</td>
                       <td className="num">{formatMoney(Number(invoice.paid_amount_minor ?? 0), invoice.currency)}</td>
                       <td>
@@ -140,11 +154,12 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
                           fields={{ projectId, invoiceId: invoice.id }}
                           value={invoice.status}
                           label={`Status for ${invoice.invoice_number}`}
-                          options={invoiceStatusOptions}
+                          options={options}
                         />
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
