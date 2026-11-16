@@ -836,10 +836,20 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
   --on-signal: #ffffff;
   --warning: #b4510f;
 }
+/* Dark: neutral #181818 ground, white as the one accent. */
 :root[data-theme="dark"] {
-  --signal: #e9b949;
-  --signal-deep: #f2c866;
-  --on-signal: #17140b;
+  --paper: #181818;
+  --bar: #141414;
+  --surface: #222222;
+  --surface-2: #2b2b2b;
+  --ink: #f2f2f2;
+  --ink-soft: #adadad;
+  --ink-3: #939393;
+  --line: #2e2e2e;
+  --line-strong: #454545;
+  --signal: #f2f2f2;
+  --signal-deep: #ffffff;
+  --on-signal: #000000;
   --warning: #f0915a;
 }
 
@@ -892,6 +902,7 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 
 /* The one highlighted card on Today. */
 .next-step { border-color: color-mix(in srgb, var(--signal) 45%, var(--line)); }
+:root[data-theme="dark"] .next-step { background: #1a1a1c; border: 1px solid rgba(255, 255, 255, 0.08); }
 
 /* Pulse opens from the top bar, under it, not from a floating robot. */
 .ask-trigger { align-items: center; background: transparent; border: 1px solid var(--line-strong); border-radius: 12px; color: var(--ink); cursor: pointer; display: inline-flex; flex: none; font-size: 0.9375rem; font-weight: 600; height: 44px; margin-left: 10px; padding: 0 14px; transition: border-color 140ms ease, background-color 140ms ease; }
