@@ -143,6 +143,8 @@ export default async function DashboardPage() {
   const cta = { invoice: "Chase payment", block: "Resolve it", task: "Open task" } as const;
   const afterThis = actions.length - 1;
   const rest = actions.slice(1);
+  // Up to four projects in two columns; an odd last tile spans the row so no cell is left empty.
+  const shownProjects = projectViews.slice(0, 4);
 
   const brief = actions.length
     ? `${actions.length} ${actions.length === 1 ? "thing needs" : "things need"} a decision${overdue.length ? `, and ${formatMoney(overdueTotal, currency)} is overdue` : ""}.`
@@ -233,16 +235,16 @@ export default async function DashboardPage() {
                   )}
                 </section>
               ) : null}
-              <section aria-labelledby="active-projects">
+              <section aria-labelledby="active-projects" className="board-projects">
                 <div className="section-head">
                   <div>
                     <h2 id="active-projects" className="panel-title">Projects</h2>
-                    <p className="panel-sub">{projectViews.length} in your workspace</p>
+                    <p className="panel-sub">{projectViews.length > 4 ? `Latest 4 of ${projectViews.length}` : `${projectViews.length} in your workspace`}</p>
                   </div>
                   <ButtonLink href="/projects" variant="outline" className="button-sm">View all</ButtonLink>
                 </div>
                 <div className="tiles">
-                  {projectViews.slice(0, 6).map((project) => {
+                  {shownProjects.map((project) => {
                     const status = statusLabels[project.status];
                     const full = project.revisionUsed >= project.revisionLimit;
                     const billed = invoicedByProject.get(project.id);
@@ -255,6 +257,14 @@ export default async function DashboardPage() {
                         </div>
                         <p className="tile-title">{project.name}</p>
                         <p className="row-sub">{project.clientName}</p>
+                        {shownProjects.length <= 2 ? (
+                          <dl className="tile-facts">
+                            <div><dt>Agreed quote</dt><dd>{formatMoney(project.quoteMinor, project.currency)}</dd></div>
+                            <div><dt>Approved extras</dt><dd>{project.approvedExtrasMinor ? formatMoney(project.approvedExtrasMinor, project.currency) : "None yet"}</dd></div>
+                            <div><dt>Invoiced</dt><dd>{formatMoney(billed?.total ?? 0, project.currency)}</dd></div>
+                            <div><dt>Paid</dt><dd>{formatMoney(billed?.paid ?? 0, project.currency)}</dd></div>
+                          </dl>
+                        ) : null}
                         <div className="tile-bar" role="img" aria-label={billed ? `${formatMoney(billed.paid, project.currency)} paid of ${formatMoney(billed.total, project.currency)} invoiced` : "Nothing invoiced yet"}>
                           <i style={{ width: `${pct(billed?.paid ?? 0, total)}%` }} />
                           <b style={{ width: `${pct((billed?.total ?? 0) - (billed?.paid ?? 0), total)}%` }} />
@@ -271,6 +281,13 @@ export default async function DashboardPage() {
                       </Link>
                     );
                   })}
+                  {shownProjects.length % 2 === 1 ? (
+                    <Link href="/projects/new?focus=first" className="tile tile-add">
+                      <span className="tile-add-icon" aria-hidden><IconPlus size={20} /></span>
+                      <p className="tile-title">Start another project</p>
+                      <p className="tile-note">Agree the scope and the price before the work starts.</p>
+                    </Link>
+                  ) : null}
                 </div>
               </section>
             </div>

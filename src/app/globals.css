@@ -801,3 +801,28 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 .pulse-launcher { border-radius: 14px; height: 48px; width: 48px; }
 @media (min-width: 1024px) { .pulse-assistant { bottom: 30px; right: 36px; } }
 .brief-side { gap: 18px; }
+/* Today's projects: a fixed two-column grid of up to four; an odd last tile takes the full row. */
+.board .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 640px) { .board .tiles { grid-template-columns: minmax(0, 1fr); } }
+/* The left column grows to the height of the right one; the project grid takes the spare height,
+   so fewer projects means taller cards rather than a hole in the page. */
+@media (min-width: 1024px) {
+  .board > .split { align-items: stretch; }
+  .board > .split > .stack:first-child { align-content: stretch; display: flex; flex-direction: column; }
+  .board-projects { display: flex; flex: 1; flex-direction: column; }
+  .board .tiles { flex: 1; grid-auto-rows: minmax(min-content, 1fr); }
+}
+.board .tile { align-content: start; display: flex; flex-direction: column; }
+.board .tile .tile-bar { margin-top: auto; }
+.board .tile-top + .tile-title { margin-top: 0; }
+.tile-add { align-items: flex-start; background: transparent; border-style: dashed; border-color: var(--line-strong); box-shadow: none; justify-content: center; }
+.tile-add:hover { background: var(--accent-soft); border-color: var(--signal); }
+.tile-add .tile-note { max-width: 32ch; }
+.tile-add-icon { align-items: center; background: var(--accent-soft); border-radius: 10px; color: var(--signal); display: inline-flex; height: 36px; justify-content: center; margin-bottom: 10px; width: 36px; }
+.board > .split > aside.stack { align-content: start; align-self: start; }
+.tile-facts { display: grid; gap: 0; margin: 16px 0 0; }
+.tile-facts div { align-items: baseline; border-top: 1px solid var(--line); display: flex; justify-content: space-between; padding: 9px 0; }
+.tile-facts dt { color: var(--ink-soft); font-size: 0.875rem; }
+.tile-facts dd { font-size: 0.9375rem; font-variant-numeric: tabular-nums; font-weight: 600; margin: 0; }
+.board .tile .tile-bar { margin-top: auto; padding-top: 0; }
+.board .tile-facts { margin-bottom: 16px; }
