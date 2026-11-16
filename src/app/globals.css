@@ -1091,15 +1091,31 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
   .project-list .row > [data-label]::before { color: var(--ink-soft); content: attr(data-label); font-size: 0.8125rem; font-weight: 500; margin-right: 6px; }
 }
 /* Calendar: an agenda on phones instead of a squeezed month grid. */
-.cal-agenda { display: none; list-style: none; margin: 0; padding: 0; }
+.pips-count { color: var(--ink-soft); font-size: 0.8125rem; font-variant-numeric: tabular-nums; margin-left: 6px; white-space: nowrap; }
+.pips.is-full .pips-count { color: var(--warning); font-weight: 650; }
+.cal-agenda { display: none; margin: 0; padding: 0; }
 @media (max-width: 639px) {
   .cal-grid, .cal-next { display: none; }
   .cal-agenda { display: block; }
 }
+/* Desktop: the month gets the full width; Next up and the feed sit beside it
+   only when there is room for seven readable columns. */
+.cal-split { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 768px) and (max-width: 1439px) {
+  .cal-split > .stack { align-items: start; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1440px) { .cal-split { grid-template-columns: minmax(0, 1fr) 320px; } }
+.cal-grid { overflow: visible; }
+.cal-cell a > span:first-child > span { -webkit-box-orient: vertical; -webkit-line-clamp: 2; display: -webkit-box; overflow: hidden; }
 .cal-agenda-empty { color: var(--ink-soft); padding: 18px 16px; }
+.cal-group + .cal-group { border-top: 1px solid var(--line-strong); }
+.cal-group-title { font-size: 0.875rem; font-weight: 700; padding: 14px 16px 0; }
+.cal-group-title span { color: var(--ink-soft); font-weight: 600; }
+.cal-group-overdue .cal-group-title { color: var(--danger); }
+.cal-group-overdue .cal-date strong { color: var(--danger); }
+.cal-days { list-style: none; margin: 0; padding: 0; }
 .cal-day { border-top: 1px solid var(--line); display: grid; gap: 14px; grid-template-columns: 44px minmax(0, 1fr); padding: 14px 16px; }
 .cal-day:first-child { border-top: 0; }
-.cal-day.is-past { opacity: 0.6; }
 .cal-date { display: grid; justify-items: center; line-height: 1.1; }
 .cal-date span { color: var(--ink-soft); font-size: 0.8125rem; font-weight: 600; }
 .cal-date strong { align-items: center; border-radius: 999px; display: flex; font-size: 1.25rem; height: 34px; justify-content: center; width: 34px; }

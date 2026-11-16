@@ -17,6 +17,7 @@ import {
   getProjectContext,
   getQuoteTemplates
 } from "@/features/operations/queries";
+import { getProjectView } from "@/features/core/queries";
 import { formatMoney } from "@/lib/money";
 import { formatDay } from "@/lib/dates";
 
@@ -35,10 +36,11 @@ const invoiceStatusOptions = [
 
 export default async function ProjectMoneyPage({ params }: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await params;
-  const [project, data, templates] = await Promise.all([
+  const [project, data, templates, view] = await Promise.all([
     getProjectContext(projectId),
     getOperationsProjectData(projectId),
-    getQuoteTemplates()
+    getQuoteTemplates(),
+    getProjectView(projectId).catch(() => null)
   ]);
   if (!project) notFound();
   const expenses = data.expenses as ExpenseRow[];
@@ -47,7 +49,8 @@ export default async function ProjectMoneyPage({ params }: { params: Promise<{ p
   const expenseTotal = expenses.reduce((sum, row) => sum + Number(row.amount_minor), 0);
   const trackedMinutes = (data.timeEntries as Array<{ minutes: number; billable: boolean }>).reduce((sum, row) => sum + Number(row.minutes), 0);
   const laborCost = project.hourly_rate_minor ? Math.round((trackedMinutes / 60) * Number(project.hourly_rate_minor)) : 0;
-  const approvedExtra = 0;
+  // Same figure the project list and overview show: approved change orders.
+  const approvedExtra = view?.approvedExtrasMinor ?? 0;
   const budget = Number(project.quote_amount_minor) + approvedExtra;
   const remaining = budget - expenseTotal - laborCost;
   const live = invoices.filter((row) => row.status !== "void");

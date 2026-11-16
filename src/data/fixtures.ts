@@ -41,7 +41,7 @@ export const projects: Project[] = [
     clientName: "Spark Retail",
     currency: "AED",
     quoteMinor: 8500000,
-    approvedExtrasMinor: 250000,
+    approvedExtrasMinor: 430000,
     status: "awaiting_deposit",
     revisionUsed: 3,
     revisionLimit: 3,
@@ -138,5 +138,29 @@ export const changeOrders: ChangeOrder[] = [
     status: "paid",
     evidenceAttached: true,
     createdAt: "2026-07-17T12:30:00.000Z"
+  },
+  {
+    id: "co-002",
+    number: "CO-002",
+    projectId: "brand-package",
+    title: "Social media templates",
+    reason: "Client request",
+    amountMinor: 175000,
+    currency: "AED",
+    depositBasisPoints: 5000,
+    timelineImpact: "+3 days",
+    status: "paid",
+    evidenceAttached: true,
+    createdAt: "2026-07-20T09:00:00.000Z"
   }
 ];
+
+/** Statuses at which a change order counts toward the contract value. */
+export const countedChangeOrderStatuses = ["approved", "awaiting_deposit", "deposit_paid", "authorized", "balance_due", "paid"];
+
+/** Preview: approved extras always come from the change orders, so every page agrees. */
+export function previewExtrasMinor(projectId: string) {
+  return changeOrders
+    .filter((order) => order.projectId === projectId && countedChangeOrderStatuses.includes(order.status))
+    .reduce((sum, order) => sum + order.amountMinor, 0);
+}

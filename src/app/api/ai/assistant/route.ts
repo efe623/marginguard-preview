@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedMembership } from "@/features/auth/authorization";
 import { generateAssistantReply } from "@/lib/ai";
-import { getServerEnv } from "@/lib/env";
+import { getServerEnv, isSupabaseConfigured } from "@/lib/env";
+import { previewPulseReply } from "@/lib/pulse-preview";
 
 export const runtime = "nodejs";
 
@@ -19,6 +20,11 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  if (!isSupabaseConfigured) {
+    const body = requestSchema.safeParse(await request.json().catch(() => null));
+    const question = body.success ? body.data.messages.at(-1)?.content ?? "" : "";
+    return NextResponse.json({ reply: previewPulseReply(question) });
+  }
   const hasGeminiKey = Boolean(getServerEnv().GEMINI_API_KEY?.trim());
   if (!hasGeminiKey) {
     console.error("[api/ai/assistant] Gemini configuration missing", {
@@ -27,7 +33,7 @@ export async function POST(request: Request) {
       vercelEnvironment: process.env.VERCEL_ENV ?? "local"
     });
     return NextResponse.json(
-      { error: "Pulse cannot find GEMINI_API_KEY in this deployment. Check the Production environment value and redeploy." },
+      { error: "Pulse isn't switched on for this workspace yet. The owner can finish setting it up in Settings." },
       { status: 503 }
     );
   }
@@ -139,7 +145,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ reply: generated.text });
   } catch {
     return NextResponse.json(
-      { error: "Pulse could not answer right now. Check the Gemini key or try again." },
+      { error: "Pulse could not answer right now. Try again in a moment." },
       { status: 502 }
     );
   }

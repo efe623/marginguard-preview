@@ -1,8 +1,12 @@
-import { clients, projects, changeOrders, scopeItems } from "@/data/fixtures";
+import { clients, projects as fixtureProjects, changeOrders, scopeItems, previewExtrasMinor } from "@/data/fixtures";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getPreviewDeleted } from "@/lib/preview-deleted";
 import { createClient } from "@/lib/supabase/server";
 import type { Client, Project, ScopeItem } from "@/types/domain";
+
+// Preview projects take their approved extras from the change orders, never a
+// separate hand-typed number, so the list, Today and Money always agree.
+const projects: Project[] = fixtureProjects.map((project) => ({ ...project, approvedExtrasMinor: previewExtrasMinor(project.id) }));
 
 const visibleStatuses = new Set<Project["status"]>([
   "active",

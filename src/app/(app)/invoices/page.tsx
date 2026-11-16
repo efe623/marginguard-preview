@@ -50,7 +50,7 @@ export default async function InvoicesPage() {
             <EmptyState
               art="money"
               title="Send your first invoice"
-              text={`Bill the work that is ready on ${target.name}. The form opens with the cursor on the amount.`}
+              text={`Create an invoice for completed work on ${target.name}. You can track whether it has been paid here.`}
               action={{ href: `/projects/${target.id}/money?focus=inv-amount`, label: "Create your first invoice" }}
               secondary={projectViews.length > 1 ? { href: "/projects", label: "Use another project" } : undefined}
             />

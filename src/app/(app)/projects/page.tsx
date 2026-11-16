@@ -102,7 +102,7 @@ export default async function ProjectsPage({
         ) : (
           <div className="rows">
             <div
-              className="hidden items-center gap-4 border-b border-[var(--line)] px-5 py-2.5 text-[0.8125rem] font-semibold text-[var(--ink-soft)] md:grid md:grid-cols-[minmax(0,1.7fr)_120px_150px_130px_130px_20px]"
+              className="hidden items-center gap-4 border-b border-[var(--line)] px-5 py-2.5 text-[0.8125rem] font-semibold text-[var(--ink-soft)] md:grid md:grid-cols-[minmax(0,1.7fr)_150px_150px_130px_130px_20px]"
               aria-hidden
             >
               <span>Project</span>
@@ -119,16 +119,17 @@ export default async function ProjectsPage({
                 <Link
                   key={project.id}
                   href={`/projects/${project.id}`}
-                  className="row md:!grid-cols-[minmax(0,1.7fr)_120px_150px_130px_130px_20px] md:gap-4"
+                  className="row md:!grid-cols-[minmax(0,1.7fr)_150px_150px_130px_130px_20px] md:gap-4"
                 >
                   <div className="row-main">
                     <p className="row-title">{project.name}</p>
                     <p className="row-sub">{project.clientName} · {project.code}</p>
                   </div>
-                  <span className={`pips ${full ? "is-full" : ""}`} role="img" aria-label={`${project.revisionUsed} of ${project.revisionLimit} revisions used`}>
+                  <span className={`pips ${full ? "is-full" : ""}`}>
                     {Array.from({ length: project.revisionLimit }).map((_, index) => (
-                      <i key={index} className={index < project.revisionUsed ? "on" : ""} />
+                      <i key={index} className={index < project.revisionUsed ? "on" : ""} aria-hidden />
                     ))}
+                    <span className="pips-count"><span className="sr-only">Revisions: </span>{project.revisionUsed}/{project.revisionLimit} used</span>
                   </span>
                   <span><Status tone={status.tone}>{status.label}</Status></span>
                   <span className="num font-semibold" data-label="Quote">{formatMoney(project.quoteMinor, project.currency)}</span>

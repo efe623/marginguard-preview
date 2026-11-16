@@ -270,7 +270,16 @@ export async function getActivityCenterData(): Promise<ActivityItem[]> {
 }
 
 export async function getInvoicesPageData() {
-  if (!isSupabaseConfigured) return { invoices: [], projects: [] };
+  if (!isSupabaseConfigured) {
+    // Preview: the same sample invoices Today and each project's Money tab show.
+    const preview = buildPreviewData();
+    const gone = (await getPreviewDeleted()).projects;
+    const projects = preview.projects.filter((project) => !gone.has(project.id)).map((project) => ({ id: project.id, name: project.name }));
+    const invoices = preview.invoices
+      .filter((invoice) => !gone.has(invoice.project_id))
+      .sort((a, b) => b.due_date.localeCompare(a.due_date));
+    return { invoices, projects };
+  }
   const context = await getAuthenticatedBusinessContext();
   if (!context) return { invoices: [], projects: [] };
   const businessId = context.membership.business_id;

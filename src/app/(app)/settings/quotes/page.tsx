@@ -32,7 +32,7 @@ export default async function QuoteTemplatesPage() {
               ))}
             </div>
           ) : (
-            <EmptyState title="Save your first template" text="Reuse your best quote wording and prices on every new project. Fill in the form and save it." focus="Create a template" />
+            <EmptyState title="Save your first template" text="Reuse your best quote wording and prices on every new project." focus="Create a template" />
           )}
         </section>
         <form action={createQuoteTemplate} className="panel">
