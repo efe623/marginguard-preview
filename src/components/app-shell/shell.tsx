@@ -10,7 +10,7 @@ import { CommandPalette, type PaletteEntity } from "@/components/app-shell/comma
 import { SignOutButton } from "@/components/app-shell/sign-out-button";
 import {
   BrandMark,
-  PulseMark,
+  PulseFace,
   IconAppearance,
   IconArchive,
   IconBusiness,
@@ -303,7 +303,7 @@ export function Shell({
             <kbd>Ctrl K</kbd>
           </button>
           <button type="button" className="ask-trigger" aria-label="Ask Pulse" title="Ask Pulse" onClick={() => window.dispatchEvent(new Event("unitpulse:ask"))}>
-            <PulseMark size={26} />
+            <PulseFace size={40} />
           </button>
           <span className="mainbar-spacer" />
           <ActivityCenter items={activity} />

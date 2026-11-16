@@ -307,13 +307,23 @@ export function BrandMark({ size = 30 }: { size?: number }) {
 }
 
 /**
- * Pulse's icon: the same U holding a heartbeat, with a small gap from the walls.
+ * Pulse, the assistant: a face on a soft grey ring. One brow raised,
+ * a nose with a rounded foot, a small sideways smile. Bone disc in dark mode.
  */
-export function PulseMark({ size = 26 }: { size?: number }) {
+export function PulseFace({ size = 40 }: { size?: number }) {
   return (
-    <svg className="brand-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-      <path d="M11 9V33A21 21 0 0 0 53 33V9" fill="none" stroke="var(--brand-ink, #161616)" strokeWidth="7" strokeLinecap="round" />
-      <path className="brand-beat" d="M20.5 34H25.5L29.5 18L34.5 44L38.5 34H43.5" fill="none" stroke="var(--brand-accent, #8a5a00)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+    <svg className="pulse-face" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <circle cx="32" cy="32" r="29" fill="var(--face-fill, #ffffff)" stroke="#d6d6d6" strokeWidth="3" />
+      <g fill="none" stroke="#161616" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6">
+        <path className="pulse-face-brow" d="M17.5 24.5Q22.5 19 28.5 21.5" />
+        <path className="pulse-face-brow" d="M35 19.5Q41.5 14 48 19.5" />
+        <path d="M33.5 23L26.2 39.6Q25.2 42.2 28 42.3L31.8 42.3" />
+        <path d="M33.5 49Q37.5 50.6 41.5 47.6" />
+      </g>
+      <g className="pulse-face-eyes" fill="#161616">
+        <circle cx="24.6" cy="26.4" r="2.3" />
+        <circle cx="41.4" cy="25.4" r="2.6" />
+      </g>
     </svg>
   );
 }

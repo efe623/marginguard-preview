@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArrowUp, FileText, ReceiptText, Sparkles, X } from "lucide-react";
-import { PulseMark } from "@/components/icons";
+import { PulseFace } from "@/components/icons";
 import { getInstantPulseReply } from "@/lib/pulse";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -86,7 +86,7 @@ export function AiAssistant() {
       {open ? (
         <section className="pulse-panel" aria-label="Pulse AI assistant">
           <header className="pulse-header">
-            <div className="pulse-avatar pulse-avatar-small pulse-avatar-mark" aria-hidden="true"><PulseMark size={20} /></div>
+            <div className="pulse-avatar pulse-avatar-small pulse-avatar-face" aria-hidden="true"><PulseFace size={30} /></div>
             <div><strong>Pulse</strong><span>UnitPulse assistant</span></div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close assistant"><X size={18} /></button>
           </header>
