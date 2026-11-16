@@ -161,7 +161,7 @@ export default async function DashboardPage() {
         actions={
           <>
             <ButtonLink href="/projects/new" variant="outline"><IconPlus size={18} /> New project</ButtonLink>
-            <LogRequestButton projects={projectViews.map((project) => ({ id: project.id, name: project.name, detail: project.clientName }))} className="button button-outline" />
+            <LogRequestButton projects={projectViews.map((project) => ({ id: project.id, name: project.name, detail: project.clientName }))} className="button button-white whitespace-nowrap" />
           </>
         }
       />

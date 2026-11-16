@@ -57,7 +57,7 @@ export function ActivityCenter({ items }: { items: ActivityItem[] }) {
 
   return (
     <div className="activity-center" ref={rootRef}>
-      <button className="icon-button" aria-current={pathname === "/notifications" ? "page" : undefined} type="button" aria-label={`Activity center${unread ? `, ${unread} unread` : ""}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+      <button className={`icon-button bell-button${unread ? " has-unread" : ""}`} aria-current={pathname === "/notifications" ? "page" : undefined} type="button" aria-label={`Activity center${unread ? `, ${unread} unread` : ""}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
         <IconBell size={20} />
         {unread ? <span className="topbar-alert-count">{Math.min(unread, 9)}</span> : null}
       </button>
