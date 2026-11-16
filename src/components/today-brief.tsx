@@ -102,7 +102,7 @@ export function TodayBrief({
       ) : null}
       {resume ? (
         <Link href={`/projects/${resume.id}`} className="resume">
-          <span>Pick up where you left off</span>
+          <span>Resume</span>
           <strong>{resume.name}</strong>
           <IconChevron size={16} />
         </Link>

@@ -1165,3 +1165,8 @@ button.nav-item { background: transparent; border: 0; cursor: pointer; font: inh
 .button-white:hover { background: #f1f1ef; border-color: #bdbdb8; }
 :root[data-theme="dark"] .button-white { border-color: #ffffff; }
 :root[data-theme="dark"] .button-white:hover { background: #e6e6e4; border-color: #e6e6e4; }
+
+/* Collapsed sidebar: the logo starts level with the header bell, as it does when open. */
+@media (min-width: 1024px) {
+  .shell[data-collapsed="true"] .sidebar-top { padding-top: 6px; }
+}
