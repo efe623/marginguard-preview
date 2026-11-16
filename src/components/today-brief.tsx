@@ -15,7 +15,6 @@ const PROJECT_KEY = "unitpulse-lastproject";
  * since the last time, and a reload then starts from now.
  */
 let baseline: string | null | undefined;
-let loadedAt = 0;
 function readBaseline() {
   if (baseline === undefined) {
     try {
@@ -23,13 +22,8 @@ function readBaseline() {
     } catch {
       baseline = null;
     }
-    loadedAt = Date.now();
   }
   return baseline;
-}
-function readLoadedAt() {
-  readBaseline();
-  return loadedAt;
 }
 function readProject() {
   try {
@@ -39,16 +33,6 @@ function readProject() {
   }
 }
 const noop = () => () => {};
-
-function ago(ms: number) {
-  const minutes = Math.round(ms / 60000);
-  if (minutes < 2) return "a moment ago";
-  if (minutes < 60) return `${minutes} minutes ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
-  const days = Math.round(hours / 24);
-  return `${days} ${days === 1 ? "day" : "days"} ago`;
-}
 
 export function TodayBrief({
   needs,
@@ -60,7 +44,6 @@ export function TodayBrief({
   projects: Array<{ id: string; name: string }>;
 }) {
   const raw = useSyncExternalStore(noop, readBaseline, () => undefined);
-  const now = useSyncExternalStore(noop, readLoadedAt, () => 0);
   const lastProject = useSyncExternalStore(noop, readProject, () => null);
 
   useEffect(() => {
@@ -82,7 +65,7 @@ export function TodayBrief({
   }, [needs]);
 
   if (raw === undefined) {
-    return <section className="panel brief-since" aria-busy="true" aria-label="Since you were last here" />;
+    return null;
   }
 
   let previous: { ts: number; needs: number } | null = null;
@@ -96,26 +79,15 @@ export function TodayBrief({
 
   const fresh = previous ? items.filter((item) => new Date(item.createdAt).getTime() > previous!.ts) : items.slice(0, 3);
   const shown = fresh.slice(0, 4);
-  const delta = previous ? previous.needs - needs : 0;
   const resume = projects.find((project) => project.id === lastProject);
 
-  let heading = "Recent activity";
-  let line = "The latest from your projects.";
-  if (previous) {
-    heading = "Since you were last here";
-    if (delta > 0) line = `${delta} fewer ${delta === 1 ? "thing" : "things"} waiting on you than last time, ${ago(now - previous.ts)}.`;
-    else if (delta < 0) line = `${-delta} new ${-delta === 1 ? "thing needs" : "things need"} you since ${ago(now - previous.ts)}.`;
-    else line = `You were last here ${ago(now - previous.ts)}.`;
-  }
+  // Nothing new and nothing to resume: say nothing rather than fill the page.
+  if (!shown.length && !resume) return null;
+  const heading = previous ? "Since your last visit" : "Recent activity";
 
   return (
-    <section className="panel brief-since" aria-labelledby="since-title">
-      <div className="panel-head">
-        <div>
-          <h2 id="since-title" className="panel-title">{heading}</h2>
-          <p className="panel-sub">{line}</p>
-        </div>
-      </div>
+    <section className="flat" aria-labelledby="since-title">
+      <h2 id="since-title" className="flat-title">{heading}</h2>
       {shown.length ? (
         <div className="rows">
           {shown.map((item) => (
@@ -127,9 +99,7 @@ export function TodayBrief({
             </Link>
           ))}
         </div>
-      ) : (
-        <p className="brief-quiet">{previous ? "No new payments, approvals or messages since then." : "Payments, approvals and client messages will show up here."}</p>
-      )}
+      ) : null}
       {resume ? (
         <Link href={`/projects/${resume.id}`} className="resume">
           <span>Pick up where you left off</span>

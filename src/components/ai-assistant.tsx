@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { ArrowUp, Bot, FileText, ReceiptText, Sparkles, X } from "lucide-react";
+import { ArrowUp, FileText, ReceiptText, Sparkles, X } from "lucide-react";
+import { BrandMark } from "@/components/icons";
 import { getInstantPulseReply } from "@/lib/pulse";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -27,6 +28,20 @@ export function AiAssistant() {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, pending]);
+
+  // Opened from the "Ask" button in the top bar (no floating launcher); Escape closes it.
+  useEffect(() => {
+    const toggle = () => setOpen((current) => !current);
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("unitpulse:ask", toggle);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("unitpulse:ask", toggle);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, []);
 
   async function ask(question: string) {
     const clean = question.trim();
@@ -67,11 +82,11 @@ export function AiAssistant() {
   }
 
   return (
-    <div className="pulse-assistant" style={{ left: "auto", right: "max(18px, env(safe-area-inset-right))" }}>
+    <div className="pulse-assistant">
       {open ? (
         <section className="pulse-panel" aria-label="Pulse AI assistant">
           <header className="pulse-header">
-            <div className="pulse-avatar pulse-avatar-small" aria-hidden="true"><Bot size={17} /></div>
+            <div className="pulse-avatar pulse-avatar-small" aria-hidden="true"><BrandMark size={18} /></div>
             <div><strong>Pulse</strong><span>UnitPulse assistant</span></div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close assistant"><X size={18} /></button>
           </header>
@@ -101,15 +116,6 @@ export function AiAssistant() {
           <p className="pulse-note">Read-only answers based on your UnitPulse data.</p>
         </section>
       ) : null}
-      <button
-        className="pulse-launcher"
-        type="button"
-        aria-label={open ? "Close Pulse assistant" : "Open Pulse assistant"}
-        aria-expanded={open}
-        onClick={() => setOpen((current) => !current)}
-      >
-        <span className="pulse-avatar" aria-hidden="true"><Bot size={24} /></span>
-      </button>
     </div>
   );
 }

@@ -301,6 +301,9 @@ export function Shell({
             <span>Search projects, clients, pages</span>
             <kbd>Ctrl K</kbd>
           </button>
+          <button type="button" className="ask-trigger" onClick={() => window.dispatchEvent(new Event("unitpulse:ask"))}>
+            Ask Pulse
+          </button>
           <span className="mainbar-spacer" />
           <ActivityCenter items={activity} />
           <div className="pop mainbar-new" ref={newRef}>
